@@ -1,0 +1,2444 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <link rel="canonical" href="https://blog.csdn.net/u010928589/article/details/90293703"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="report" content='{"pid": "blog", "spm":"1001.2101"}'>
+    <meta name="referrer" content="always">
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <meta name="applicable-device" content="pc">
+    <link  href="https://g.csdnimg.cn/static/logo/favicon32.ico"  rel="shortcut icon" type="image/x-icon" />
+    <title>自定义spring boot-starter,实现自动配置,自定义注解扫描注入(类似dubbo-starter)_喵喵爱西瓜的博客-CSDN博客_springboot自定义注解扫描</title>
+    <script>
+      (function(){ 
+        var el = document.createElement("script"); 
+        el.src = "https://s3a.pstatp.com/toutiao/push.js?1abfa13dfe74d72d41d83c86d240de427e7cac50c51ead53b2e79d40c7952a23ed7716d05b4a0f683a653eab3e214672511de2457e74e99286eb2c33f4428830"; 
+        el.id = "ttzz"; 
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(el, s);
+      })(window)
+    </script>
+        <meta name="keywords" content="springboot自定义注解扫描">
+        <meta name="csdn-baidu-search"  content='{"autorun":true,"install":true,"keyword":"springboot自定义注解扫描"}'>
+    <meta name="description" content="1. 简介 本文,自定义starter是为了扩展 之前自己写的一个RPC框架,所以本文的案列 就是在这个RPC框架之上,实现自动配置 传送门 :手写RPC框架博主现在想把这个 RPC框架封装成一个 starter,实现以下功能1 . 在maven 引入对应starter 实现自动配置,yaml文件的参数自定义2 . 在项目启动时,扫描 打了 自定义注解@Chy...">
+    <script src="//g.csdnimg.cn/tingyun/1.8.5/blog.js" type='text/javascript'></script>
+        <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/css/detail_enter-dbcfbb1ed8.min.css">
+    <script type="application/ld+json">{"@context":"https://ziyuan.baidu.com/contexts/cambrian.jsonld","@id":"https://blog.csdn.net/u010928589/article/details/90293703","appid":"1638831770136827","pubDate":"2019-05-17T17:25:44","title":"自定义spring boot-starter,实现自动配置,自定义注解扫描注入(类似dubbo-starter)_喵喵爱西瓜的博客-CSDN博客_springboot自定义注解扫描","upDate":"2019-05-17T17:25:44"}</script>
+        <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/themesSkin/skin3-template/skin3-template-762f7595fd.min.css">
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isCorporate = false;//注释删除enterprise
+        var username =  "u010928589";
+        var skinImg = "white";
+        var blog_address = "https://blog.csdn.net/u010928589";
+        var currentUserName = "weixin_46000198";
+        var isOwner = false;
+        var loginUrl = "http://passport.csdn.net/account/login?from=https://blog.csdn.net/u010928589/article/details/90293703";
+        var blogUrl = "https://blog.csdn.net/";
+        var avatar = "https://profile.csdnimg.cn/4/D/5/3_u010928589";
+        var articleTitle = "自定义spring boot-starter,实现自动配置,自定义注解扫描注入(类似dubbo-starter)";
+        var articleDesc = "1. 简介 本文,自定义starter是为了扩展 之前自己写的一个RPC框架,所以本文的案列 就是在这个RPC框架之上,实现自动配置 传送门 :手写RPC框架博主现在想把这个 RPC框架封装成一个 starter,实现以下功能1 . 在maven 引入对应starter 实现自动配置,yaml文件的参数自定义2 . 在项目启动时,扫描 打了 自定义注解@Chy...";
+        var articleTitles = "自定义spring boot-starter,实现自动配置,自定义注解扫描注入(类似dubbo-starter)_喵喵爱西瓜的博客-CSDN博客_springboot自定义注解扫描";
+        var nickName = "喵喵爱西瓜";
+        var articleDetailUrl = "https://blog.csdn.net/u010928589/article/details/90293703";
+        if(window.location.host.split('.').length == 3) {
+            blog_address = blogUrl + username;
+        }
+        var skinStatus = "White";
+        var blogStaticHost = "https://csdnimg.cn/release/blogv2/"
+        var mallTestStyle = "control"
+    </script>
+    <script src="https://g.csdnimg.cn/??fixed-sidebar/1.1.6/fixed-sidebar.js" type="text/javascript"></script>
+    <script src='//g.csdnimg.cn/common/csdn-report/report.js' type='text/javascript'></script>
+    <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/public/sandalstrap/1.4/css/sandalstrap.min.css">
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+    <script src="https://dup.baidustatic.com/js/ds.js"></script>
+</head>
+  <body class="nodata " style="">
+        <script>
+            var toolbarSearchExt = '{"landingWord":["springboot自定义注解扫描"],"queryWord":"","tag":["spring boot","spring boot starter","rpc","mybatis"],"title":"自定义spring boot-starter,实现自动配置,自定义注解扫描注入(类似dubbo-starter)"}';
+        </script>
+    <script src="https://g.csdnimg.cn/common/csdn-toolbar/csdn-toolbar.js" type="text/javascript"></script>
+    <script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        }
+        else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+    </script>
+<link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/pc/css/blog_code-01256533b5.min.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/chart-3456820cac.css" />
+
+<script>
+    var articleId = 90293703;
+    var commentscount = 3;
+    var curentUrl = "https://blog.csdn.net/u010928589/article/details/90293703";
+    var myUrl = "https://my.csdn.net/";
+    var highlight = ["starter","mybatis","spring","自定义注解","dubbo","star","boot","ter","rpc","自定义","扫描","自动","类似","注入","配置","注解","实现","(",")",",","-"];//高亮数组
+    var isRecommendModule = true;
+    var isBaiduPre = true;
+    var baiduCount = 2;
+    var setBaiduJsCount = 10;
+    var share_card_url = "https://app-blog.csdn.net/share?article_id=90293703&username=u010928589"
+	var articleType = 1;
+    var baiduKey = "springboot自定义注解扫描";
+    var userNewReport = true;
+    var needInsertBaidu = true;
+    var recommendRegularDomainArr = ["blog.csdn.net/.+/article/details/","download.csdn.net/download/","edu.csdn.net/course/detail/","ask.csdn.net/questions/","bbs.csdn.net/topics/","www.csdn.net/gather_.+/"]
+    var codeStyle = "atom-one-dark";
+    var baiduSearchType = "baidulandingword";
+     var sharData = "{\"hot\":[{\"id\":1,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/a5f4260710904e538002a6ab337939b3.png\"},{\"id\":2,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/188b37199a2c4b74b1d9ffc39e0d52de.png\"},{\"id\":3,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/14ded358b631444581edd98a256bc5af.png\"},{\"id\":4,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/1470f23a770444d986ad551b9c33c5be.png\"},{\"id\":5,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/c329f5181dc74f6c9bd28c982bb9f91d.png\"},{\"id\":6,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ccd8a3305e81460f9c505c95b432a65f.png\"},{\"id\":7,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/bc89d8283389440d97fc4d30e30f45e1.png\"},{\"id\":8,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/452d485b4a654f5592390550d2445edf.png\"},{\"id\":9,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/f8b9939db2ed474a8f43a643015fc8b7.png\"},{\"id\":10,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/6de8864187ab4ed3b1db0856369c36ff.png\"},{\"id\":11,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/673cc3470ff74072acba958dc0c46e2d.png\"},{\"id\":12,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/930c119760ac4491804db80f9c6d4e3f.png\"},{\"id\":13,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/15e6befb05a24233bc2b65e96aa8d972.png\"},{\"id\":14,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/2075fd6822184b95a41e214de4daec13.png\"},{\"id\":15,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/859b1552db244eb6891a809263a5c657.png\"},{\"id\":16,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/0be2f920f1f74290a98921974a9613fd.png\"},{\"id\":17,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/2e97e00b43f14afab494ea55ef3f4a6e.png\"},{\"id\":18,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ff4ab252f46e444686f5135d6ebbfec0.png\"},{\"id\":19,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ae029bbe99564e79911657912d36524f.png\"},{\"id\":20,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/b3ece39963de440388728e9e7b9bf427.png\"},{\"id\":21,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/6f14651a99ba486e926d63b6fa692997.png\"},{\"id\":22,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/83ceddf050084875a341e32dcceca721.png\"},{\"id\":23,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/b90368b8fd5d4c6c8c79a707d877cf7c.png\"},{\"id\":24,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/aeffae14ecf14e079b2616528c9a393b.png\"},{\"id\":25,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/c5a06b5a13d44d16bed868fc3384897a.png\"},{\"id\":26,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/08b697658b844b318cea3b119e9541ef.png\"},{\"id\":27,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/68ccb0b8d09346ac961d2b5c1a8c77bf.png\"},{\"id\":28,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/a2227a247e37418cbe0ea972ba6a859b.png\"},{\"id\":29,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/3a42825fede748f9993e5bb844ad350d.png\"},{\"id\":30,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/8882abc1dd484224b636966ea38555c3.png\"}],\"vip\":[{\"id\":1,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101150.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101154.png\"},{\"id\":2,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101204.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101208.png\"},{\"id\":3,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101211.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101215.png\"},{\"id\":4,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101218.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101220.png\"},{\"id\":5,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101223.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101226.png\"},{\"id\":6,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100635.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100639.png\"},{\"id\":7,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100642.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100644.png\"},{\"id\":8,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100647.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100649.png\"},{\"id\":9,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100652.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100655.png\"}],\"map\":{\"hot\":\"热门\",\"vip\":\"VIP\"}}";
+    
+    var canRead = true;
+    var blogMoveHomeArticle = false;
+    var showPcWindowAd = false;
+    var showHeadWord = true;
+    var showSearchText = "";
+    var linkPage = true;
+    var articleSource = 1;
+    var articleReport = '{"pid": "blog", "spm":"1001.2101"}';
+    var isShowToQuestion = false;
+    var baiduSearchChannel = 'pc_relevant'
+    var baiduSearchIdentification = '.pc_relevant_recovery_v2'
+    var distRequestId = '1666714551932_07776'
+    var initRewardObject = {
+        giver: "weixin_46000198",
+        anchor: "u010928589",
+        articleId: "90293703",
+        sign: "8b12ef7bc33099ec52af2f24cd99d7ab",
+    }
+    var isLikeStatus = false;
+    var isUnLikeStatus = false;
+    var studyLearnWord = "";
+    var isCurrentUserVip = false;
+    var testNewStyle = "control"
+    var contentViewsHeight = 0;
+    var contentViewsCount = 0;
+    var contentViewsCountLimit = 5;
+    var isShowConcision = true
+    var isCookieConcision = false
+    var isHasDirectoryModel = false
+    var isShowSideModel = false
+    var isShowDirectoryModel = true
+    function getCookieConcision(sName){
+        var allCookie = document.cookie.split("; ");
+        for (var i=0; i < allCookie.length; i++){
+            var aCrumb = allCookie[i].split("=");
+            if (sName == aCrumb[0])
+                return aCrumb[1];
+        }
+        return null;
+    }
+    if (getCookieConcision('blog_details_concision') && getCookieConcision('blog_details_concision') == 0){
+        isCookieConcision = true
+        isShowSideModel = true
+        isShowDirectoryModel = false
+    }
+</script>
+<div class="main_father clearfix d-flex justify-content-center mainfather-concision" style="height:100%;"> 
+    <div class="container clearfix container-concision" id="mainBox">
+        <script>
+        if(!isCookieConcision){
+            $('.main_father').removeClass('mainfather-concision')
+            $('.main_father .container').removeClass('container-concision')
+        }
+        </script>
+        <main>
+<script type="text/javascript">
+    function getQueryString(name) {   
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象  
+      var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+      if( r != null ) return decodeURIComponent( r[2] ); return '';   
+    }
+    function stripscript(s){ 
+      var pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？%]") 
+      var rs = ""; 
+      for (var i = 0; i < s.length; i++) { 
+        rs = rs+s.substr(i, 1).replace(pattern, ''); 
+      } 
+      return rs; 
+    }
+    var blogHotWords = stripscript(getQueryString('utm_term')).length > 1 ? stripscript(getQueryString('utm_term')) : ''
+</script>
+<div class="blog-content-box">
+        <div class="article-header-box">
+        <div class="article-header">
+            <div class="article-title-box">
+                <h1 class="title-article" id="articleContentId">自定义spring boot-starter,实现自动配置,自定义注解扫描注入(类似dubbo-starter)</h1>
+            </div>
+            <div class="article-info-box">
+                <div class="article-bar-top">
+                    <img class="article-type-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/original.png" alt="">
+                    <div class="bar-content">
+                    <a class="follow-nickName " href="https://blog.csdn.net/u010928589" target="_blank" rel="noopener">喵喵爱西瓜</a>
+                    <img class="article-time-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCurrentTime2.png" alt="">
+                    <span class="time">于&nbsp;2019-05-17 17:25:44&nbsp;发布</span>
+                    <img class="article-read-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/articleReadEyes2.png" alt="">
+                    <span class="read-count">5350</span>
+                    <a id="blog_detail_zk_collection" class="un-collection" data-report-click='{"mod":"popu_823","spm":"1001.2101.3001.4232","ab":"new"}'>
+                        <img class="article-collect-img article-heard-img un-collect-status isdefault" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollect2.png" alt="">
+                        <img class="article-collect-img article-heard-img collect-status isactive" style="display:inline-block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive2.png" alt="">
+                        <span class="name">收藏</span>
+                        <span class="get-collection">
+                            10
+                        </span>
+                    </a>
+                    </div>
+                </div>
+                <div class="blog-tags-box">
+                    <div class="tags-box artic-tag-box">
+                            <span class="label">分类专栏：</span>
+                                <a class="tag-link" href="https://blog.csdn.net/u010928589/category_8401722.html" target="_blank" rel="noopener">springboot</a>
+                                <a class="tag-link" href="https://blog.csdn.net/u010928589/category_8788685.html" target="_blank" rel="noopener">JAVA</a>
+                                <a class="tag-link" href="https://blog.csdn.net/u010928589/category_8957845.html" target="_blank" rel="noopener">rpc</a>
+                            <span class="label">文章标签：</span>
+                                <a data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"spring boot","ab":"new","extra":"{\"searchword\":\"spring boot\"}"}' class="tag-link" href="https://so.csdn.net/so/search/s.do?q=spring+boot&amp;t=blog&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">spring boot</a>
+                                <a data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"spring boot starter","ab":"new","extra":"{\"searchword\":\"spring boot starter\"}"}' class="tag-link" href="https://so.csdn.net/so/search/s.do?q=spring+boot+starter&amp;t=blog&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">spring boot starter</a>
+                                <a data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"rpc","ab":"new","extra":"{\"searchword\":\"rpc\"}"}' class="tag-link" href="https://so.csdn.net/so/search/s.do?q=rpc&amp;t=blog&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">rpc</a>
+                                <a data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"mybatis","ab":"new","extra":"{\"searchword\":\"mybatis\"}"}' class="tag-link" href="https://so.csdn.net/so/search/s.do?q=mybatis&amp;t=blog&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">mybatis</a>
+                    </div>
+                </div>
+                <div class="slide-content-box">
+                    <div class="article-copyright">
+                        <div class="creativecommons">
+                            版权声明：本文为博主原创文章，遵循<a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。
+                        </div>
+                        <div class="article-source-link">
+                            本文链接：<a href="https://blog.csdn.net/u010928589/article/details/90293703" target="_blank">https://blog.csdn.net/u010928589/article/details/90293703</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="operating">
+                    <a class="href-article-edit slide-toggle">版权</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="blogHuaweiyunAdvert"></div>
+        <div id="blogColumnPayAdvert">
+            <div class="column-group">
+                <div class="column-group-item column-group0 ">
+                    <div class="item-l">
+                        <a class="item-target" href="https://blog.csdn.net/u010928589/category_8401722.html" target="_blank" title="springboot"
+                        data-report-view='{"spm":"1001.2101.3001.6332"}'
+                        data-report-click='{"spm":"1001.2101.3001.6332"}'>
+                            <img class="item-target" src="https://img-blog.csdnimg.cn/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="">
+                            <span class="title item-target">
+                                <span>
+                                <span class="tit">springboot</span>
+                                    <span class="dec more">同时被 3 个专栏收录<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newArrowDown1White.png" alt=""></span>
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                    <div class="item-m">
+                        <span>8 篇文章</span>
+                        <span>1 订阅</span>
+                    </div>
+                    <div class="item-r">
+                            <a class="item-target article-column-bt articleColumnFreeBt" data-id="8401722">订阅专栏</a>
+                    </div>
+                </div>
+                <div class="column-group-item column-group1 ">
+                    <div class="item-l">
+                        <a class="item-target" href="https://blog.csdn.net/u010928589/category_8788685.html" target="_blank" title="JAVA"
+                        data-report-view='{"spm":"1001.2101.3001.6332"}'
+                        data-report-click='{"spm":"1001.2101.3001.6332"}'>
+                            <img class="item-target" src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="">
+                            <span class="title item-target">
+                                <span>
+                                <span class="tit">JAVA</span>
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                    <div class="item-m">
+                        <span>10 篇文章</span>
+                        <span>0 订阅</span>
+                    </div>
+                    <div class="item-r">
+                            <a class="item-target article-column-bt articleColumnFreeBt" data-id="8788685">订阅专栏</a>
+                    </div>
+                </div>
+                <div class="column-group-item column-group2 ">
+                    <div class="item-l">
+                        <a class="item-target" href="https://blog.csdn.net/u010928589/category_8957845.html" target="_blank" title="rpc"
+                        data-report-view='{"spm":"1001.2101.3001.6332"}'
+                        data-report-click='{"spm":"1001.2101.3001.6332"}'>
+                            <img class="item-target" src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="">
+                            <span class="title item-target">
+                                <span>
+                                <span class="tit">rpc</span>
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                    <div class="item-m">
+                        <span>2 篇文章</span>
+                        <span>0 订阅</span>
+                    </div>
+                    <div class="item-r">
+                            <a class="item-target article-column-bt articleColumnFreeBt" data-id="8957845">订阅专栏</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <article class="baidu_pl">
+        <div id="article_content" class="article_content clearfix">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-6e43165c0a.css">
+                <div id="content_views" class="htmledit_views">
+                    <h1>1. 简介</h1> 
+<p>  本文,自定义starter是为了扩展 之前自己写的一个RPC框架,所以本文的案列 就是在这个RPC框架之上,实现自动配置</p> 
+<p>   传送门 :  <a href="https://github.com/cao2068959/rpc-starter">github</a>  |  <a href="https://gitee.com/bigNoseCat/rpc-starter">gitee</a></p> 
+<p>博主现在想把这个 RPC框架封装成一个 starter,实现以下功能</p> 
+<p>1 .  在maven 引入对应starter 实现自动配置,yaml文件的参数自定义</p> 
+<p>2 . 在项目启动时,扫描 打了 自定义注解  <span style="color:#ffbb66;">&#64;ChyRPCRegist </span>的类,把他注册进 PRC 注册中心,同时使用 spring 提供的单例对象,进行反射调用</p> 
+<p>3 . 扫描 自定义注解  <span style="color:#ffbb66;">&#64;ChyRPCServiceFind </span>的<span style="color:#f33b45;">接口(这里是接口,不是实现类,默认spring 的 &#64;service是不扫描进容器的)</span>,然后偷龙换风,把代理对象扔给spring管理, 可以用 <span style="color:#3399ea;">&#64;Autowired</span>,<span style="color:#3399ea;">&#64;Resource </span>注解注入后使用 , 类似 mybatis 的 starter;</p> 
+<p>最后一个比较麻烦,博主都是看着 mybatis starter 的源码一步步摸过来.</p> 
+<p>&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;分割线&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;​​​​​​​&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;​​​​​​​&#61;&#61;&#61;&#61;</p> 
+<p>老规矩,先扔 github,这个项目依赖了,上一篇 <a href="https://blog.csdn.net/u010928589/article/details/90291911">手写RPC框架</a> ,要先下载对应的PRC框架,然后 maven 安装后才能正常使用</p> 
+<p><a href="https://github.com/cao2068959/rpc-starter">https://github.com/cao2068959/rpc-starter</a></p> 
+<p></p> 
+<h1>2 . starter 基本配置</h1> 
+<p>  (1 . 新建一个spring boot项目 引入maven</p> 
+<pre class="has"><code class="language-html">    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-configuration-processor&lt;/artifactId&gt;
+            &lt;optional&gt;true&lt;/optional&gt;
+        &lt;/dependency&gt;
+        
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-autoconfigure&lt;/artifactId&gt;
+        &lt;/dependency&gt;
+
+
+       &lt;!--博主自己手写的RPC框架--&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;chy.frame.rpc&lt;/groupId&gt;
+            &lt;artifactId&gt;chyrpc2.0&lt;/artifactId&gt;
+            &lt;version&gt;2.0&lt;/version&gt;
+        &lt;/dependency&gt;
+
+
+    &lt;/dependencies&gt;
+
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+                &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+                &lt;configuration&gt;
+                    &lt;source&gt;1.8&lt;/source&gt;
+                    &lt;target&gt;1.8&lt;/target&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;</code></pre> 
+<p> (2 .创建一个  Properties 用来映射 yaml上的配置文件</p> 
+<pre class="has"><code class="language-java">//在yaml文件中的前缀
+&#64;ConfigurationProperties(prefix&#61;&#34;chyrpc&#34;)
+public class RpcProperties {
+    private String zookeepeer &#61; &#34;127.0.0.1:2181&#34;;
+    private int port &#61; 10086;
+    private String ip &#61; &#34;127.0.0.1&#34;;
+
+    public String getZookeepeer() {
+        return zookeepeer;
+    }
+
+    public void setZookeepeer(String zookeepeer) {
+        this.zookeepeer &#61; zookeepeer;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port &#61; port;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip &#61; ip;
+    }
+}
+</code></pre> 
+<p> (3 创建自动配置类</p> 
+<pre class="has"><code class="language-java">&#64;Configuration
+//必须要引入了 我手写的 rpc框架才能生效
+&#64;ConditionalOnClass(ChyRpcApplication.class)
+//能够读取我自定义的配置文件
+&#64;EnableConfigurationProperties(RpcProperties.class)
+public class ChyRpcAutoConfigure {
+
+    &#64;Autowired
+    RpcProperties rpcProperties;
+
+    &#64;Bean
+    //如果用户自定义了一个 ChyRpcApplication 就不创建,如果没有就在spring 容器中加入一个默认配置的rpc容器,ChyRpcApplication也是我RPC的核心类,类似 sessionFactory
+    &#64;ConditionalOnMissingBean(ChyRpcApplication.class)
+    public ChyRpcApplication initChyRpcApplication(){
+        ChyRpcApplication chyRpcApplication &#61; new ChyRpcApplication(rpcProperties.getZookeepeer());
+        chyRpcApplication.setPort(rpcProperties.getPort());
+        chyRpcApplication.setIp(rpcProperties.getIp());
+        return chyRpcApplication;
+    }
+
+
+
+}
+</code></pre> 
+<p>(4  在 项目下创建spring.factories文件 </p> 
+<p><img alt="" class="has" height="75" src="https://img-blog.csdnimg.cn/2019051715442370.png" width="362" /></p> 
+<pre class="has"><code class="language-java">org.springframework.boot.autoconfigure.EnableAutoConfiguration&#61;\
+chy.frame.spring.starter.rpc.autoConfigure.ChyRpcAutoConfigure</code></pre> 
+<p>加入,要自动配置的 配置类.这样 当spring boot 引入该 starter后 就会自动加载 该类,然后根据那几个条件注解去加载对应方法</p> 
+<p>(5 测试</p> 
+<p>  当以上配完之后,打包,然后 新建一个 spring boot 项目,引入</p> 
+<pre class="has"><code class="language-html">  &lt;dependency&gt;
+        &lt;groupId&gt;chy.frame.spring.starter&lt;/groupId&gt;
+        &lt;artifactId&gt;chyrpc-spring-boot-starter&lt;/artifactId&gt;
+        &lt;version&gt;1.0&lt;/version&gt;
+    &lt;/dependency&gt;
+</code></pre> 
+<p>这时候,在yaml文件中 就能输入我们添加的参数</p> 
+<p><img alt="" class="has" height="171" src="https://img-blog.csdnimg.cn/20190517155019944.png?x-oss-process&#61;image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA5Mjg1ODk&#61;,size_16,color_FFFFFF,t_70" width="656" /></p> 
+<p>输入端口 为 7992, 启动项目后,看到 控制台</p> 
+<p><img alt="" class="has" height="242" src="https://img-blog.csdnimg.cn/20190517155202842.png?x-oss-process&#61;image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA5Mjg1ODk&#61;,size_16,color_FFFFFF,t_70" width="1200" /></p> 
+<p>看来spring已经帮我们 把 ChyRpcApplication 放入 spring 容器了.</p> 
+<p></p> 
+<p>这时候,启动2个服务,一个注册服务,一个调用服务.</p> 
+<pre class="has"><code class="language-java">&#64;RestController
+public class Mycontroller {
+
+    &#64;Autowired
+    public MyService myService;
+
+    &#64;Autowired
+    public ChyRpcApplication chyRpcApplication;
+
+
+    &#64;GetMapping(&#34;/regist&#34;)
+    public String regist() throws Exception {
+        chyRpcApplication.register(&#34;nameSB&#34;,myService);
+        return &#34;注册成功&#34;;
+    }
+
+    &#64;GetMapping(&#34;/test2&#34;)
+    public String test2() throws Exception {
+        ServiceApi serviceApi &#61; chyRpcApplication.getService(&#34;nameSB&#34;,ServiceApi.class);
+        return serviceApi.test();
+    }
+
+
+
+}</code></pre> 
+<p>能看到,浏览器上显示,远程 服务器的方法调用后,最基本的 starter 就搭建 完了 </p> 
+<p>&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;分割线 总结一波&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;&#61;</p> 
+<p>不过缺点也很明显,如果上千个 服务要注册,能写到崩溃,而且这么调用.spring 不能管理到 代理对象.每次 都是一个新的代理.</p> 
+<p></p> 
+<h1>2 . 实现自动注册服务</h1> 
+<p>这里 我自定义了一个 注解</p> 
+<p><span style="color:#ffbb66;">&#64;ChyRPCRegist </span></p> 
+<p>凡是被这个 注解盯上的类,会在自动配置的时候,注册进RPC框架.</p> 
+<pre class="has"><code class="language-java">
+&#64;Target({ElementType.TYPE, ElementType.METHOD})
+&#64;Retention(RetentionPolicy.RUNTIME)
+&#64;Documented
+public &#64;interface ChyRPCRegist {
+
+//有一个默认参数,将会指定 RPC服务的名称,如果不写,将会用这个类的接口的名称注册
+    String name() default &#34;&#34;;
+}
+</code></pre> 
+<p>因为, RPC注册的时候,需要服务类的实例对象(总不能每次调用都去new一个) ,同时spring 已经帮我们管理好了,我们直接用 spring 管理的 bean 对象就行.</p> 
+<p>所以思路就是,我们需要在 spring 把所有的 bean都创建好了,再去注册我们的服务.</p> 
+<p>spring 有各种监听 接口,这里 我们使用   <span style="color:#7c79e5;">ApplicationListener&lt;ContextRefreshedEvent</span><span style="color:#7c79e5;">&gt;  </span>这个接口,注意泛型才是关键</p> 
+<p>这个接口会在 bean全部创建完了才会调用.</p> 
+<p>那事情是很好办了,创建一个类</p> 
+<p><span style="color:#f33b45;">实现思路, 在监听触发后,拿到 spring 容器中所有的bean对象.然后扫描所有bean.看谁打了注解 </span><span style="color:#3399ea;">&#64;ChyRPCRegist</span><span style="color:#f33b45;"> ,打了的就注册进RPC容器中.</span></p> 
+<pre class="has"><code class="language-java">public class ChyRpcRegistService implements ApplicationListener&lt;ContextRefreshedEvent&gt; {
+
+    &#64;Autowired
+    private ChyRpcApplication chyRpcApplication;
+
+    /**
+     * 扫描自定义的注解,并注册到RPC容器中
+     * &#64;param contextRefreshedEvent
+     */
+    &#64;Override
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+
+        //拿到spring容器
+        ApplicationContext applicationContext &#61; contextRefreshedEvent.getApplicationContext();
+        //拿到所有打了注解 ChyRPCRegist 的bean
+        Map&lt;String, Object&gt; beansWithAnnotation &#61; applicationContext.getBeansWithAnnotation(ChyRPCRegist.class);
+
+        boolean isStart &#61; false;
+
+        for (String serviceName : beansWithAnnotation.keySet()) {
+
+            Object serviceObject &#61; beansWithAnnotation.get(serviceName);
+            Class&lt;?&gt; serviceImpClass &#61; serviceObject.getClass();
+            //拿到注解
+            ChyRPCRegist chyRPCRegist &#61; serviceImpClass.getAnnotation(ChyRPCRegist.class);
+
+            String registName &#61; chyRPCRegist.name();
+            //如果在注解中没指定名称,就用 接口的名称,
+            if(&#34;&#34;.equals(registName)){
+                Class&lt;?&gt;[] interfaces &#61; serviceImpClass.getInterfaces();
+                if(interfaces!&#61;null &amp;&amp; interfaces.length &gt;0){
+                    registName &#61; interfaces[0].getName();
+                }
+            }
+
+            if(registName &#61;&#61; null || &#34;&#34;.equals(registName)){
+                System.err.println(serviceObject.getClass().getName()&#43; &#34; ---&gt; 注册失败&#34;);
+                continue;
+            }
+            try {
+                chyRpcApplication.register(registName,serviceObject);
+                isStart &#61; true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        if(isStart){
+            System.out.println(&#34;RPC 服务提供者 开启 ---- &gt; 端口 &#34;&#43; chyRpcApplication.getPort());
+        }
+
+    }
+
+
+}
+</code></pre> 
+<p>但是这个类 现在还没进入 spring 容器中,自然 监听也不会生效</p> 
+<p>在之前我们配置的  <span style="color:#ffbb66;">ChyRpcAutoConfigure </span>类中加上 </p> 
+<pre class="has"><code class="language-java">  /**
+     * 扫描所有打过注解的类,把他注册进rpc服务
+     */
+    &#64;ConditionalOnBean(ChyRpcApplication.class)
+    &#64;Bean
+    public ChyRpcRegistService registAllService(){
+        return new ChyRpcRegistService();
+    }</code></pre> 
+<p>测试 :</p> 
+<p></p> 
+<pre class="has"><code class="language-java">//因为bean对象 还是要交给 spring管理,我们的注解是在 spring扫描完 对象后才处理,没有管理bean的能力,所以必须要加上 &#64;Service &#64;Controller 等注解
+&#64;Service
+&#64;ChyRPCRegist
+public class MyService implements ServiceApi {
+
+    public String test(){
+        return &#34;调用了 8082的服务哦&#34;;
+    }
+
+}
+</code></pre> 
+<p>启动服务后,查看 zookeeper,发现 已经注册进了 RPC容器.</p> 
+<p></p> 
+<h1>3 实现扫描接口上的自定义注解</h1> 
+<p> 接下来,我们要实现了 类似 fegin ,mybaits 在接口上打个注解,然后把 代理对象塞进去的骚操作.</p> 
+<p> . 首先,一个空接口上,如果打了 &#64;Service 这些注解,spring 容器在扫描的时候,也不会生成对应的 bean,所以 上面那种自动注册的做法 就完全 pass了.</p> 
+<p>既然 &#64;servcie 注解 不理会 接口,那我们就自己现实一个,mybaits 也是类似,所以他用了 &#64;Mapper注解</p> 
+<pre class="has"><code class="language-java">
+&#64;Target({ElementType.TYPE, ElementType.METHOD})
+&#64;Retention(RetentionPolicy.RUNTIME)
+&#64;Documented
+public &#64;interface ChyRPCServiceFind {
+//服务的名称,用来RPC的时候调用指定名称的 服务
+    String serviceName() default &#34;&#34;;
+//还记得 service注解中也要指定一个名字吗,使用&#64;Resource的时候 注入对应名字的对象
+    String beanName() default &#34;&#34;;
+}
+</code></pre> 
+<p>既然 这个注解 要有扫描 bean的作用.那么 我肯定要指定扫描的包路径,是不是 很熟悉 ,mybatis 中有个 <span style="color:#f33b45;">&#64;MapperScan</span>注解来指定扫描的路径,那么我们也来一个&#64;RpcScan</p> 
+<pre class="has"><code class="language-java">
+&#64;Target({ElementType.TYPE, ElementType.METHOD})
+&#64;Retention(RetentionPolicy.RUNTIME)
+//spring中的注解,加载对应的类
+&#64;Import(FindServiceScan.class)
+&#64;Documented
+public &#64;interface RpcScan {
+
+    String[] basePackage() default {};
+}
+</code></pre> 
+<p>是不是看到了 一个 &#64;Import(FindServiceScan.class) </p> 
+<p>没错,他就是 我们正真的扫描入口</p> 
+<p>这个类 实现了 <span style="color:#f33b45;">ImportBeanDefinitionRegistrar </span>接口, 看名字就知道,他现在拥有的注册 bean的能力</p> 
+<pre class="has"><code class="language-java">
+public class FindServiceScan implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
+
+
+    ResourceLoader resourceLoader;
+
+  
+
+    &#64;Override
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+
+        this.resourceLoader &#61; resourceLoader;
+    }
+
+    &#64;Override
+    public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry beanDefinitionRegistry) {
+        AnnotationAttributes annoAttrs &#61; AnnotationAttributes.fromMap(annotationMetadata.getAnnotationAttributes(RpcScan.class.getName()));
+
+        String[] basePackages &#61; annoAttrs.getStringArray(&#34;basePackage&#34;);
+        //没有设置 扫描路径,就扫描对应
+        if(basePackages.length &#61;&#61; 0){
+            basePackages &#61; new String[]{((StandardAnnotationMetadata) annotationMetadata).getIntrospectedClass().getPackage().getName()};
+        }
+
+        //自定义的 包扫描器
+        FindServiceClassPathScanHandle scanHandle &#61; new FindServiceClassPathScanHandle(beanDefinitionRegistry,false);
+
+        if(resourceLoader !&#61; null){
+            scanHandle.setResourceLoader(resourceLoader);
+        }
+
+        scanHandle.setBeanNameGenerator(new RpcBeanNameGenerator());
+        //扫描指定路径下的接口
+        Set&lt;BeanDefinitionHolder&gt; beanDefinitionHolders &#61; scanHandle.doScan(basePackages);
+    }
+}</code></pre> 
+<p>同时 还继承 <span style="color:#f33b45;">ResourceLoaderAware</span> 接口 这是为了,拿到resourceLoader 对象,用于 传入 扫描管理器中.</p> 
+<p>重点在 <span style="color:#f33b45;">ImportBeanDefinitionRegistrar </span>的实现方法 registerBeanDefinitions 中</p> 
+<p>在这里面,我 读取 前面 &#64;RpcScan 里指定要扫描的包路径,如果没指定,就扫描 main 方法下所在包的所有类,然后 new了一个 <span style="color:#ffbb66;">FindServiceClassPathScanHandle</span> 对象开始扫描.  <span style="color:#ffbb66;">FindServiceClassPathScanHandle</span>是继承了 <span style="color:#f33b45;">ClassPathBeanDefinitionScanner </span>而<span style="color:#f33b45;">ClassPathBeanDefinitionScanner</span>这是 spring 默认提供给我们的 扫描器.这样我们就能站在巨人的肩膀上扩展一下.(你问我为什么 知道,因为mybatis就是这么写的,我这不算抄袭...)</p> 
+<p>然后重点 就是 <span style="color:#ffbb66;">FindServiceClassPathScanHandle</span>这个类</p> 
+<pre class="has"><code class="language-java">public class FindServiceClassPathScanHandle extends ClassPathBeanDefinitionScanner {
+
+    public FindServiceClassPathScanHandle(BeanDefinitionRegistry registry, boolean useDefaultFilters) {
+        super(registry, useDefaultFilters);
+    }
+
+
+    &#64;Override
+    protected Set&lt;BeanDefinitionHolder&gt; doScan(String... basePackages) {
+        //添加过滤条件
+         addIncludeFilter(new AnnotationTypeFilter(ChyRPCServiceFind.class));
+        //调用spring的扫描
+        Set&lt;BeanDefinitionHolder&gt; beanDefinitionHolders &#61; super.doScan(basePackages);
+        if(beanDefinitionHolders.size() !&#61; 0){
+            //给扫描出来的接口添加上代理对象
+            processBeanDefinitions(beanDefinitionHolders);
+        }
+        return beanDefinitionHolders;
+    }
+
+
+    /**
+     * 给扫描出来的接口添加上代理对象
+     * &#64;param beanDefinitions
+     */
+    private void processBeanDefinitions(Set&lt;BeanDefinitionHolder&gt; beanDefinitions) {
+        GenericBeanDefinition definition;
+        for (BeanDefinitionHolder holder : beanDefinitions) {
+            definition &#61; (GenericBeanDefinition) holder.getBeanDefinition();
+            //拿到接口的全路径名称
+            String beanClassName &#61; definition.getBeanClassName();
+            //把接口的全路径放入ProxyFactoryBean 的构造器中,在构造器中会自动转成 class类型
+            definition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
+            //把扫描出来的接口里面改成一个 生成代理类的工程方法,这个类实现了 factoryBean spring容器在实例化的时候会调用 里面的getObject 方法
+            definition.setBeanClass(ProxyFactoryBean.class);
+            definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
+
+        }
+    }
+
+    &#64;Override
+    protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
+        return beanDefinition.getMetadata().isInterface() &amp;&amp; beanDefinition.getMetadata().isIndependent();
+    }
+
+}</code></pre> 
+<p>大概流程 是 : </p> 
+<p>重写<span style="color:#ffbb66;"> doScan</span> 方法,在原来的基础上 加了一个 过滤条件,只扫描打了 <span style="color:#ffbb66;">ChyRPCServiceFind </span>注解的类.(如果看 spring 源码 也和这个类似,只是注解变成了 service controller 等注解). 然后<span style="color:#86ca5e;">调用 父类的默认扫描方法</span>.</p> 
+<p>然后拿到 所有打了 注解的 接口 的 bean描述文件(这时候,还没实例化对象,spring 会用描述文件去生成对应的实例),交给<span style="color:#3399ea;">processBeanDefinitions</span> 去修改描述文件,这样 到真正生成 实例的时候,就<span style="color:#f33b45;">偷梁换柱</span></p> 
+<p><span style="color:#f33b45;">注意 :</span></p> 
+<p>       要重写i<span style="color:#ffbb66;">sCandidateComponent </span>方法,如果不重写,用父类的 <span style="color:#ffbb66;">isCandidateComponent </span>,就会把<span style="color:#f33b45;">接口</span>给过滤掉.导致doScan的时候拿不到接口(我在debug里面绕了好久才发现,mybatis 也重写了,抄的时候居然把关键点忘记了)</p> 
+<p></p> 
+<p><span style="color:#3399ea;">processBeanDefinitions</span>做的就是,修改bean描述文件, 把描述文件中 bean的类的类型(原来是我们扫描到的接口),改成了<span style="color:#ffbb66;">ProxyFactoryBean </span>,这个类 会帮我们生成<span style="color:#f33b45;">代理类 </span></p> 
+<pre class="has"><code class="language-java">public class ProxyFactoryBean&lt;T&gt; implements FactoryBean&lt;T&gt; {
+
+
+    private Class&lt;T&gt; rpcInterface;
+
+
+    &#64;Autowired
+    private ChyRpcApplication chyRpcApplication;
+
+
+    public ProxyFactoryBean(Class&lt;T&gt; rpcInterface) {
+        this.rpcInterface &#61; rpcInterface;
+    }
+
+    /**
+     * 用描述文件,生成真正对象的时候,会调用这个方法
+     * 调用的时候生成代理对象
+     * &#64;return
+     * &#64;throws Exception
+     */
+    &#64;Override
+    public T getObject() throws Exception {
+        ChyRPCServiceFind serviceFind &#61; rpcInterface.getAnnotation(ChyRPCServiceFind.class);
+        String serviceName &#61; serviceFind.serviceName();
+        if(serviceName &#61;&#61; null || &#34;&#34;.equals(serviceName)){
+            serviceName &#61; rpcInterface.getName();
+        }
+        return chyRpcApplication.getService(serviceName,rpcInterface);
+    }
+
+    /**
+     * 假装我的类型还是 原来的接口类型,不是代理对象
+     * 这样 自动注入的时候,类型才能匹配上
+     * &#64;return
+     */
+    &#64;Override
+    public Class&lt;?&gt; getObjectType() {
+        return rpcInterface;
+    }
+
+
+    &#64;Override
+    public boolean isSingleton() {
+        return true;
+    }
+
+    public Class&lt;T&gt; getRpcInterface() {
+        return rpcInterface;
+    }
+
+    public void setRpcInterface(Class&lt;T&gt; rpcInterface) {
+        this.rpcInterface &#61; rpcInterface;
+    }
+
+
+    public ChyRpcApplication getChyRpcApplication() {
+        return chyRpcApplication;
+    }
+
+    public void setChyRpcApplication(ChyRpcApplication chyRpcApplication) {
+        this.chyRpcApplication &#61; chyRpcApplication;
+    }
+}</code></pre> 
+<p>到这里就基本实现了.</p> 
+<h2>测试</h2> 
+<h3><span style="color:#e579b6;">调用者类</span></h3> 
+<h2><img alt="" class="has" height="196" src="https://img-blog.csdnimg.cn/20190517171116792.png?x-oss-process&#61;image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA5Mjg1ODk&#61;,size_16,color_FFFFFF,t_70" width="652" /></h2> 
+<p>启动类</p> 
+<p><img alt="" class="has" height="366" src="https://img-blog.csdnimg.cn/20190517171421234.png?x-oss-process&#61;image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA5Mjg1ODk&#61;,size_16,color_FFFFFF,t_70" width="1200" /></p> 
+<p><img alt="" class="has" height="326" src="https://img-blog.csdnimg.cn/20190517171521965.png?x-oss-process&#61;image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA5Mjg1ODk&#61;,size_16,color_FFFFFF,t_70" width="1032" /></p> 
+<h3><span style="color:#e579b6;">提供者</span></h3> 
+<p><img alt="" class="has" height="252" src="https://img-blog.csdnimg.cn/20190517171322194.png?x-oss-process&#61;image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA5Mjg1ODk&#61;,size_16,color_FFFFFF,t_70" width="1200" /></p> 
+<p>最后输入 浏览器访问 能成功看到</p> 
+<p><img alt="" class="has" height="222" src="https://img-blog.csdnimg.cn/20190517171613589.png?x-oss-process&#61;image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA5Mjg1ODk&#61;,size_16,color_FFFFFF,t_70" width="1168" /></p> 
+<p>这样基本 效果就完成了</p> 
+<h1>4 按照名称注入对象</h1> 
+<p>最后嗯,还有一个BUG.就是 这个注入,只能根据接口的类型注入.那如果我想像<span style="color:#f33b45;"> &#64;Service(&#34;hell&#34;)</span>注解这样 在里面指定一个 名称,在注入的时候 <span style="color:#f33b45;"> &#64;Resource(name &#61; &#34;hell&#34;)</span>来指定注入对象,怎么办嗯</p> 
+<p><img alt="" class="has" height="722" src="https://img-blog.csdnimg.cn/20190517172045695.png?x-oss-process&#61;image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA5Mjg1ODk&#61;,size_16,color_FFFFFF,t_70" width="1200" /></p> 
+<p>在 创建自定义 扫描器的时候,是不是看到了这玩意,他就是用了 给你的 扫描类取名字的,我们重写这个类.</p> 
+<pre class="has"><code class="language-java">public class RpcBeanNameGenerator extends AnnotationBeanNameGenerator {
+
+    &#64;Override
+    public String generateBeanName(BeanDefinition definition, BeanDefinitionRegistry registry) {
+
+        //从自定义注解中拿name
+        String name &#61; getNameByServiceFindAnntation(definition,registry);
+        if(name !&#61; null &amp;&amp; !&#34;&#34;.equals(name)){
+            return name;
+        }
+        //走原来的方法
+        return super.generateBeanName(definition, registry);
+    }
+
+    private String getNameByServiceFindAnntation(BeanDefinition definition, BeanDefinitionRegistry registry) {
+        String beanClassName &#61; definition.getBeanClassName();
+        try {
+            Class&lt;?&gt; aClass &#61; Class.forName(beanClassName);
+            ChyRPCServiceFind annotation &#61; aClass.getAnnotation(ChyRPCServiceFind.class);
+            if(annotation &#61;&#61; null){
+                return null;
+            }
+            return annotation.beanName();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+
+}
+</code></pre> 
+<p></p> 
+<p>OK.最后测试</p> 
+<p><img alt="" class="has" height="208" src="https://img-blog.csdnimg.cn/20190517172338285.png?x-oss-process&#61;image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA5Mjg1ODk&#61;,size_16,color_FFFFFF,t_70" width="1200" /></p> 
+<p><img alt="" class="has" height="198" src="https://img-blog.csdnimg.cn/20190517172403394.png" width="950" /></p> 
+<p>虽然IDEA没有识别出来,但是启动正常</p> 
+<p></p>
+                </div>
+        </div>
+        <div id="treeSkill"></div>
+    </article>
+  <script>
+  $(function() {
+    setTimeout(function () {
+      var mathcodeList = document.querySelectorAll('.htmledit_views img.mathcode');
+      if (mathcodeList.length > 0) {
+        var testImg = new Image();
+        testImg.onerror = function () {
+          mathcodeList.forEach(function (item) {
+            $(item).before('<span class="img-codecogs">\\(' + item.alt + '\\)</span>');
+            $(item).remove();
+          })
+          MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+        }
+        testImg.src = mathcodeList[0].src;
+      }
+    }, 1000)
+  })
+  </script>
+</div>
+<div class="more-toolbox-new" id="toolBarBox">
+    <div class="left-toolbox">
+        <div class="toolbox-left">
+            <div class="profile-box"><a class="profile-href" target="_blank" href="https://blog.csdn.net/u010928589"><img class="profile-img" src="https://profile.csdnimg.cn/4/D/5/3_u010928589"><span class="profile-name">喵喵爱西瓜</span></a></div>
+            <div class="profile-attend">
+                    <a class="tool-attend tool-bt-button tool-bt-attend" href="javascript:;" data-report-view='{"mod":"1592215036_002","spm":"1001.2101.3001.4232","extend1":"关注"}'>关注</a>
+                <a class="tool-item-follow active-animation" style="display:none;">关注</a>
+            </div>
+        </div>
+        <div class="toolbox-middle">
+        <ul class="toolbox-list">
+            <li class="tool-item tool-item-size tool-active is-like" id="is-like">
+            <a class="tool-item-href">
+                <img style="display:none;" id="is-like-imgactive-animation-like" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarThumbUpactive.png" alt="">
+                <img class="isactive" style="display:none" id="is-like-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2021Active.png" alt="">
+                <img class="isdefault" style="display:block" id="is-like-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2021Black.png" alt="">  
+                <span id="spanCount" class="count ">
+                        3
+                </span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">点赞</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active is-unlike" id="is-unlike">
+            <a class="tool-item-href">
+                <img class="isactive" style="margin-right:0px;display:none" id="is-unlike-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnHeart2021Active.png" alt="">
+                <img class="isdefault" style="margin-right:0px;display:block" id="is-unlike-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnHeart2021Black.png" alt="">
+                <span id="unlikeCount" class="count "></span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">踩</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active is-collection ">
+            <a class="tool-item-href" href="javascript:;" data-report-click='{"mod":"popu_824","spm":"1001.2101.3001.4130","ab":"new"}'>
+                <img style="display:none" id="is-collection-img-collection" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive.png" alt="">
+                <img class="isdefault" id="is-collection-img" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectBlack.png" alt="">
+                <img class="isactive" id="is-collection-imgactive" style="display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectActive.png" alt="">
+                <span class="count get-collection active" id="get-collection">
+                    10
+                </span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">收藏</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-item-reward">
+                <a class="tool-item-href" href="javascript:;" data-report-click='{"mod":"popu_830","spm":"1001.2101.3001.4237","dest":"","ab":"new"}'>
+                <img class="isdefault reward-bt" id="rewardBtNew" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newRewardBlack.png" alt="打赏">
+                <span class="count"></span>
+                </a>
+                <div class="tool-hover-tip"><span class="text space">打赏</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-item-comment">
+            <a class="tool-item-href go-side-comment" data-report-click='{"spm":"1001.2101.3001.7009"}'>
+                <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newComment2021Black.png" alt="">
+                <span class="count">
+                    3
+                </span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">评论</span></div>
+            </li>
+            <li class="tool-item tool-item-bar">
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-QRcode" id="tool-share">
+                <a class="tool-item-href" href="javascript:;" data-report-click='{"mod":"1582594662_002","spm":"1001.2101.3001.4129","ab":"new"}'>
+                    <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newShareBlack.png" alt="">
+                </a>
+                <div class="QRcode" id="tool-QRcode">
+                    <div class="share-bg-icon icon1" id="shareBgIcon"></div>
+                    <div class="share-bg-box">
+                        <div class="share-content">
+                            <img class="share-avatar" src="https://profile.csdnimg.cn/4/D/5/3_u010928589" alt="">
+                            <div class="share-tit">自定义spring boot-starter,实现自动配置,自定义注解扫描注入(类似dubbo-starter)</div>
+                            <div class="share-dec">1. 简介 本文,自定义starter是为了扩展 之前自己写的一个RPC框架,所以本文的案列 就是在这个RPC框架之上,实现自动配置 传送门 :手写RPC框架博主现在想把这个 RPC框架封装成一个 starter,实现以下功能1 . 在maven 引入对应starter 实现自动配置,yaml文件的参数自定义2 . 在项目启动时,扫描 打了 自定义注解@Chy...</div>
+                            <a id="copyPosterUrl" class="url" data-report-click='{"spm":"1001.2101.3001.7493"}' data-report-view='{"spm":"1001.2101.3001.7493"}'>复制链接</a>
+                        </div>
+                        <div class="share-code">
+                            <div class="share-code-box" id='shareCode'></div>
+                            <div class="share-code-text">扫一扫</div>
+                        </div>
+                        
+                    </div>
+                    <div class="share-code-type">
+                      
+                    </div>
+                </div>
+            </li>
+        </ul>
+        </div>
+        <div class="toolbox-right">
+                <div class="tool-directory">
+                    <a class="bt-columnlist-show"
+                    data-id="8401722"
+                    data-free="true"
+                    data-subscribe="false"
+                    data-title="springboot"
+                    data-img="https://img-blog.csdnimg.cn/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64"
+                    data-url="https://blog.csdn.net/u010928589/category_8401722.html"
+                    data-sum="8"
+                    data-people="1"
+                    data-price="0"
+                    data-oldprice="0"
+                    data-join="false"
+                    data-studyvip="false"
+                    data-studysubscribe="false"
+                    data-report-view='{"spm":"1001.2101.3001.6334","extend1":"专栏目录"}'
+                    data-report-click='{"spm":"1001.2101.3001.6334","extend1":"专栏目录"}'
+                    >专栏目录</a>
+                </div>
+        </div>
+    </div>  
+</div>
+<script type=text/javascript crossorigin src="https://csdnimg.cn/release/phoenix/production/qrcode-7c90a92189.min.js"></script>
+<script src="//g.csdnimg.cn/??sharewx/1.2.1/sharewx.js" type="text/javascript"></script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/user-login/3.0.1/user-login.js"></script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/collection-box/2.1.0/collection-box.js"></script>
+                <div id="dmp_ad_58" style="width:100%;overflow-x:hidden"><div id="kp_box_58" data-pid="58"><iframe  src="https://kunpeng-sc.csdnimg.cn/?timestamp=1645783940/#/preview/438926?positionId=58&adId=1014867&queryWord=自定义spring boot-starter,实现自动配置,自定义注解扫描注入类似dubbo-starter&spm=1001.2101.3001.5002&articleId=90293703&hk=1" frameborder="0" width= "100%"  height= "75px" scrolling="no" ></iframe><img class="pre-img-lasy"  data-src="https://kunyu.csdn.net/1.png?p=58&adId=1014867&a=1014867&c=438926&k=自定义spring boot-starter,实现自动配置,自定义注解扫描注入类似dubbo-starter&spm=1001.2101.3001.5002&articleId=90293703&hk=1&d=1&t=3&u=cf19f771fbe241b08dc8ddcf5ff68cf2" style="display: block;width: 0px;height: 0px;"></div></div>
+            <script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_commontools-d5fda285fa.min.js" type="text/javascript" async></script>
+            <div class="second-recommend-box recommend-box ">
+<div class="recommend-item-box type_download clearfix" data-url="https://download.csdn.net/download/taanzuo/10535644"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.1","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-download-2~default~CTRLIST~Paid-1-10535644-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"1","strategy":"2~default~CTRLIST~Paid","dest":"https://download.csdn.net/download/taanzuo/10535644"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://download.csdn.net/download/taanzuo/10535644" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.1","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-download-2~default~CTRLIST~Paid-1-10535644-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"1","strategy":"2~default~CTRLIST~Paid","dest":"https://download.csdn.net/download/taanzuo/10535644"}'  data-report-query='spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-download-2%7Edefault%7ECTRLIST%7EPaid-1-10535644-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-download-2%7Edefault%7ECTRLIST%7EPaid-1-10535644-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1">java<em>(</em><em>spring</em> <em>boot</em><em>)</em><em>自定义注解</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block">07-11</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://download.csdn.net/download/taanzuo/10535644" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.1","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-download-2~default~CTRLIST~Paid-1-10535644-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"1","strategy":"2~default~CTRLIST~Paid","dest":"https://download.csdn.net/download/taanzuo/10535644"}'  data-report-query='spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-download-2%7Edefault%7ECTRLIST%7EPaid-1-10535644-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-download-2%7Edefault%7ECTRLIST%7EPaid-1-10535644-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>自定义</em>java<em>注解</em>开发<em>,</em>javabean中某方法添加该<em>自定义注解</em><em>,</em><em>配置</em>该方法相关信息指标<em>,</em>通过全局<em>扫描</em>该<em>注解</em>获取全部方法及相关指标<em>,</em><em>自动</em>执行方法<em>(</em>本demo用于系统监控开发<em>)</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+            </div>
+<a id="commentBox" name="commentBox"></a>
+<div id="pcCommentBox" class="comment-box comment-box-new2  login-comment-box-new" style="display:block">
+		<div class="has-comment" style="display:block">
+		<div class="has-comment-tit">评论<span class="count go-side-comment">3</span><span class="text go-side-comment">条</span><img class="go-side-comment more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowRightWhite.png" alt=""><a class="has-comment-bt-right go-side-comment focus">写评论</a></div>
+			<div class="has-comment-con comment-operate-item"></div>
+		</div>
+		<div class="unhas-comment" style="display:none">
+			<div class="unhas-comment-left">评论</div>
+			<div class="unhas-comment-right"><a class="go-side-comment focus">写评论</a></div>
+		</div>
+</div>
+            <div class="recommend-box insert-baidu-box recommend-box-style ">
+                <div class="recommend-item-box no-index" style="display:none"></div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/u014022405/article/details/89703609"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.2","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-2-89703609-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"2","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/u014022405/article/details/89703609"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/u014022405/article/details/89703609" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.2","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-2-89703609-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"2","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/u014022405/article/details/89703609"}'  data-report-query='spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2-89703609-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2-89703609-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1">像<em>mybatis</em>一样，<em>Spring</em>启动时为接口创建代理对象并<em>自动</em><em>注入</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/u014022405" target="_blank"><span class="blog-title">莫莫的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">04-30</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1993
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/u014022405/article/details/89703609" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.2","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-2-89703609-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"2","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/u014022405/article/details/89703609"}'  data-report-query='spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2-89703609-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2-89703609-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1">有些时候，我们需要为一些接口创建代理对象，并放入<em>Spring</em>的IOC容器中，比如，当我们需要构建一个<em>RPC</em>框架客户端程序时，客户端肯定只有服务的接口，并没有具体的<em>实现</em>，<em>实现</em>在远程服务器，这个时候，我们就可以为这些服务接口创建代理对象，并将代理对象放入IOC容器中，当我们需要调用服务时，通过接口请求服务，最终由代理对象发起网络请求，将服务请求发送到远程服务器，远程服务器执行后，再将结果返回到客户端，...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/qq_38709999/article/details/103292883"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.3","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-3-103292883-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"3","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/qq_38709999/article/details/103292883"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/qq_38709999/article/details/103292883" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.3","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-3-103292883-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"3","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/qq_38709999/article/details/103292883"}'  data-report-query='spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-103292883-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-103292883-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>spring</em><em>boot</em>使用<em>自定义注解</em><em>注入</em>参数值</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/qq_38709999" target="_blank"><span class="blog-title">千羽的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">11-28</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					4570
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/qq_38709999/article/details/103292883" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.3","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-3-103292883-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"3","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/qq_38709999/article/details/103292883"}'  data-report-query='spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-103292883-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-103292883-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1">需求：使用<em>自定义注解</em>，获得请求头中的字段，映射进入handler参数。
+1、<em>自定义注解</em>
+package com.example.demo.anno;
+
+import java.lang.annotation.*;
+
+/**
+ * @author shi
+ * @created 2019/11/28
+ */
+@Documented
+@Target<em>(</em>{ElementType.PARAME<em>TER</em>}<em>)</em>
+@...</div>
+			</a>
+		</div>
+	</div>
+</div>
+		<dl id="recommend-item-box-tow" class="recommend-item-box type_blog clearfix">
+			
+		</dl>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/a294634473/article/details/100728363"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.4","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4-100728363-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"4","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/a294634473/article/details/100728363"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/a294634473/article/details/100728363" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.4","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4-100728363-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"4","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/a294634473/article/details/100728363"}'  data-report-query='spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4-100728363-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4-100728363-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>Spring</em> <em>boot</em><em>-</em><em>-</em><em>自定义</em>类<em>扫描</em>器</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/a294634473" target="_blank"><span class="blog-title">a294634473的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">09-11</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					4805
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/a294634473/article/details/100728363" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.4","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4-100728363-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"4","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/a294634473/article/details/100728363"}'  data-report-query='spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4-100728363-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4-100728363-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>Spring</em> <em>boot</em><em>-</em><em>-</em><em>自定义</em>类<em>扫描</em>器前言ClassPathBeanDefinitionScanner简介ImportBeanDefinitionRegistrar简介<em>自定义</em>注册过程<em>自定义注解</em><em>实现</em>ImportBeanDefinitionRegistrar<em>自定义</em>类扫使用总结
+前言
+之前一直在写<em>RPC</em>框架是基于<em>Spring</em>的框架。通过<em>扫描</em>接口并将其<em>注入</em>代理工厂的方式是采用了<em>Spring</em> <em>自定义</em>标签的...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/TimeShare1/article/details/110003793"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.5","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-5-110003793-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"5","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/TimeShare1/article/details/110003793"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/TimeShare1/article/details/110003793" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.5","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-5-110003793-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"5","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/TimeShare1/article/details/110003793"}'  data-report-query='spm=1001.2101.3001.6650.5&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-5-110003793-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-5-110003793-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>spring</em><em>boot</em> <em>自定义注解</em>启动<em>扫描</em><em>注解</em>类信息</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/TimeShare1" target="_blank"><span class="blog-title">TimeShare1的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">11-23</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1464
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/TimeShare1/article/details/110003793" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.5","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-5-110003793-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"5","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/TimeShare1/article/details/110003793"}'  data-report-query='spm=1001.2101.3001.6650.5&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-5-110003793-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-5-110003793-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1">先<em>自定义</em>一个<em>注解</em>:
+
+
+import java.lang.annotation.*;
+
+@Target<em>(</em>{ElementType.METHOD<em>,</em> ElementType.TYPE}<em>)</em>
+@Retention<em>(</em>RetentionPolicy.RUNTIME<em>)</em>
+@Documented
+@Inherited
+public @in<em>ter</em>face Section {
+    String name<em>(</em><em>)</em>;
+}
+
+写一个类<em>实现</em> BeanPostProcessor
+
+
+@Component
+public class Ms..</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_38390086/article/details/125724856"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.6","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-6-125724856-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"6","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_38390086/article/details/125724856"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_38390086/article/details/125724856" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.6","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-6-125724856-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"6","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_38390086/article/details/125724856"}'  data-report-query='spm=1001.2101.3001.6650.6&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-125724856-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-125724856-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>spring</em><em>boot</em><em>扫描</em>带有<em>自定义注解</em>的方法</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_38390086" target="_blank"><span class="blog-title">weixin_38390086的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">07-11</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1096
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_38390086/article/details/125724856" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.6","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-6-125724856-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"6","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_38390086/article/details/125724856"}'  data-report-query='spm=1001.2101.3001.6650.6&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-125724856-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-125724856-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>spring</em><em>boot</em><em>扫描</em>带有<em>自定义注解</em>的方法，通过抽象化方式，抽取公共逻辑进行统一处理，使业务逻辑处理部分更加简洁</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/Hellowenpan/article/details/122683971"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.7","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-7-122683971-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"7","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/Hellowenpan/article/details/122683971"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/Hellowenpan/article/details/122683971" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.7","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-7-122683971-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"7","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/Hellowenpan/article/details/122683971"}'  data-report-query='spm=1001.2101.3001.6650.7&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-122683971-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-122683971-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>spring</em><em>boot</em><em>自定义注解</em>，项目启动时<em>扫描</em><em>注解</em>类并<em>注入</em>容器</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/Hellowenpan" target="_blank"><span class="blog-title">wenpan的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">01-25</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					2087
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/Hellowenpan/article/details/122683971" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.7","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-7-122683971-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"7","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/Hellowenpan/article/details/122683971"}'  data-report-query='spm=1001.2101.3001.6650.7&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-122683971-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-122683971-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1">以下是核心流程的<em>实现</em>示例，如果需要更完整的<em>实现</em>，可参考：
+注意：需要切换到simple<em>-</em><em>rpc</em><em>-</em>like<em>-</em>feign分支
+
+https://gitee.com/mr_wenpan/basis<em>-</em>simple<em>-</em><em>rpc</em>/blob/mas<em>ter</em>/simple<em>-</em><em>rpc</em><em>-</em><em>starter</em>/src/main/java/org/simple/<em>rpc</em>/<em>starter</em>/registrar/Simple<em>Rpc</em>ClientsRegistrar.java
+https://gitee.com/mr_wenpan/basis<em>-</em>simple</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/qq_21460229/article/details/104323948"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.8","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-104323948-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"8","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_21460229/article/details/104323948"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/qq_21460229/article/details/104323948" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.8","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-104323948-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"8","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_21460229/article/details/104323948"}'  data-report-query='spm=1001.2101.3001.6650.8&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-104323948-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-104323948-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>spring</em><em>boot</em><em>自定义注解</em>，项目启动时<em>扫描</em><em>注解</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/qq_21460229" target="_blank"><span class="blog-title">Sirius的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">02-15</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1万+
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/qq_21460229/article/details/104323948" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.8","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-104323948-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"8","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_21460229/article/details/104323948"}'  data-report-query='spm=1001.2101.3001.6650.8&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-104323948-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-104323948-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1">1、需求：
+
+<em>自定义注解</em>，项目启动时进行<em>注解</em><em>扫描</em>并存储，便于后面生成对象。<em>类似</em>于@Controller，@Service，<em>自定义</em>的原因是，整个项目会初始化很多流程，每个流程由好多个小模块（对象）串联起来。同一个类会被创建多个对象，被使用在不同的流程里面。以后会根据流程的<em>配置</em>对应切换对象。
+
+2、项目结构
+
+3、代码和<em>配置</em>
+pom.xml
+  &lt;parent&gt;
+		&lt;groupId...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/lintiyan/article/details/94362640"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.9","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-9-94362640-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"9","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/lintiyan/article/details/94362640"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/lintiyan/article/details/94362640" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.9","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-9-94362640-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"9","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/lintiyan/article/details/94362640"}'  data-report-query='spm=1001.2101.3001.6650.9&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-94362640-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-94362640-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1">记一个<em>spring</em><em>boot</em>多模块包<em>扫描</em>问题</div>
+					<div class="tag">热门推荐</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/lintiyan" target="_blank"><span class="blog-title">lintiyan的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">06-30</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					3万+
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/lintiyan/article/details/94362640" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.9","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-9-94362640-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"9","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/lintiyan/article/details/94362640"}'  data-report-query='spm=1001.2101.3001.6650.9&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-94362640-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-94362640-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1">记一个<em>spring</em><em>boot</em>多模块包<em>扫描</em>问题
+问题描述：
+<em>spring</em><em>boot</em>建立多个模块，当一个模块需要使用另一个模块的服务时，需要<em>注入</em>另一个模块的组件，如下面图中例子：
+
+
+memberservice模块中的MemberServiceApiImpl类需要<em>注入</em>common模块中的RedisService组件，该怎么<em>注入</em>呢？
+解决：
+在memberservice模块的启动类上加上RedisServi...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/zxd1435513775/article/details/122473523"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.10","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-10-122473523-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"10","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/zxd1435513775/article/details/122473523"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/zxd1435513775/article/details/122473523" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.10","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-10-122473523-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"10","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/zxd1435513775/article/details/122473523"}'  data-report-query='spm=1001.2101.3001.6650.10&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-10-122473523-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-10-122473523-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>Spring</em><em>Boot</em><em>自定义</em><em>starter</em>增强版（二）&mdash;&mdash;<em>扫描</em><em>自定义注解</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/zxd1435513775" target="_blank"><span class="blog-title">scorpio的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">01-13</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1830
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/zxd1435513775/article/details/122473523" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.10","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-10-122473523-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"10","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/zxd1435513775/article/details/122473523"}'  data-report-query='spm=1001.2101.3001.6650.10&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-10-122473523-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-10-122473523-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>Spring</em><em>Boot</em><em>自定义</em><em>starter</em>加强版&mdash;&mdash;<em>扫描</em><em>自定义注解</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/small_to_large/article/details/105144416"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.11","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-11-105144416-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"11","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/small_to_large/article/details/105144416"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/small_to_large/article/details/105144416" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.11","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-11-105144416-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"11","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/small_to_large/article/details/105144416"}'  data-report-query='spm=1001.2101.3001.6650.11&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-11-105144416-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-11-105144416-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>MyBatis</em> 整合<em>Spring</em><em>扫描</em>接口，以及Mapper接口创建代理对象的（<em>mybatis</em><em>-</em><em>spring</em>）源码分析</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/small_to_large" target="_blank"><span class="blog-title">small_to_large的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">03-27</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					676
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/small_to_large/article/details/105144416" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.11","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-11-105144416-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"11","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/small_to_large/article/details/105144416"}'  data-report-query='spm=1001.2101.3001.6650.11&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-11-105144416-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-11-105144416-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1">一、整合<em>spring</em><em>扫描</em>（@MapperScan 具体<em>实现</em>细节）
+
+1》<em>Spring</em> Bean Factory 创建之后回调各个BeanFactoryPostProcessor
+	2》ConfigurationClassPostProcessor processConfigBeanDefinitions 解析处理@Configuration<em>注解</em>标注的<em>配置</em>类
+	3》 依次处理 applicat...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/m0_64360721/article/details/126007523"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.12","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-12-126007523-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"12","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/m0_64360721/article/details/126007523"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/m0_64360721/article/details/126007523" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.12","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-12-126007523-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"12","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/m0_64360721/article/details/126007523"}'  data-report-query='spm=1001.2101.3001.6650.12&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-12-126007523-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-12-126007523-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1">【<em>Spring</em> <em>Boot</em>】手把手教你写一个 <em>Starter</em></div>
+					<div class="tag">最新发布</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/m0_64360721" target="_blank"><span class="blog-title">黑白法师的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">07-27</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					564
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/m0_64360721/article/details/126007523" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.12","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-12-126007523-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"12","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/m0_64360721/article/details/126007523"}'  data-report-query='spm=1001.2101.3001.6650.12&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-12-126007523-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-12-126007523-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1">大家在开发的过程中应该经常会看到各种各样的<em>Starter</em>，当我们需要集成某个功能的时候，<em>Spring</em>或是第三方都会提供一个<em>Starter</em>来帮助我们更简单的集成对应的功能到我们的项目中。基于我之前<em>实现</em>的一些功能来分享一下如何写一个<em>Starter</em>。...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/wolfishness/article/details/101170774"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.13","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-13-101170774-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"13","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/wolfishness/article/details/101170774"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/wolfishness/article/details/101170774" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.13","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-13-101170774-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"13","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/wolfishness/article/details/101170774"}'  data-report-query='spm=1001.2101.3001.6650.13&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-101170774-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-101170774-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>自定义</em><em>spring</em> <em>boot</em><em>-</em><em>starter</em><em>,</em><em>实现</em><em>自动</em><em>配置</em><em>,</em><em>自定义注解</em><em>扫描</em><em>注入</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/wolfishness" target="_blank"><span class="blog-title">wolfishness的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">09-22</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					4939
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/wolfishness/article/details/101170774" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.13","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-13-101170774-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"13","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/wolfishness/article/details/101170774"}'  data-report-query='spm=1001.2101.3001.6650.13&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-101170774-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-101170774-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1">一、简介
+<em>自定义</em><em>starter</em>包是为了方便
+这里说下artifactId的命名问题，<em>Spring</em> 官方 <em>Starter</em>通常命名为 <em>spring</em><em>-</em><em>boot</em><em>-</em><em>starter</em><em>-</em>{name} 如 <em>spring</em><em>-</em><em>boot</em><em>-</em><em>starter</em><em>-</em>web 。
+<em>Spring</em>官方建议非官方<em>Starter</em>命名应遵循 {name}<em>-</em><em>spring</em><em>-</em><em>boot</em><em>-</em><em>starter</em> 的格式。
+这里<em>配置</em>的是统一异常的相关<em>配置</em>
+全局异常：h...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_38390086/article/details/107865814"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.14","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-14-107865814-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"14","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_38390086/article/details/107865814"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_38390086/article/details/107865814" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.14","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-14-107865814-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"14","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_38390086/article/details/107865814"}'  data-report-query='spm=1001.2101.3001.6650.14&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-107865814-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-107865814-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>spring</em><em>boot</em><em>自定义注解</em>+<em>扫描</em>+调用</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_38390086" target="_blank"><span class="blog-title">weixin_38390086的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">08-07</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1067
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_38390086/article/details/107865814" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.14","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-14-107865814-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"14","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_38390086/article/details/107865814"}'  data-report-query='spm=1001.2101.3001.6650.14&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-107865814-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-107865814-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1">最近做项目遇到一个问题，和<em>spring</em><em>扫描</em>controller<em>类似</em>，由于请求都会到一个接口上，所以需要进行分发，当然可以自己写if判断进行处理，但是现在有了更好的处理方式了。
+/**
+ * <em>扫描</em>公共API
+ */
+@Configuration
+public class ScannerOpenApi implements InitializingBean {
+    @Autowired
+    private ApplicationContext applicationContext;
+    @Autow</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://dongguabai.blog.csdn.net/article/details/81702958"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.15","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-15-81702958-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"15","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://dongguabai.blog.csdn.net/article/details/81702958"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://dongguabai.blog.csdn.net/article/details/81702958" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.15","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-15-81702958-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"15","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://dongguabai.blog.csdn.net/article/details/81702958"}'  data-report-query='spm=1001.2101.3001.6650.15&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-81702958-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-81702958-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>Spring</em> <em>Boot</em><em>自定义注解</em><em>扫描</em>器</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/Dongguabai" target="_blank"><span class="blog-title">Dongguabai 的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">08-15</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					2万+
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://dongguabai.blog.csdn.net/article/details/81702958" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.15","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-15-81702958-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"15","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://dongguabai.blog.csdn.net/article/details/81702958"}'  data-report-query='spm=1001.2101.3001.6650.15&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-81702958-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-81702958-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1">之前在整合<em>Spring</em> <em>Boot</em>和tk<em>Mybatis</em>的时候使用了这个<em>注解</em>：
+
+
+
+这个还挺实用的，会将指定包下的相应的类加载至<em>Spring</em>容器中，刚好我这边也有一个独立抽取出来的权限模块也想<em>实现</em>这样的功能（当然可以使用@EnableXX的方式，但是<em>注入</em>的组件太多了，直接包<em>扫描</em>直接点），而不是使用@ComponentScan或者是scanBasePackages必须指定某个包，这样显得太low了，使...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/qq_33591903/article/details/119843446"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.16","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-16-119843446-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"16","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_33591903/article/details/119843446"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/qq_33591903/article/details/119843446" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.16","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-16-119843446-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"16","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_33591903/article/details/119843446"}'  data-report-query='spm=1001.2101.3001.6650.16&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-119843446-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-119843446-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>Spring</em><em>Boot</em>的<em>自动</em>装配原理、<em>自定义</em><em>starter</em>与spi机制，一网打尽</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/qq_33591903" target="_blank"><span class="blog-title">阳阳的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">08-24</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					3723
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/qq_33591903/article/details/119843446" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.16","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-16-119843446-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"16","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_33591903/article/details/119843446"}'  data-report-query='spm=1001.2101.3001.6650.16&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-119843446-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-119843446-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1">一、前言
+
+<em>Spring</em>简直是java企业级应用开发人员的春天，我们可以通过<em>Spring</em>提供的ioc容器，避免硬编码带来的程序过度耦合。
+
+但是，启动一个<em>Spring</em>应用程序也绝非易事，他需要大量且繁琐的xml<em>配置</em>，开发人员压根不能全身心的投入到业务中去。
+
+因此，<em>Spring</em><em>Boot</em>诞生了，虽然本质上还是属于<em>Spring</em>，但是<em>Spring</em><em>Boot</em>的优势在于以下两个特点：
+
+（1）约定大于<em>配置</em>
+
+<em>Spring</em><em>Boot</em>定义了项目的基本骨架，例如各个环境的<em>配置</em>文件统一放到resource中，使用active来启</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/wDong0613/article/details/79910768"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.17","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-17-79910768-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"17","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/wDong0613/article/details/79910768"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/wDong0613/article/details/79910768" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.17","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-17-79910768-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"17","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/wDong0613/article/details/79910768"}'  data-report-query='spm=1001.2101.3001.6650.17&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-79910768-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-79910768-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>spring</em> <em>boot</em>启动<em>扫描</em>不到<em>自定义注解</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/wDong0613" target="_blank"><span class="blog-title">不准备改行的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">04-12</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					8043
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/wDong0613/article/details/79910768" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.17","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-17-79910768-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"17","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/wDong0613/article/details/79910768"}'  data-report-query='spm=1001.2101.3001.6650.17&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-79910768-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-79910768-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1">对于<em>自定义注解</em>这里就不唠叨了，百度一大堆，这里有我一个<em>自定义注解</em>@Retention<em>(</em>RetentionPolicy.RUNTIME<em>)</em>
+@Target<em>(</em>{ ElementType.METHOD }<em>)</em>
+public @in<em>ter</em>face MsgEvent {
+    RetailOrderEvent msgEvent<em>(</em><em>)</em>;
+}<em>注解</em><em>实现</em>类@Component
+public class MsgEvent...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_download clearfix" data-url="https://download.csdn.net/download/weixin_38621553/12742548"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.18","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-download-2~default~BlogCommendFromBaidu~Rate-18-12742548-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"18","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://download.csdn.net/download/weixin_38621553/12742548"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://download.csdn.net/download/weixin_38621553/12742548" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.18","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-download-2~default~BlogCommendFromBaidu~Rate-18-12742548-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"18","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://download.csdn.net/download/weixin_38621553/12742548"}'  data-report-query='spm=1001.2101.3001.6650.18&utm_medium=distribute.pc_relevant.none-task-download-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-12742548-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-download-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-12742548-blog-90293703.pc_relevant_recovery_v2'>
+					<div class="left ellipsis-online ellipsis-online-1">java <em>Spring</em><em>Boot</em><em>自定义注解</em><em>,</em>及<em>自定义</em>解析器<em>实现</em>对象<em>自动</em><em>注入</em>操作</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block">08-24</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://download.csdn.net/download/weixin_38621553/12742548" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.18","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-download-2~default~BlogCommendFromBaidu~Rate-18-12742548-blog-90293703.pc_relevant_recovery_v2\",\"dist_request_id\":\"1666714551932_07776\"}","dist_request_id":"1666714551932_07776","ab_strategy":"recoveryv2","index":"18","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://download.csdn.net/download/weixin_38621553/12742548"}'  data-report-query='spm=1001.2101.3001.6650.18&utm_medium=distribute.pc_relevant.none-task-download-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-12742548-blog-90293703.pc_relevant_recovery_v2&depth_1-utm_source=distribute.pc_relevant.none-task-download-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-12742548-blog-90293703.pc_relevant_recovery_v2'>
+				<div class="desc ellipsis-online ellipsis-online-1">主要介绍了java <em>Spring</em><em>Boot</em><em>自定义注解</em><em>,</em>及<em>自定义</em>解析器<em>实现</em>对象<em>自动</em><em>注入</em>操作，具有很好的参考价值，希望对大家有所帮助。一起跟随小编过来看看吧</div>
+			</a>
+		</div>
+	</div>
+</div>
+            </div>
+<div id="recommendNps" class="recommend-nps-box common-nps-box">
+  <h3 class="aside-title">“相关推荐”对你有帮助么？</h3>
+  <div class="aside-content">
+      <ul class="newnps-list">
+          <li class="newnps-item" data-type="非常没帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel1.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey1.png" alt="">
+              </div>
+              <div class="newnps-text">非常没帮助</div>
+          </li>
+          <li class="newnps-item" data-type="没帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel2.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey2.png" alt="">
+              </div>
+              <div class="newnps-text">没帮助</div>
+          </li>
+          <li class="newnps-item" data-type="一般">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel3.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey3.png" alt="">
+              </div>
+              <div class="newnps-text">一般</div>
+          </li>
+          <li class="newnps-item" data-type="有帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel4.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey4.png" alt="">
+              </div>
+              <div class="newnps-text">有帮助</div>
+          </li>
+          <li class="newnps-item" data-type="非常有帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel5.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey5.png" alt="">
+              </div>
+              <div class="newnps-text">非常有帮助</div>
+          </li>
+      </ul>
+      <div class="newnps-form-box">
+      <div class="newnps-form">
+          <input type="text" placeholder="请输入建议或反馈后点击提交" class="newnps-input">
+          <span class="newnps-btn">提交</span>
+      </div>
+      </div>
+  </div>
+</div>            <div class="template-box">
+                <span>©️2022 CSDN</span>
+                <span>皮肤主题：大白</span>
+                <span> 设计师：CSDN官方博客</span>
+                <span>
+                    <a href="https://blog.csdn.net/" class="back-home c-blue c-blue-hover c-blue-focus">返回首页</a>
+                </span>
+            </div>
+<div class="blog-footer-bottom" style="margin-top:10px;"></div>
+<script src="https://g.csdnimg.cn/common/csdn-footer/csdn-footer.js" data-isfootertrack="false" type="text/javascript"></script>
+<script type="text/javascript">
+    window.csdn.csdnFooter.options = {
+        el: '.blog-footer-bottom',
+        type: 2
+    }
+</script>        </main>
+<aside class="blog_container_aside">
+<div id="asideProfile" class="aside-box">
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/u010928589" target="_blank" data-report-click='{"mod":"popu_379","spm":"1001.2101.3001.4121","dest":"https://blog.csdn.net/u010928589","ab":"new"}'>
+                <img src="https://profile.csdnimg.cn/4/D/5/3_u010928589" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex flex-column profile-intro-name-box">
+            <div class="profile-intro-name-boxTop">
+                <a href="https://blog.csdn.net/u010928589" target="_blank" class="" id="uid" title="喵喵爱西瓜" data-report-click='{"mod":"popu_379","spm":"1001.2101.3001.4122","dest":"https://blog.csdn.net/u010928589","ab":"new"}'>
+                    <span class="name " username="u010928589">喵喵爱西瓜</span>
+                </a>
+                <span>
+                </span>
+                <span class="flag expert-blog">
+                <span class="bubble">CSDN认证博客专家</span>
+                </span>
+                <span class="flag company-blog">
+                <span class="bubble">CSDN认证企业博客</span>
+                </span>
+            </div>
+            <div class="profile-intro-name-boxFooter">
+                <span class="personal-home-page personal-home-years" title="已加入 CSDN 9年">码龄9年</span>
+                    <span class="personal-home-page">
+                    <a class="personal-home-certification" href="https://i.csdn.net/#/uc/profile?utm_source=14998968" target="_blank" title="暂无认证">
+                    <img src="https://csdnimg.cn/identity/nocErtification.png" alt="">
+                    暂无认证
+                    </a>
+                    </span>
+            </div>
+        </div>
+    </div>
+    <div class="data-info d-flex item-tiling">
+        <dl class="text-center" title="22">
+            <a href="https://blog.csdn.net/u010928589" data-report-click='{"mod":"1598321000_001","spm":"1001.2101.3001.4310"}' data-report-query="t=1">  
+                <dt><span class="count">22</span></dt>
+                <dd class="font">原创</dd>
+            </a>
+        </dl>
+        <dl class="text-center" data-report-click='{"mod":"1598321000_002","spm":"1001.2101.3001.4311"}' title="369227">
+            <a href="https://blog.csdn.net/rank/list/weekly" target="_blank">
+                <dt><span class="count">36万+</span></dt>
+                <dd class="font">周排名</dd>
+            </a>
+        </dl>
+        <dl class="text-center" title="665150">
+            <a href="https://blog.csdn.net/rank/list/total" data-report-click='{"mod":"1598321000_003","spm":"1001.2101.3001.4312"}' target="_blank">
+                <dt><span class="count">66万+</span></dt>
+                <dd class="font">总排名</dd>
+            </a>
+        </dl>
+        <dl class="text-center" style="min-width:58px" title="52613">  
+            <dt><span class="count">5万+</span></dt>
+            <dd>访问</dd>
+        </dl>
+        <dl class="text-center" title="4级,点击查看等级说明">
+            <dt><a href="https://blog.csdn.net/blogdevteam/article/details/103478461" target="_blank">
+                <img class="level" src="https://csdnimg.cn/identity/blog4.png">
+            </a>
+            </dt>
+            <dd>等级</dd>
+        </dl>
+    </div>
+    <div class="item-rank"></div>
+    <div class="data-info d-flex item-tiling">
+        <dl class="text-center" title="898">
+            <dt><span class="count">898</span></dt>
+            <dd>积分</dd>
+        </dl>
+         <dl class="text-center" id="fanBox" title="89">
+            <dt><span class="count" id="fan">89</span></dt>
+            <dd>粉丝</dd>
+        </dl>
+        <dl class="text-center" title="89">
+            <dt><span class="count">89</span></dt>
+            <dd>获赞</dd>
+        </dl>
+        <dl class="text-center" title="70">
+            <dt><span class="count">70</span></dt>
+            <dd>评论</dd>
+        </dl>
+        <dl class="text-center" title="146">
+            <dt><span class="count">146</span></dt>
+            <dd>收藏</dd>
+        </dl>
+    </div>
+    <div class="aside-box-footer" data-report-view='{"spm":"3001.4296"}'>
+        <div class="badge-box d-flex">
+            <div class="badge d-flex">
+                <div class="icon-badge" title="持之以恒">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/chizhiyiheng@240.png" alt="持之以恒">
+                    </div>
+                </div>
+                <div class="icon-badge" title="勤写标兵">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/qixiebiaobing4@240.png" alt="勤写标兵">
+                    </div>
+                </div>
+                <div class="icon-badge" title="学习力">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/yuanli_xuexili@240.png" alt="学习力">
+                    </div>
+                </div>
+                <div class="icon-badge" title="原力新人">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/yuanli_xinren@240.png" alt="原力新人">
+                    </div>
+                </div>
+                <div class="icon-badge" title="阅读者勋章">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/yuedu3@240.png" alt="阅读者勋章">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="profile-intro-name-boxOpration">
+        <div class="opt-letter-watch-box">
+        <a class="bt-button personal-letter" href="https://im.csdn.net/chat/u010928589" target="_blank" rel="noopener">私信</a>
+        </div>
+        <div class="opt-letter-watch-box"> 
+            <a class="personal-watch bt-button" id="btnAttent" >关注</a>  
+        </div>
+    </div>
+</div>
+ <div id="asideSearchArticle" class="aside-box">
+	<div class="aside-content search-comter">
+    <div class="aside-search aside-search-blog">         
+        <input type="text" class="input-serch-blog" name="" autocomplete="off" value="" id="search-blog-words" placeholder="搜博主文章">
+        <a class="btn-search-blog">
+                    <img src="//csdnimg.cn/cdn/content-toolbar/csdn-sou.png?v=1587021042">
+        </a>
+    </div>
+    </div>
+</div>
+
+
+<div id="asideHotArticle" class="aside-box">
+	<h3 class="aside-title">热门文章</h3>
+	<div class="aside-content">
+		<ul class="hotArticle-list">
+			<li>
+				<a href="https://blog.csdn.net/u010928589/article/details/105343949" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/u010928589/article/details/105343949","ab":"new"}'>
+				skywalking7 源码解析 (1)  : agent插件加载原理
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">5579</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/u010928589/article/details/106237355" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/u010928589/article/details/106237355","ab":"new"}'>
+				skywalking线程池插件,解决lambda使用问题
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">5425</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/u010928589/article/details/90293703" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/u010928589/article/details/90293703","ab":"new"}'>
+				自定义spring boot-starter,实现自动配置,自定义注解扫描注入(类似dubbo-starter)
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">5346</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/u010928589/article/details/91348761" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/u010928589/article/details/91348761","ab":"new"}'>
+				spring boot多数据源动态切换, 多数据源事务管理
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">5156</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/u010928589/article/details/84313987" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/u010928589/article/details/84313987","ab":"new"}'>
+				springboot2+ redis+fastjson  自定义缓存管理器，设置序列化方式为fastjson
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">4554</span>
+                </a>
+			</li>
+		</ul>
+	</div>
+</div>
+<div id="asideCategory" class="aside-box flexible-box">
+    <h3 class="aside-title">分类专栏</h3>
+    <div class="aside-content">
+        <ul>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_9877748.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_9877748.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756923.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        skywalking
+                    </span>
+                </a>
+                <span class="special-column-num">4篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_6870620.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_6870620.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        a
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_8401722.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_8401722.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        springboot
+                    </span>
+                </a>
+                <span class="special-column-num">8篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_8448990.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_8448990.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756926.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        爬虫
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_8788685.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_8788685.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        JAVA
+                    </span>
+                </a>
+                <span class="special-column-num">10篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_8957844.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_8957844.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        netty
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_8957845.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_8957845.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        rpc
+                    </span>
+                </a>
+                <span class="special-column-num">2篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_8957846.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_8957846.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756918.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        zookeeper
+                    </span>
+                </a>
+                <span class="special-column-num">2篇</span>
+            </li>
+        </ul>
+    </div>
+    <p class="text-center">
+        <a class="flexible-btn" data-fbox="aside-archive"><img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowDownWhite.png" alt=""></a>
+    </p>
+</div>
+<div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/u010928589/article/details/91348761#comments_21192912" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010928589/article/details/91348761#comments_21192912","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010928589/article/details/91348761#comments_21192912","ab":"new"}'>spring boot多数据源动态切换, 多数据源事务管理</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/huanghengliang" class="user-name" target="_blank">go ahead！@: </a>
+                    <span class="code-comments">作者原文：1 . 因为现在事物是我自己管理,但是mybatis 每次拿完 connect就会自动 调用close 和 commit方法.这样导致我自己操作的事物失效.所以我要先让mybatis不能自作主张帮我关闭connect
+其实在mybatis中如果发现我们已经开启了事务，他就不会commit和close，而是留给spring的事务自己决定是否commit或是rollback</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/u010928589/article/details/106237355#comments_21119968" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010928589/article/details/106237355#comments_21119968","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010928589/article/details/106237355#comments_21119968","ab":"new"}'>skywalking线程池插件,解决lambda使用问题</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/a745233700" class="user-name" target="_blank">张维鹏: </a>
+                    <span class="code-comments">这种对代码有侵入性，如果以后不想接入Skywalking全链路监控，可能需要修改的地方就很多了</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/u010928589/article/details/120562951#comments_20260050" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010928589/article/details/120562951#comments_20260050","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010928589/article/details/120562951#comments_20260050","ab":"new"}'>方便高效的JAVA对象转换工具</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/Peter___Pan" class="user-name" target="_blank">Peter Pan: </a>
+                    <span class="code-comments">这个工具太强了，mark。</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/u010928589/article/details/106608864#comments_19022722" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010928589/article/details/106608864#comments_19022722","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010928589/article/details/106608864#comments_19022722","ab":"new"}'>skywalking7 源码解析 (3) ：agent启动服务分析以及性能影响</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/qq_31100443" class="user-name" target="_blank">S哥: </a>
+                    <span class="code-comments">挺幽默，👍</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/u010928589/article/details/120562951#comments_18657052" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010928589/article/details/120562951#comments_18657052","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010928589/article/details/120562951#comments_18657052","ab":"new"}'>方便高效的JAVA对象转换工具</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/LYNN059" class="user-name" target="_blank">西瓜爱喵喵: </a>
+                    <span class="code-comments">学到了很多，感谢大佬</span>
+                </p>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="asideNewNps" class="aside-box common-nps-box">
+    <h3 class="aside-title">您愿意向朋友推荐“博客详情页”吗？</h3>
+    <div class="aside-content">
+        <ul class="newnps-list">
+            <li class="newnps-item" data-type="强烈不推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel1.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey1.png" alt="">
+                </div>
+                <div class="newnps-text">强烈不推荐</div>
+            </li>
+            <li class="newnps-item" data-type="不推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel2.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey2.png" alt="">
+                </div>
+                <div class="newnps-text">不推荐</div>
+            </li>
+            <li class="newnps-item" data-type="一般般">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel3.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey3.png" alt="">
+                </div>
+                <div class="newnps-text">一般般</div>
+            </li>
+            <li class="newnps-item" data-type="推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel4.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey4.png" alt="">
+                </div>
+                <div class="newnps-text">推荐</div>
+            </li>
+            <li class="newnps-item" data-type="强烈推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel5.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey5.png" alt="">
+                </div>
+                <div class="newnps-text">强烈推荐</div>
+            </li>
+        </ul>
+        <div class="newnps-form-box">
+        <div class="newnps-form">
+            <input type="text" placeholder="请输入建议或反馈后点击提交" class="newnps-input">
+            <span class="newnps-btn">提交</span>
+        </div>
+        </div>
+    </div>
+</div>
+<div id="asideArchive" class="aside-box" style="display:block!important; width:300px;">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix">
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/u010928589/article/details/120562951" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/u010928589/article/details/120562951","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/u010928589/article/details/120562951","ab":"new"}'>方便高效的JAVA对象转换工具</a>
+            </li>
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/u010928589/article/details/118892813" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/u010928589/article/details/118892813","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/u010928589/article/details/118892813","ab":"new"}'>spring API扫描插件</a>
+            </li>
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/u010928589/article/details/118891985" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/u010928589/article/details/118891985","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/u010928589/article/details/118891985","ab":"new"}'>jar包扫描工具: gamma</a>
+            </li>
+        </ul>
+        <div class="archive-bar"></div>
+        <div class="archive-box">
+                <div class="archive-list-item"><a href="https://blog.csdn.net/u010928589?type=blog&amp;year=2021&amp;month=09" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/u010928589?type=blog&amp;year=2021&amp;month=09"}'><span class="year">2021年</span><span class="num">4篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/u010928589?type=blog&amp;year=2020&amp;month=11" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/u010928589?type=blog&amp;year=2020&amp;month=11"}'><span class="year">2020年</span><span class="num">6篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/u010928589?type=blog&amp;year=2019&amp;month=12" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/u010928589?type=blog&amp;year=2019&amp;month=12"}'><span class="year">2019年</span><span class="num">10篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/u010928589?type=blog&amp;year=2018&amp;month=11" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/u010928589?type=blog&amp;year=2018&amp;month=11"}'><span class="year">2018年</span><span class="num">2篇</span></a></div>
+        </div>
+    </div>
+</div>
+	<div id="footerRightAds" class="isShowFooterAds">
+		<div class="aside-box">
+			<div id="kp_box_57" data-pid="57"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1076724771190722"
+     crossorigin="anonymous"></script>
+<!-- PC-博客-详情页-左下视窗-0-79 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1076724771190722"
+     data-ad-slot="4787882818"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=57&adId=1015190&a=1015190&c=0&k=自定义spring boot-starter,实现自动配置,自定义注解扫描注入类似dubbo-starter&spm=1001.2101.3001.5001&articleId=90293703&d=1&t=3&u=81ca8eb925ba44fc854f7e6e691dee52" style="display: block;width: 0px;height: 0px;"></div>
+		</div>
+	</div>
+    <!-- 详情页显示目录 -->
+<!--文章目录-->
+<div id="asidedirectory" class="aside-box">
+    <div class='groupfile' id="directory">
+        <h3 class="aside-title">目录</h3>
+        <div class="align-items-stretch group_item">
+            <div class="pos-box">
+            <div class="scroll-box">
+                <div class="toc-box"></div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+</aside>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).parents("p.text-center").remove();
+	})
+</script>
+<script type="text/javascript"  src="https://g.csdnimg.cn/user-tooltip/2.7/user-tooltip.js"></script>
+<script type="text/javascript"  src="https://g.csdnimg.cn/user-medal/2.0.0/user-medal.js"></script>    </div>
+<div class="recommend-right align-items-stretch clearfix" id="rightAside" data-type="recommend">
+    <aside class="recommend-right_aside">
+        <div id="recommend-right" >
+                                <div class="programmer1Box">
+                        <div id="kp_box_530" data-pid="530"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1076724771190722"
+     crossorigin="anonymous"></script>
+<!-- PC-博客-详情页-右上视窗-0-79 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1076724771190722"
+     data-ad-slot="2214239108"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=530&adId=1015188&a=1015188&c=0&k=自定义spring boot-starter,实现自动配置,自定义注解扫描注入类似dubbo-starter&spm=1001.2101.3001.4647&articleId=90293703&d=1&t=3&u=03bb7e21ebcd46b58759bfe40a569c17" style="display: block;width: 0px;height: 0px;"></div>
+                    </div>
+            <div class='flex-column aside-box groupfile' id="groupfile">
+                <div class="groupfile-div">
+                <h3 class="aside-title">目录</h3>
+                <div class="align-items-stretch group_item">
+                    <div class="pos-box">
+                        <div class="scroll-box">
+                            <div class="toc-box"></div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+                <div id="recommendAdBox">
+                    <div id="kp_box_479" data-pid="479"><div class="_gnumici5vli"></div>
+    <script type="text/javascript">
+        (window.slotbydup = window.slotbydup || []).push({
+            id: "u5883818",
+            container: "_gnumici5vli",
+            async: true
+        });
+    </script>
+    <!-- 多条广告如下脚本只需引入一次 -->
+    <script type="text/javascript" src="//cpro.baidustatic.com/cpro/ui/cm.js" async="async" defer="defer" >
+    </script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=479&adId=1015221&a=1015221&c=0&k=自定义spring boot-starter,实现自动配置,自定义注解扫描注入类似dubbo-starter&spm=1001.2101.3001.4834&articleId=90293703&d=1&t=3&u=fa90136df8ec4e849ee98b0f2903a790" style="display: block;width: 0px;height: 0px;"></div>
+                </div>
+            <div class='aside-box kind_person d-flex flex-column'>
+                    <h3 class="aside-title">分类专栏</h3>
+                    <div class="align-items-stretch kindof_item" id="kind_person_column">
+                        <div class="aside-content">
+                            <ul>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_9877748.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_9877748.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756923.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            skywalking
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">4篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_6870620.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_6870620.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            a
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_8401722.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_8401722.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            springboot
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">8篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_8448990.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_8448990.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756926.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            爬虫
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_8788685.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_8788685.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            JAVA
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">10篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_8957844.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_8957844.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            netty
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_8957845.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_8957845.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            rpc
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">2篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010928589/category_8957846.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010928589/category_8957846.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756918.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            zookeeper
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">2篇</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<div class="recommend-right1  align-items-stretch clearfix" id="rightAsideConcision" data-type="recommend">
+    <aside class="recommend-right_aside">
+        <div id="recommend-right-concision" >
+            <div class='flex-column aside-box groupfile' id="groupfileConcision">
+                <div class="groupfile-div1">
+                <h3 class="aside-title">目录</h3>
+                <div class="align-items-stretch group_item">
+                    <div class="pos-box">
+                        <div class="scroll-box">
+                            <div class="toc-box"></div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+</div>
+<div class="mask-dark"></div>
+<script src="https://csdnimg.cn/public/sandalstrap/1.4/js/sandalstrap.min.js"></script>
+<div class="skin-boxshadow"></div>
+<div class="directory-boxshadow"></div>
+<div class="comment-side-box-shadow comment-side-tit-close" id="commentSideBoxshadow">
+<div class="comment-side-content">
+	<div class="comment-side-tit">
+	<div class="comment-side-tit-count">评论&nbsp;<span class="count">3</span></div>
+	<img class="comment-side-tit-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png"></div>
+	<div id="pcCommentSideBox" class="comment-box comment-box-new2 " style="display:block">
+		<div class="comment-edit-box d-flex">
+			<div class="user-img">
+				<a href="https://blog.csdn.net/weixin_46000198" target="_blank">
+					<img src="https://profile.csdnimg.cn/E/D/5/3_weixin_46000198">
+				</a>
+			</div>
+			<form id="commentform">
+				<textarea class="comment-content" name="comment_content" id="comment_content" placeholder="欢迎高质量的评论，低质的评论会被折叠" maxlength="1000"></textarea>
+				<div class="comment-operate-box">
+					<div class="comment-operate-l">
+						<span id="tip_comment" class="tip">还能输入<em>1000</em>个字符</span>
+					</div>
+					<div class="comment-operate-c">
+						&nbsp;
+					</div>
+					<div class="comment-operate-r">
+						<div class="comment-operate-item comment-emoticon">
+							<img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentEmotionIcon.png" alt="表情包">
+							<span class="comment-operate-tip">插入表情</span>
+							<div class="comment-emoticon-box comment-operate-isshow">
+								<div class="comment-emoticon-img-box"></div>
+							</div>
+						</div>
+						<div class="comment-operate-item comment-code">
+							<img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentCodeIcon.png" alt="表情包">
+							<span class="comment-operate-tip">代码片</span>
+							<div class="comment-code-box comment-operate-isshow">
+								<ul id="commentCode">
+									<li><a data-code="html">HTML/XML</a></li>
+									<li><a data-code="objc">objective-c</a></li>
+									<li><a data-code="ruby">Ruby</a></li>
+									<li><a data-code="php">PHP</a></li>
+									<li><a data-code="csharp">C</a></li>
+									<li><a data-code="cpp">C++</a></li>
+									<li><a data-code="javascript">JavaScript</a></li>
+									<li><a data-code="python">Python</a></li>
+									<li><a data-code="java">Java</a></li>
+									<li><a data-code="css">CSS</a></li>
+									<li><a data-code="sql">SQL</a></li>
+									<li><a data-code="plain">其它</a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="comment-operate-item">
+							<input type="hidden" id="comment_replyId" name="comment_replyId">
+							<input type="hidden" id="article_id" name="article_id" value="90293703">
+							<input type="hidden" id="comment_userId" name="comment_userId" value="">
+							<input type="hidden" id="commentId" name="commentId" value="">
+							<a data-report-click='{"mod":"1582594662_003","spm":"1001.2101.3001.4227","ab":"new"}'>
+							<input type="submit" class="btn-comment btn-comment-input" value="评论">
+							</a>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="comment-list-container">
+			<div class="comment-list-box comment-operate-item">
+			</div>
+			<div id="lookGoodComment" class="look-good-comment side-look-comment">
+				<a class="look-more-comment">查看更多评论<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowDownWhite.png" alt=""></a>
+			</div>
+			<div id="lookFlodComment" class="look-flod-comment">
+					<span class="count"></span>&nbsp;条评论被折叠&nbsp;<a class="look-more-flodcomment">查看</a>
+			</div>
+			<div class="opt-box text-center">
+				<div class="btn btn-sm btn-link-blue" id="btnMoreComment"></div>
+			</div>
+		</div>
+	</div>
+	<div id="pcFlodCommentSideBox" class="pc-flodcomment-sidebox">
+		<div class="comment-fold-tit"><span id="lookUnFlodComment" class="back"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowLeftWhite.png" alt=""></span>被折叠的&nbsp;<span class="count"></span>&nbsp;条评论
+		 <a href="https://blogdev.blog.csdn.net/article/details/122245662" class="tip" target="_blank">为什么被折叠?</a>
+		 <a href="https://bbs.csdn.net/forums/FreeZone" class="park" target="_blank">
+		 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/iconPark.png">到【灌水乐园】发言</a>                                
+		</div>
+		<div class="comment-fold-content"></div>
+		<div id="lookBadComment" class="look-bad-comment side-look-comment">
+			<a class="look-more-comment">查看更多评论<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowDownWhite.png" alt=""></a>
+		</div>
+	</div>
+</div>
+</div>
+<div id="rewardNew" class="reward-popupbox-new">
+	<p class="rewad-title">打赏作者<span class="reward-close"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png"></span></p>
+	<dl class="profile-box">
+		<dd>
+		<a href="https://blog.csdn.net/u010928589" data-report-click='{"mod":"popu_379","dest":"https://blog.csdn.net/u010928589","ab":"new"}'>
+			<img src="https://profile.csdnimg.cn/4/D/5/3_u010928589" class="avatar_pic">
+		</a>
+		</dd>
+		<dt>
+			<p class="blog-name">喵喵爱西瓜</p>
+			<p class="blog-discript">你的鼓励将是我创作的最大动力</p>
+		</dt>
+	</dl>
+	<div class="reward-box-new">
+			<div class="reward-content"><div class="reward-right"></div></div>
+	</div>
+	<div class="money-box">
+				<span class="choose-money choosed" data-id="2">¥2</span>
+				<span class="choose-money " data-id="4">¥4</span>
+				<span class="choose-money " data-id="6">¥6</span>
+				<span class="choose-money " data-id="10">¥10</span>
+				<span class="choose-money " data-id="20">¥20</span>
+				<input id="customizeMoney" class="customize-money" name="" type="" value="" placeholder="自定义"/>
+				<div class="customize-tip">输入1-500的整数</div>
+	</div>
+	<div class="pay-box">
+		<div class="pay-type-blance pay-type active" data-type="blance">
+			<img class="unchoose" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnChoose.png" alt="">
+			<img class="choose"src="https://csdnimg.cn/release/blogv2/dist/pc/img/newChoose.png" alt="">
+			<span class="pay-type-name">余额支付</span>
+			<span class="pay-type-num">(余额：-- )</span>
+		</div>
+		<div class="pay-type-money pay-type" data-type="money">
+			<img class="unchoose" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnChoose.png" alt="">
+			<img class="choose"src="https://csdnimg.cn/release/blogv2/dist/pc/img/newChoose.png" alt="">
+			<span class="pay-type-name">扫码支付</span>
+		</div>
+	</div>
+	<div class="sure-box">
+		<div class="sure-box-money">
+			<div class="code-box">
+				<div class="code-num-box">
+					<span class="code-name">扫码支付：</span><span class="code-num">¥2</span>
+				</div>
+				<div class="code-img-box">
+					<div class="renovate">
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png">
+					<span>获取中</span>
+					</div>
+				</div>
+				<div class="code-pay-box">
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newWeiXin.png" alt="">
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newZhiFuBao.png" alt="">
+					<span>扫码支付</span>
+				</div>
+			</div>
+		</div>
+		<div class="sure-box-blance">
+			<p class="tip">您的余额不足，请更换扫码支付或<a target="_blank" data-report-click='{"mod":"1597646289_003","spm":"1001.2101.3001.4302"}' href="https://i.csdn.net/#/wallet/balance/recharge?utm_source=RewardVip" class="go-invest">充值</a></p>
+			<p class="is-have-money"><a class="reward-sure">打赏作者</a></p>
+		</div>
+	</div>
+</div>
+<div class="pay-code">
+    <div class="pay-money">实付<span class="pay-money-span" data-nowprice='' data-oldprice=''>元</span></div>
+    <div class="content-blance"><a class="blance-bt" href="javascript:;">使用余额支付</a></div>
+    <div class="content-code">
+    <div id="payCode" data-id="">
+            <div class="renovate">
+                <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png">
+                <span>点击重新获取</span>
+            </div>
+        </div>
+        <div class="pay-style"><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/weixin.png"></span><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/zhifubao.png"></span><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/jingdong.png"></span><span class="text">扫码支付</span></div>
+    </div>
+    <div class="bt-close"><svg t="1567152543821" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10924" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12"><defs><style type="text/css"></style></defs><path d="M512 438.378667L806.506667 143.893333a52.032 52.032 0 1 1 73.6 73.621334L585.621333 512l294.485334 294.485333a52.074667 52.074667 0 0 1-73.6 73.642667L512 585.621333 217.514667 880.128a52.053333 52.053333 0 1 1-73.621334-73.642667L438.378667 512 143.893333 217.514667a52.053333 52.053333 0 1 1 73.621334-73.621334L512 438.378667z" fill="" p-id="10925"></path></svg></div>
+    <!-- <p style="margin-top: 8px;font-size: 14px;" class="text-center">支付成功即可阅读</p> -->
+    <div class="pay-balance">
+    <input type="radio" class="pay-code-radio" data-type="details"> 
+    <span class="span">钱包余额</span>
+    <span class="balance" style="color:#FC5531;font-size:14px;">0</span>  
+    <div class="pay-code-tile">
+        <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-help.png" alt="">
+        <div class="pay-code-content">
+            <div class="span">
+                <p class="title">抵扣说明：</p>
+                <p> 1.余额是钱包充值的虚拟货币，按照1:1的比例进行支付金额的抵扣。<br> 2.余额无法直接购买下载，可以购买VIP、C币套餐、付费专栏及课程。</p>
+            </div>
+        </div>
+    </div>
+    </div>
+    <a class="pay-balance-con" href="https://i.csdn.net/#/wallet/balance/recharge" target="_blank"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/recharge.png" alt=""><span  >余额充值</span></a>
+</div>
+<div style="display:none;">
+	<img src="" onerror='setTimeout(function(){if(!/(csdn.net|iteye.com|baiducontent.com|googleusercontent.com|360webcache.com|sogoucdn.com|bingj.com|baidu.com)$/.test(window.location.hostname)){window.location.href="\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x63\x73\x64\x6e\x2e\x6e\x65\x74"}},3000);'>
+</div>
+<div class="keyword-dec-box" id="keywordDecBox"></div>
+</body>
+    <!-- 富文本柱状图  -->
+	<link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/chart.css"/>
+	<script type="text/javascript" src="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/lib/chart.min.js"></script>
+    <script type="text/javascript" src="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/widget2chart.js"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_highlight-2a2586c533.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_common-fbcbe8567e.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/components/js/edit_copy_code-ce0f06f94b.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/codesnippet/lib/highlight/styles/atom-one-dark.css">
+<script src="https://g.csdnimg.cn/user-accusation/1.0.5/user-accusation.js" type="text/javascript" ></script>
+<script>
+ // 全局声明
+ if (window.csdn === undefined) {
+      window.csdn = {};
+    }
+    window.csdn.sideToolbar = {
+        options: {
+            report:{
+                isShow: true,
+            },
+            qr: {
+                isShow: false,
+            },
+            guide: {
+                isShow: true
+            }
+        }
+    }
+    $(function(){
+        $(document).on('click',"a.option-box[data-type='report']",function() {
+            window.csdn.userLogin.loadAjax(function(res){
+                window.csdn.feedback({
+                    "type":'blog',
+                    "rtype":'article',
+                    "rid":articleId,
+                    "reportedName":username,
+                    "submitOptions":{
+                        "title":articleTitle,
+                        "contentUrl":articleDetailUrl
+                    },
+                    "callback":function(){
+                        showToast({
+                            text: "感谢您的举报，我们会尽快审核！",
+                            bottom: '10%', 
+                            zindex: 9000, 
+                            speed: 500,
+                            time: 1500
+                        });
+                    }
+                })
+            })
+        });
+    })
+</script>
+    <script src="https://g.csdnimg.cn/baidu-search/1.0.12/baidu-search.js"  type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/download/old_static/js/qrcode.js"></script>
+<script src="https://g.csdnimg.cn/lib/qrcode/1.0.0/qrcode.min.js"></script>
+<script src="https://g.csdnimg.cn/user-ordercart/3.0.1/user-ordercart.js" type="text/javascript"></script>
+<script src="https://g.csdnimg.cn/user-ordertip/5.0.1/user-ordertip.js" type="text/javascript" ></script>
+<script src="https://g.csdnimg.cn/order-payment/4.0.1/order-payment.js" type="text/javascript" ></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/pc/js/common-a1dfbf1dc3.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/pc/js/detail-bff68f3fa1.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/pc/js/column-2e5cf567c5.min.js" type="text/javascript"></script>
+<script src="https://g.csdnimg.cn/side-toolbar/3.4/side-toolbar.js" type="text/javascript"></script>
+<script src="https://g.csdnimg.cn/copyright/1.0.4/copyright.js" type="text/javascript"></script>
+<script>
+    $(".MathJax").remove();
+    if ($('div.markdown_views pre.prettyprint code.hljs').length > 0) {
+        $('div.markdown_views')[0].className = 'markdown_views';
+    }
+</script>
+<script type="text/javascript" src="https://csdnimg.cn/release/blog_mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+            "HTML-CSS": {
+                    linebreaks: { automatic: true, width: "94%container" },
+                    imageFont: null
+            },
+            tex2jax: {
+                preview: "none",
+                ignoreClass:"title-article"
+            },
+            mml2jax: {
+                preview: 'none'
+            }
+    });
+</script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/common/csdn-login-box/csdn-login-box.js"></script></html>

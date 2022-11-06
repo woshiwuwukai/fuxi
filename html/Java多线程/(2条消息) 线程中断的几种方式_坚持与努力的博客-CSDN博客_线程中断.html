@@ -1,0 +1,2205 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <link rel="canonical" href="https://blog.csdn.net/a984171281/article/details/119569848"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="report" content='{"pid": "blog", "spm":"1001.2101"}'>
+    <meta name="referrer" content="always">
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <meta name="applicable-device" content="pc">
+    <link  href="https://g.csdnimg.cn/static/logo/favicon32.ico"  rel="shortcut icon" type="image/x-icon" />
+    <title>线程中断的几种方式_坚持与努力的博客-CSDN博客_线程中断</title>
+    <script>
+      (function(){ 
+        var el = document.createElement("script"); 
+        el.src = "https://s3a.pstatp.com/toutiao/push.js?1abfa13dfe74d72d41d83c86d240de427e7cac50c51ead53b2e79d40c7952a23ed7716d05b4a0f683a653eab3e214672511de2457e74e99286eb2c33f4428830"; 
+        el.id = "ttzz"; 
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(el, s);
+      })(window)
+    </script>
+        <meta name="keywords" content="线程中断">
+        <meta name="csdn-baidu-search"  content='{"autorun":true,"install":true,"keyword":"线程中断的方法"}'>
+    <meta name="description" content="有三种方法可以使终止线程。1.  使用退出标志，使线程正常退出，也就是当run方法完成后线程终止。2.  使用stop方法强行终止线程（这个方法不推荐使用，因为stop和suspend、resume一样，也可能发生不可预料的结果）。3.  使用interrupt方法中断线程。1.使用退出标识终止线程当run方法执行完后，线程就会退出。但有时run方法是永远不会结束的。如在服务端程序中使用线程进行监听客户端请求，或是其他的需要循环处理的任务。在这种情况下，一般是将这些任务放在一个循环中，如w">
+    <script src="//g.csdnimg.cn/tingyun/1.8.5/blog.js" type='text/javascript'></script>
+        <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/css/detail_enter-dbcfbb1ed8.min.css">
+    <script type="application/ld+json">{"@context":"https://ziyuan.baidu.com/contexts/cambrian.jsonld","@id":"https://blog.csdn.net/a984171281/article/details/119569848","appid":"1638831770136827","pubDate":"2021-08-10T14:51:47","title":"线程中断的几种方式_坚持与努力的博客-CSDN博客_线程中断","upDate":"2021-08-10T15:00:10"}</script>
+        <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/themesSkin/skin-shirtblue/skin-shirtblue-b2ba816980.min.css">
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isCorporate = false;//注释删除enterprise
+        var username =  "a984171281";
+        var skinImg = "white";
+        var blog_address = "https://blog.csdn.net/a984171281";
+        var currentUserName = "weixin_46000198";
+        var isOwner = false;
+        var loginUrl = "http://passport.csdn.net/account/login?from=https://blog.csdn.net/a984171281/article/details/119569848";
+        var blogUrl = "https://blog.csdn.net/";
+        var avatar = "https://profile.csdnimg.cn/3/D/0/3_a984171281";
+        var articleTitle = "线程中断的几种方式";
+        var articleDesc = "有三种方法可以使终止线程。1.  使用退出标志，使线程正常退出，也就是当run方法完成后线程终止。2.  使用stop方法强行终止线程（这个方法不推荐使用，因为stop和suspend、resume一样，也可能发生不可预料的结果）。3.  使用interrupt方法中断线程。1.使用退出标识终止线程当run方法执行完后，线程就会退出。但有时run方法是永远不会结束的。如在服务端程序中使用线程进行监听客户端请求，或是其他的需要循环处理的任务。在这种情况下，一般是将这些任务放在一个循环中，如w";
+        var articleTitles = "线程中断的几种方式_坚持与努力的博客-CSDN博客_线程中断";
+        var nickName = "坚持与努力";
+        var articleDetailUrl = "https://blog.csdn.net/a984171281/article/details/119569848";
+        if(window.location.host.split('.').length == 3) {
+            blog_address = blogUrl + username;
+        }
+        var skinStatus = "White";
+        var blogStaticHost = "https://csdnimg.cn/release/blogv2/"
+        var mallTestStyle = "control"
+    </script>
+    <script src="https://g.csdnimg.cn/??fixed-sidebar/1.1.6/fixed-sidebar.js" type="text/javascript"></script>
+    <script src='//g.csdnimg.cn/common/csdn-report/report.js' type='text/javascript'></script>
+    <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/public/sandalstrap/1.4/css/sandalstrap.min.css">
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+    <script src="https://dup.baidustatic.com/js/ds.js"></script>
+</head>
+  <body class="nodata " style="">
+        <script>
+            var toolbarSearchExt = '{"landingWord":["线程中断"],"queryWord":"线程中断的方法","tag":["多线程","并发编程"],"title":"线程中断的几种方式"}';
+        </script>
+    <script src="https://g.csdnimg.cn/common/csdn-toolbar/csdn-toolbar.js" type="text/javascript"></script>
+    <script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        }
+        else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+    </script>
+<link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/pc/css/blog_code-01256533b5.min.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/chart-3456820cac.css" />
+
+<script>
+    var articleId = 119569848;
+    var commentscount = 0;
+    var curentUrl = "https://blog.csdn.net/a984171281/article/details/119569848";
+    var myUrl = "https://my.csdn.net/";
+    var highlight = ["并发编程","多线程","并发","线程","几种","中断","编程","方式","的"];//高亮数组
+    var isRecommendModule = true;
+    var isBaiduPre = true;
+    var baiduCount = 2;
+    var setBaiduJsCount = 10;
+    var share_card_url = "https://app-blog.csdn.net/share?article_id=119569848&username=a984171281"
+	var articleType = 1;
+    var baiduKey = "线程中断的方法";
+    var userNewReport = true;
+    var needInsertBaidu = true;
+    var recommendRegularDomainArr = ["blog.csdn.net/.+/article/details/","download.csdn.net/download/","edu.csdn.net/course/detail/","ask.csdn.net/questions/","bbs.csdn.net/topics/","www.csdn.net/gather_.+/"]
+    var codeStyle = "";
+    var baiduSearchType = "utm_term";
+     var sharData = "{\"hot\":[{\"id\":1,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/a5f4260710904e538002a6ab337939b3.png\"},{\"id\":2,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/188b37199a2c4b74b1d9ffc39e0d52de.png\"},{\"id\":3,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/14ded358b631444581edd98a256bc5af.png\"},{\"id\":4,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/1470f23a770444d986ad551b9c33c5be.png\"},{\"id\":5,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/c329f5181dc74f6c9bd28c982bb9f91d.png\"},{\"id\":6,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ccd8a3305e81460f9c505c95b432a65f.png\"},{\"id\":7,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/bc89d8283389440d97fc4d30e30f45e1.png\"},{\"id\":8,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/452d485b4a654f5592390550d2445edf.png\"},{\"id\":9,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/f8b9939db2ed474a8f43a643015fc8b7.png\"},{\"id\":10,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/6de8864187ab4ed3b1db0856369c36ff.png\"},{\"id\":11,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/673cc3470ff74072acba958dc0c46e2d.png\"},{\"id\":12,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/930c119760ac4491804db80f9c6d4e3f.png\"},{\"id\":13,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/15e6befb05a24233bc2b65e96aa8d972.png\"},{\"id\":14,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/2075fd6822184b95a41e214de4daec13.png\"},{\"id\":15,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/859b1552db244eb6891a809263a5c657.png\"},{\"id\":16,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/0be2f920f1f74290a98921974a9613fd.png\"},{\"id\":17,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/2e97e00b43f14afab494ea55ef3f4a6e.png\"},{\"id\":18,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ff4ab252f46e444686f5135d6ebbfec0.png\"},{\"id\":19,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ae029bbe99564e79911657912d36524f.png\"},{\"id\":20,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/b3ece39963de440388728e9e7b9bf427.png\"},{\"id\":21,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/6f14651a99ba486e926d63b6fa692997.png\"},{\"id\":22,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/83ceddf050084875a341e32dcceca721.png\"},{\"id\":23,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/b90368b8fd5d4c6c8c79a707d877cf7c.png\"},{\"id\":24,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/aeffae14ecf14e079b2616528c9a393b.png\"},{\"id\":25,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/c5a06b5a13d44d16bed868fc3384897a.png\"},{\"id\":26,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/08b697658b844b318cea3b119e9541ef.png\"},{\"id\":27,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/68ccb0b8d09346ac961d2b5c1a8c77bf.png\"},{\"id\":28,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/a2227a247e37418cbe0ea972ba6a859b.png\"},{\"id\":29,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/3a42825fede748f9993e5bb844ad350d.png\"},{\"id\":30,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/8882abc1dd484224b636966ea38555c3.png\"}],\"vip\":[{\"id\":1,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101150.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101154.png\"},{\"id\":2,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101204.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101208.png\"},{\"id\":3,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101211.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101215.png\"},{\"id\":4,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101218.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101220.png\"},{\"id\":5,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101223.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101226.png\"},{\"id\":6,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100635.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100639.png\"},{\"id\":7,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100642.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100644.png\"},{\"id\":8,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100647.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100649.png\"},{\"id\":9,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100652.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100655.png\"}],\"map\":{\"hot\":\"热门\",\"vip\":\"VIP\"}}";
+    
+    var canRead = true;
+    var blogMoveHomeArticle = false;
+    var showPcWindowAd = false;
+    var showHeadWord = true;
+    var showSearchText = "";
+    var linkPage = true;
+    var articleSource = 1;
+    var articleReport = '{"pid": "blog", "spm":"1001.2101"}';
+    var isShowToQuestion = false;
+    var baiduSearchChannel = 'pc_relevant'
+    var baiduSearchIdentification = '.pc_relevant_multi_platform_whitelistv4'
+    var distRequestId = '1666867031032_78642'
+    var initRewardObject = {
+        giver: "weixin_46000198",
+        anchor: "a984171281",
+        articleId: "119569848",
+        sign: "b3fb88773cf766323227ac6a593262c6",
+    }
+    var isLikeStatus = false;
+    var isUnLikeStatus = false;
+    var studyLearnWord = "";
+    var isCurrentUserVip = false;
+    var testNewStyle = "oldStyle"
+    var contentViewsHeight = 0;
+    var contentViewsCount = 0;
+    var contentViewsCountLimit = 5;
+    var isShowConcision = true
+    var isCookieConcision = false
+    var isHasDirectoryModel = false
+    var isShowSideModel = false
+    var isShowDirectoryModel = true
+    function getCookieConcision(sName){
+        var allCookie = document.cookie.split("; ");
+        for (var i=0; i < allCookie.length; i++){
+            var aCrumb = allCookie[i].split("=");
+            if (sName == aCrumb[0])
+                return aCrumb[1];
+        }
+        return null;
+    }
+    if (getCookieConcision('blog_details_concision') && getCookieConcision('blog_details_concision') == 0){
+        isCookieConcision = true
+        isShowSideModel = true
+        isShowDirectoryModel = false
+    }
+</script>
+<div class="main_father clearfix d-flex justify-content-center mainfather-concision" style="height:100%;"> 
+    <div class="container clearfix container-concision" id="mainBox">
+        <script>
+        if(!isCookieConcision){
+            $('.main_father').removeClass('mainfather-concision')
+            $('.main_father .container').removeClass('container-concision')
+        }
+        </script>
+        <main>
+<script type="text/javascript">
+    function getQueryString(name) {   
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象  
+      var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+      if( r != null ) return decodeURIComponent( r[2] ); return '';   
+    }
+    function stripscript(s){ 
+      var pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？%]") 
+      var rs = ""; 
+      for (var i = 0; i < s.length; i++) { 
+        rs = rs+s.substr(i, 1).replace(pattern, ''); 
+      } 
+      return rs; 
+    }
+    var blogHotWords = stripscript(getQueryString('utm_term')).length > 1 ? stripscript(getQueryString('utm_term')) : ''
+</script>
+<div class="blog-content-box">
+        <div class="article-header-box">
+        <div class="article-header">
+            <div class="article-title-box">
+                <h1 class="title-article" id="articleContentId">线程中断的几种方式</h1>
+            </div>
+            <div class="article-info-box">
+                <div class="article-bar-top">
+                    <img class="article-type-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/original.png" alt="">
+                    <div class="bar-content">
+                    <a class="follow-nickName " href="https://blog.csdn.net/a984171281" target="_blank" rel="noopener">坚持与努力</a>
+                    <img class="article-time-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCurrentTime2.png" alt="">
+                    <span class="time">于&nbsp;2021-08-10 15:00:10&nbsp;发布</span>
+                    <img class="article-read-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/articleReadEyes2.png" alt="">
+                    <span class="read-count">3189</span>
+                    <a id="blog_detail_zk_collection" class="un-collection" data-report-click='{"mod":"popu_823","spm":"1001.2101.3001.4232","ab":"new"}'>
+                        <img class="article-collect-img article-heard-img un-collect-status isdefault" style="display:inline-block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollect2.png" alt="">
+                        <img class="article-collect-img article-heard-img collect-status isactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive2.png" alt="">
+                        <span class="name">收藏</span>
+                        <span class="get-collection">
+                            4
+                        </span>
+                    </a>
+                    </div>
+                </div>
+                <div class="blog-tags-box">
+                    <div class="tags-box artic-tag-box">
+                            <span class="label">分类专栏：</span>
+                                <a class="tag-link" href="https://blog.csdn.net/a984171281/category_10562554.html" target="_blank" rel="noopener">多线程</a>
+                            <span class="label">文章标签：</span>
+                                <a data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"多线程","ab":"new","extra":"{\"searchword\":\"多线程\"}"}' class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E5%A4%9A%E7%BA%BF%E7%A8%8B&amp;t=blog&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">多线程</a>
+                                <a data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"并发编程","ab":"new","extra":"{\"searchword\":\"并发编程\"}"}' class="tag-link" href="https://so.csdn.net/so/search/s.do?q=%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B&amp;t=blog&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">并发编程</a>
+                    </div>
+                </div>
+                <div class="slide-content-box">
+                    <div class="article-copyright">
+                        <div class="creativecommons">
+                            版权声明：本文为博主原创文章，遵循<a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。
+                        </div>
+                        <div class="article-source-link">
+                            本文链接：<a href="https://blog.csdn.net/a984171281/article/details/119569848" target="_blank">https://blog.csdn.net/a984171281/article/details/119569848</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="operating">
+                    <a class="href-article-edit slide-toggle">版权</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="blogHuaweiyunAdvert"></div>
+        <div id="blogColumnPayAdvert">
+            <div class="column-group">
+                <div class="column-group-item column-group0 column-group-item-one">
+                    <div class="item-l">
+                        <a class="item-target" href="https://blog.csdn.net/a984171281/category_10562554.html" target="_blank" title="多线程"
+                        data-report-view='{"spm":"1001.2101.3001.6332"}'
+                        data-report-click='{"spm":"1001.2101.3001.6332"}'>
+                            <img class="item-target" src="https://img-blog.csdnimg.cn/20201014180756913.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="">
+                            <span class="title item-target">
+                                <span>
+                                <span class="tit">多线程</span>
+                                    <span class="dec">专栏收录该内容</span>
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                    <div class="item-m">
+                        <span>10 篇文章</span>
+                        <span>1 订阅</span>
+                    </div>
+                    <div class="item-r">
+                            <a class="item-target article-column-bt articleColumnFreeBt" data-id="10562554">订阅专栏</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <article class="baidu_pl">
+        <div id="article_content" class="article_content clearfix">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-6e43165c0a.css">
+                <div id="content_views" class="markdown_views prism-atom-one-dark">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                        <path stroke-linecap="round" d="M5,0 0,2.5 5,5z" id="raphael-marker-block" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></path>
+                    </svg>
+                    <p>有三种方法可以使终止线程。</p> 
+<pre><code>1.  使用退出标志&#xff0c;使线程正常退出&#xff0c;也就是当run方法完成后线程终止。
+
+2.  使用stop方法强行终止线程&#xff08;这个方法不推荐使用&#xff0c;因为stop和suspend、resume一样&#xff0c;也可能发生不可预料的结果&#xff09;。
+
+3.  使用interrupt方法中断线程。
+</code></pre> 
+<ul><li>1.使用退出标识终止线程<br /> 当run方法执行完后&#xff0c;线程就会退出。但有时run方法是永远不会结束的。如在服务端程序中使用线程进行监听客户端请求&#xff0c;或是其他的需要循环处理的任务。在这种情况下&#xff0c;一般是将这些任务放在一个循环中&#xff0c;如while循环。如果想让循环永远运行下去&#xff0c;可以使用while&#xff08;true&#xff09;{……}来处理。但要想使while循环在某一特定条件下退出&#xff0c;最直接的方法就是设一个boolean类型的标志&#xff0c;并通过设置这个标志为true或false来控制while循环是否退出。下面给出了一个利用退出标志终止线程的例子。</li></ul> 
+<pre><code class="prism language-java"><span class="token keyword">package</span> <span class="token namespace">chapter2</span><span class="token punctuation">;</span>
+ 
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ThreadFlag</span> <span class="token keyword">extends</span> <span class="token class-name">Thread</span>
+<span class="token punctuation">{<!-- --></span>
+    <span class="token keyword">public</span> <span class="token keyword">volatile</span> <span class="token keyword">boolean</span> exit <span class="token operator">&#61;</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+ 
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{<!-- --></span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token operator">!</span>exit<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span>
+    <span class="token punctuation">{<!-- --></span>
+        <span class="token class-name">ThreadFlag</span> thread <span class="token operator">&#61;</span> <span class="token keyword">new</span> <span class="token class-name">ThreadFlag</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        thread<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">5000</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 主线程延迟5秒</span>
+        thread<span class="token punctuation">.</span>exit <span class="token operator">&#61;</span> <span class="token boolean">true</span><span class="token punctuation">;</span>  <span class="token comment">// 终止线程thread</span>
+        thread<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&#34;线程退出!&#34;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre> 
+<p>在上面代码中定义了一个退出标志exit&#xff0c;当exit为true时&#xff0c;while循环退出&#xff0c;exit的默认值为false.在定义exit时&#xff0c;使用了一个Java关键字volatile&#xff0c;这个关键字的目的是使exit同步&#xff0c;也就是说在同一时刻只能由一个线程来修改exit的值</p> 
+<ul><li> 
+  <ol start="2"><li>使用stop方法终止线程</li></ol> <p>使用stop方法可以强行终止正在运行或挂起的线程。我们可以使用如下的代码来终止线程&#xff1a;</p> </li></ul> 
+<pre><code class="prism language-java">   thread<span class="token punctuation">.</span><span class="token function">stop</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre> 
+<p>虽然使用上面的代码可以终止线程&#xff0c;但使用stop方法是很危险的&#xff0c;就象突然关闭计算机电源&#xff0c;而不是按正常程序关机一样&#xff0c;可能会产生不可预料的结果&#xff0c;因此&#xff0c;并不推荐使用stop方法来终止线程。</p> 
+<ul><li> 
+  <ol start="3"><li>使用interrupt方法终止线程</li></ol> </li></ul> 
+<pre><code>使用interrupt方法来终端线程可分为两种情况&#xff1a;
+
+&#xff08;1&#xff09;线程处于阻塞状态&#xff0c;如使用了sleep方法。
+
+&#xff08;2&#xff09;使用while&#xff08;&#xff01;isInterrupted&#xff08;&#xff09;&#xff09;{……}来判断线程是否被中断。
+</code></pre> 
+<p>在第一种情况下使用interrupt方法&#xff0c;sleep方法将抛出一个InterruptedException例外&#xff0c;而在第二种情况下线程将直接退出。下面的代码演示了在第一种情况下使用interrupt方法。</p> 
+<pre><code class="prism language-java"><span class="token keyword">package</span> <span class="token namespace">chapter2</span><span class="token punctuation">;</span>
+ 
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ThreadInterrupt</span> <span class="token keyword">extends</span> <span class="token class-name">Thread</span>
+<span class="token punctuation">{<!-- --></span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">run</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{<!-- --></span>
+        <span class="token keyword">try</span>
+        <span class="token punctuation">{<!-- --></span>
+            <span class="token function">sleep</span><span class="token punctuation">(</span><span class="token number">50000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// 延迟50秒</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">InterruptedException</span> e<span class="token punctuation">)</span>
+        <span class="token punctuation">{<!-- --></span>
+            <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span><span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">Exception</span>
+    <span class="token punctuation">{<!-- --></span>
+        <span class="token class-name">Thread</span> thread <span class="token operator">&#61;</span> <span class="token keyword">new</span> <span class="token class-name">ThreadInterrupt</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        thread<span class="token punctuation">.</span><span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&#34;在50秒之内按任意键中断线程!&#34;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>in<span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        thread<span class="token punctuation">.</span><span class="token function">interrupt</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        thread<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">&#34;线程已经退出!&#34;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre> 
+<p>上面代码的运行结果如下&#xff1a;</p> 
+<pre><code class="prism language-java">    在<span class="token number">50</span>秒之内按任意键中断线程<span class="token operator">!</span>
+ 
+    sleep interrupted
+    线程已经退出<span class="token operator">!</span> 
+</code></pre> 
+<p>在调用interrupt方法后&#xff0c; sleep方法抛出异常&#xff0c;然后输出错误信息&#xff1a;sleep interrupted.</p> 
+<p><strong>注意</strong>&#xff1a;在Thread类中有两个方法可以判断线程是否通过interrupt方法被终止。一个是静态的方法interrupted&#xff08;&#xff09;&#xff0c;一个是非静态的方法isInterrupted&#xff08;&#xff09;&#xff0c;这两个方法的区别是interrupted用来判断当前线是否被中断&#xff0c;而isInterrupted可以用来判断其他线程是否被中断。因此&#xff0c;while &#xff08;&#xff01;isInterrupted&#xff08;&#xff09;&#xff09;也可以换成while &#xff08;&#xff01;Thread.interrupted&#xff08;&#xff09;&#xff09;。</p>
+                </div>
+                <link href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/markdown_views-22a2fefd3b.css" rel="stylesheet">
+                <link href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/style-4f8fbf9108.css" rel="stylesheet">
+        </div>
+        <div id="treeSkill"></div>
+    </article>
+  <script>
+  $(function() {
+    setTimeout(function () {
+      var mathcodeList = document.querySelectorAll('.htmledit_views img.mathcode');
+      if (mathcodeList.length > 0) {
+        var testImg = new Image();
+        testImg.onerror = function () {
+          mathcodeList.forEach(function (item) {
+            $(item).before('<span class="img-codecogs">\\(' + item.alt + '\\)</span>');
+            $(item).remove();
+          })
+          MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+        }
+        testImg.src = mathcodeList[0].src;
+      }
+    }, 1000)
+  })
+  </script>
+</div>
+<div class="more-toolbox-new" id="toolBarBox">
+    <div class="left-toolbox">
+        <div class="toolbox-left">
+            <div class="profile-box"><a class="profile-href" target="_blank" href="https://blog.csdn.net/a984171281"><img class="profile-img" src="https://profile.csdnimg.cn/3/D/0/3_a984171281"><span class="profile-name">坚持与努力</span></a></div>
+            <div class="profile-attend">
+                    <a class="tool-attend tool-bt-button tool-bt-attend" href="javascript:;" data-report-view='{"mod":"1592215036_002","spm":"1001.2101.3001.4232","extend1":"关注"}'>关注</a>
+                <a class="tool-item-follow active-animation" style="display:none;">关注</a>
+            </div>
+        </div>
+        <div class="toolbox-middle">
+        <ul class="toolbox-list">
+            <li class="tool-item tool-item-size tool-active is-like" id="is-like">
+            <a class="tool-item-href">
+                <img style="display:none;" id="is-like-imgactive-animation-like" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarThumbUpactive.png" alt="">
+                <img class="isactive" style="display:none" id="is-like-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2021Active.png" alt="">
+                <img class="isdefault" style="display:block" id="is-like-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2021Black.png" alt="">  
+                <span id="spanCount" class="count ">
+                        2
+                </span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">点赞</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active is-unlike" id="is-unlike">
+            <a class="tool-item-href">
+                <img class="isactive" style="margin-right:0px;display:none" id="is-unlike-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnHeart2021Active.png" alt="">
+                <img class="isdefault" style="margin-right:0px;display:block" id="is-unlike-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnHeart2021Black.png" alt="">
+                <span id="unlikeCount" class="count "></span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">踩</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active is-collection ">
+            <a class="tool-item-href" href="javascript:;" data-report-click='{"mod":"popu_824","spm":"1001.2101.3001.4130","ab":"new"}'>
+                <img style="display:none" id="is-collection-img-collection" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive.png" alt="">
+                <img class="isdefault" id="is-collection-img" style="display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectBlack.png" alt="">
+                <img class="isactive" id="is-collection-imgactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectActive.png" alt="">
+                <span class="count get-collection " id="get-collection">
+                    4
+                </span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">收藏</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-item-reward">
+                <a class="tool-item-href" href="javascript:;" data-report-click='{"mod":"popu_830","spm":"1001.2101.3001.4237","dest":"","ab":"new"}'>
+                <img class="isdefault reward-bt" id="rewardBtNew" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newRewardBlack.png" alt="打赏">
+                <span class="count"></span>
+                </a>
+                <div class="tool-hover-tip"><span class="text space">打赏</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-item-comment">
+            <a class="tool-item-href go-side-comment" data-report-click='{"spm":"1001.2101.3001.7009"}'>
+                <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newComment2021Black.png" alt="">
+                <span class="count">
+                    0
+                </span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">评论</span></div>
+            </li>
+            <li class="tool-item tool-item-bar">
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-QRcode" id="tool-share">
+                <a class="tool-item-href" href="javascript:;" data-report-click='{"mod":"1582594662_002","spm":"1001.2101.3001.4129","ab":"new"}'>
+                    <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newShareBlack.png" alt="">
+                </a>
+                <div class="QRcode" id="tool-QRcode">
+                    <div class="share-bg-icon icon1" id="shareBgIcon"></div>
+                    <div class="share-bg-box">
+                        <div class="share-content">
+                            <img class="share-avatar" src="https://profile.csdnimg.cn/3/D/0/3_a984171281" alt="">
+                            <div class="share-tit">线程中断的几种方式</div>
+                            <div class="share-dec">有三种方法可以使终止线程。1.  使用退出标志，使线程正常退出，也就是当run方法完成后线程终止。2.  使用stop方法强行终止线程（这个方法不推荐使用，因为stop和suspend、resume一样，也可能发生不可预料的结果）。3.  使用interrupt方法中断线程。1.使用退出标识终止线程当run方法执行完后，线程就会退出。但有时run方法是永远不会结束的。如在服务端程序中使用线程进行监听客户端请求，或是其他的需要循环处理的任务。在这种情况下，一般是将这些任务放在一个循环中，如w</div>
+                            <a id="copyPosterUrl" class="url" data-report-click='{"spm":"1001.2101.3001.7493"}' data-report-view='{"spm":"1001.2101.3001.7493"}'>复制链接</a>
+                        </div>
+                        <div class="share-code">
+                            <div class="share-code-box" id='shareCode'></div>
+                            <div class="share-code-text">扫一扫</div>
+                        </div>
+                        
+                    </div>
+                    <div class="share-code-type">
+                      
+                    </div>
+                </div>
+            </li>
+        </ul>
+        </div>
+        <div class="toolbox-right">
+                <div class="tool-directory">
+                    <a class="bt-columnlist-show"
+                    data-id="10562554"
+                    data-free="true"
+                    data-subscribe="false"
+                    data-title="多线程"
+                    data-img="https://img-blog.csdnimg.cn/20201014180756913.png?x-oss-process=image/resize,m_fixed,h_64,w_64"
+                    data-url="https://blog.csdn.net/a984171281/category_10562554.html"
+                    data-sum="10"
+                    data-people="1"
+                    data-price="0"
+                    data-oldprice="0"
+                    data-join="false"
+                    data-studyvip="false"
+                    data-studysubscribe="false"
+                    data-report-view='{"spm":"1001.2101.3001.6334","extend1":"专栏目录"}'
+                    data-report-click='{"spm":"1001.2101.3001.6334","extend1":"专栏目录"}'
+                    >专栏目录</a>
+                </div>
+        </div>
+    </div>  
+</div>
+<script type=text/javascript crossorigin src="https://csdnimg.cn/release/phoenix/production/qrcode-7c90a92189.min.js"></script>
+<script src="//g.csdnimg.cn/??sharewx/1.2.1/sharewx.js" type="text/javascript"></script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/user-login/3.0.1/user-login.js"></script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/collection-box/2.1.0/collection-box.js"></script>
+                <div class="first-recommend-box recommend-box ">
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_54234280/article/details/126650363"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6661.1","mod":"popu_871","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant_t0.none-task-blog-2~default~YuanLiJiHua~Position-1-126650363-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"1","strategy":"2~default~YuanLiJiHua~Position","dest":"https://blog.csdn.net/weixin_54234280/article/details/126650363"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_54234280/article/details/126650363" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6661.1","mod":"popu_871","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant_t0.none-task-blog-2~default~YuanLiJiHua~Position-1-126650363-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"1","strategy":"2~default~YuanLiJiHua~Position","dest":"https://blog.csdn.net/weixin_54234280/article/details/126650363"}'  data-report-query='spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EYuanLiJiHua%7EPosition-1-126650363-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EYuanLiJiHua%7EPosition-1-126650363-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>中断</em><em>线程</em><em>的</em><em>方式</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_54234280" target="_blank"><span class="blog-title">weixin_54234280的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">09-01</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					37
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_54234280/article/details/126650363" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6661.1","mod":"popu_871","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant_t0.none-task-blog-2~default~YuanLiJiHua~Position-1-126650363-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"1","strategy":"2~default~YuanLiJiHua~Position","dest":"https://blog.csdn.net/weixin_54234280/article/details/126650363"}'  data-report-query='spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EYuanLiJiHua%7EPosition-1-126650363-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EYuanLiJiHua%7EPosition-1-126650363-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>中断</em><em>线程</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+                </div>
+            <script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_commontools-d5fda285fa.min.js" type="text/javascript" async></script>
+            <div class="second-recommend-box recommend-box ">
+<div class="recommend-item-box type_download clearfix" data-url="https://download.csdn.net/download/weixin_38517113/13743168"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.1","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-download-2~default~CTRLIST~Rate-1-13743168-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"1","strategy":"2~default~CTRLIST~Rate","dest":"https://download.csdn.net/download/weixin_38517113/13743168"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://download.csdn.net/download/weixin_38517113/13743168" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.1","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-download-2~default~CTRLIST~Rate-1-13743168-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"1","strategy":"2~default~CTRLIST~Rate","dest":"https://download.csdn.net/download/weixin_38517113/13743168"}'  data-report-query='spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-download-2%7Edefault%7ECTRLIST%7ERate-1-13743168-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-download-2%7Edefault%7ECTRLIST%7ERate-1-13743168-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1">面试官：如何终止<em>线程</em>？有<em>几种</em><em>方式</em>？</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info display-flex">
+					<span class="info-block">12-21</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://download.csdn.net/download/weixin_38517113/13743168" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.1","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-download-2~default~CTRLIST~Rate-1-13743168-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"1","strategy":"2~default~CTRLIST~Rate","dest":"https://download.csdn.net/download/weixin_38517113/13743168"}'  data-report-query='spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-download-2%7Edefault%7ECTRLIST%7ERate-1-13743168-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-download-2%7Edefault%7ECTRLIST%7ERate-1-13743168-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1">在 Java 中有以下 3 种方法可以终止正在运行<em>的</em><em>线程</em>：
+使用退出标志，使<em>线程</em>正常退出，也就是当 run() 方法完成后<em>线程</em>终止；
+使用 stop() 方法强行终止<em>线程</em>，但是不推荐使用这个方法，因为使用此方法不安全，目前该方法已被弃用；
+使用 interrupt()方法<em>中断</em><em>线程</em>。
+第一种：使用标志位终止<em>线程</em>
+使用标志位终止<em>线程</em>就是定义一个boolean型<em>的</em>标志位 ，在<em>线程</em><em>的</em>run方法中根据这个标志位是为true还是为false来判断是否终止，这种情况多用于while循环中。
+class StopThread extends Thread {
+    //标志位
+	private boolea</div>
+			</a>
+		</div>
+	</div>
+</div>
+            </div>
+<a id="commentBox" name="commentBox"></a>
+<div id="pcCommentBox" class="comment-box comment-box-new2  login-comment-box-new" style="display:block">
+		<div class="has-comment" style="display:none">
+		<div class="has-comment-tit">评论<span class="count go-side-comment">0</span><span class="text go-side-comment">条</span><img class="go-side-comment more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowRightWhite.png" alt=""><a class="has-comment-bt-right go-side-comment focus">写评论</a></div>
+			<div class="has-comment-con comment-operate-item"></div>
+		</div>
+		<div class="unhas-comment" style="display:flex">
+			<div class="unhas-comment-left">评论</div>
+			<div class="unhas-comment-right"><a class="go-side-comment focus">写评论</a></div>
+		</div>
+</div>
+            <div class="recommend-box insert-baidu-box recommend-box-style ">
+                <div class="recommend-item-box no-index" style="display:none"></div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://javastack.blog.csdn.net/article/details/122835451"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.2","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-2-122835451-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"2","strategy":"2~default~CTRLIST~Rate","dest":"https://javastack.blog.csdn.net/article/details/122835451"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://javastack.blog.csdn.net/article/details/122835451" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.2","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-2-122835451-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"2","strategy":"2~default~CTRLIST~Rate","dest":"https://javastack.blog.csdn.net/article/details/122835451"}'  data-report-query='spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2-122835451-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2-122835451-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1">面试官问：如何<em>中断</em>一个<em>线程</em>，具体如何实现？</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/youanyyou" target="_blank"><span class="blog-title">Java技术栈，分享最主流的Java技术</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">02-09</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					256
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://javastack.blog.csdn.net/article/details/122835451" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.2","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-2-122835451-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"2","strategy":"2~default~CTRLIST~Rate","dest":"https://javastack.blog.csdn.net/article/details/122835451"}'  data-report-query='spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2-122835451-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2-122835451-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>中断</em><em>线程</em>
+<em>线程</em><em>的</em>thread.interrupt()方法是<em>中断</em><em>线程</em>，将会设置该<em>线程</em><em>的</em><em>中断</em>状态位，即设置为true，<em>中断</em><em>的</em>结果<em>线程</em>是死亡、还是等待新<em>的</em>任务或是继续运行至下一步，就取决于这个程序本身。<em>线程</em>会不时地检测这个<em>中断</em>标示位，以判断<em>线程</em>是否应该被<em>中断</em>（<em>中断</em>标示值是否为true）。它并不像stop方法那样会<em>中断</em>一个正在运行<em>的</em><em>线程</em>。
+判断<em>线程</em>是否被<em>中断</em>
+判断某个<em>线程</em>是否已被发送过<em>中断</em>请求，请使用Thread.currentThread().isInterrupted()方法（因为它将<em>线程</em><em>中断</em>标示位设置为tru</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/sjh10000/article/details/105694687"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.3","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-3-105694687-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"3","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/sjh10000/article/details/105694687"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/sjh10000/article/details/105694687" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.3","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-3-105694687-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"3","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/sjh10000/article/details/105694687"}'  data-report-query='spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-105694687-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-105694687-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>线程</em><em>中断</em><em>的</em><em>方式</em>（interrupt详解）</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/sjh10000" target="_blank"><span class="blog-title">sjh10000的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">04-23</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					2873
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/sjh10000/article/details/105694687" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.3","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-3-105694687-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"3","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/sjh10000/article/details/105694687"}'  data-report-query='spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-105694687-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-105694687-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1">1.<em>线程</em><em>中断</em><em>的</em><em>方式</em>总结？
+1.正常退出：在<em>线程</em>start()开启之后，当<em>线程</em>执行完run()或call()方法之后，此时，该<em>线程</em>会正常退出。
+2.stop强制退出：在Thread类中，可以发现其中<em>的</em>stop()方法上加有@Deprecated注解，表示此方法已废弃、暂时可用，但以后此类或方法都不会再更新、后期可能会删除，建议后来人不要调用此方法。其主要原因是<em>线程</em>会立即停止，而且<em>线程</em>拥有<em>的</em>资源不会释...</div>
+			</a>
+		</div>
+	</div>
+</div>
+		<dl id="recommend-item-box-tow" class="recommend-item-box type_blog clearfix">
+			
+		</dl>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/jiadajing267/article/details/80590000"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.4","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4-80590000-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"4","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/jiadajing267/article/details/80590000"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/jiadajing267/article/details/80590000" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.4","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4-80590000-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"4","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/jiadajing267/article/details/80590000"}'  data-report-query='spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4-80590000-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4-80590000-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1">【<em>多线程</em>】&mdash;&mdash;深入理解<em>线程</em><em>中断</em><em>方式</em>（interrupt）</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/jiadajing267" target="_blank"><span class="blog-title">漫漫长途，终有回转；余味苦涩，终有回甘</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">06-06</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					9952
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/jiadajing267/article/details/80590000" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.4","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4-80590000-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"4","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/jiadajing267/article/details/80590000"}'  data-report-query='spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4-80590000-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4-80590000-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1">&nbsp; &nbsp; 最近在系统回顾<em>多线程</em>这一部分<em>的</em>内容，对<em>线程</em><em>中断</em><em>方式</em>这一部分相比之前有了不同<em>的</em>认识。整理一下，如有理解偏颇之处，还请各位大神不惜赐教。&nbsp; &nbsp; 在看高洪岩《Java<em>多线程</em><em>编程</em>核心技术》<em>的</em>时候里面讲了很多种停止<em>线程</em><em>方式</em>，其实仔细回想起来停止<em>线程</em>并没有那么复杂。总体整理下来就三种<em>方式</em>！1、正常退出;2、stop暴力停止（不再推荐使用）；3、异常法;1、正常退出当<em>线程</em>中run()或者call()按照...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/qq_35771266/article/details/126073453"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.5","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-5-126073453-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"5","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/qq_35771266/article/details/126073453"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/qq_35771266/article/details/126073453" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.5","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-5-126073453-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"5","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/qq_35771266/article/details/126073453"}'  data-report-query='spm=1001.2101.3001.6650.5&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-5-126073453-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-5-126073453-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>线程</em><em>中断</em>方法</div>
+					<div class="tag">最新发布</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/qq_35771266" target="_blank"><span class="blog-title">qq_35771266的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">07-30</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					136
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/qq_35771266/article/details/126073453" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.5","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-5-126073453-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"5","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/qq_35771266/article/details/126073453"}'  data-report-query='spm=1001.2101.3001.6650.5&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-5-126073453-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-5-126073453-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1">因为volatile能保证在<em>多线程</em>之间，一旦变量修改，能够立马通知到其他持有该变量<em>的</em><em>线程</em>值被改变。所以我们可以利用volatile这个特性来实现<em>线程</em><em>中断</em>。interrupted()查询当前<em>线程</em>阻塞状态，并将状态设置为false。备注操作<em>线程</em>不能处于sleep,wait,join，不然会抛出异常。interrupt()设置<em>线程</em>状态为true。isInterrupt()查询当前<em>线程</em>阻塞状态。...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/hanguihb/article/details/102689998"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.6","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-6-102689998-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"6","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/hanguihb/article/details/102689998"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/hanguihb/article/details/102689998" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.6","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-6-102689998-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"6","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/hanguihb/article/details/102689998"}'  data-report-query='spm=1001.2101.3001.6650.6&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-102689998-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-102689998-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1">终止<em>线程</em><em>的</em>方法</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/hanguihb" target="_blank"><span class="blog-title">Bernard Han的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">10-22</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					214
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/hanguihb/article/details/102689998" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.6","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-6-102689998-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"6","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/hanguihb/article/details/102689998"}'  data-report-query='spm=1001.2101.3001.6650.6&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-102689998-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-102689998-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1">转载自：https://zhidao.baidu.com/question/366236031.html?qbl=relate_question_0&amp;word=java%CF%DF%B3%CC%D0%E8%D2%AA%B9%D8%B1%D5%C2%F0
+
+终止<em>线程</em><em>的</em>三种方法
+1. 使用退出标志，使<em>线程</em>正常退出，也就是当run方法完成后<em>线程</em>终止。
+2. 使用stop方法强行终止<em>线程</em>（这个方法...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_43237362/article/details/104416273"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.7","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-7-104416273-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"7","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_43237362/article/details/104416273"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_43237362/article/details/104416273" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.7","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-7-104416273-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"7","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_43237362/article/details/104416273"}'  data-report-query='spm=1001.2101.3001.6650.7&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-104416273-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-104416273-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>线程</em><em>中断</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_43237362" target="_blank"><span class="blog-title">写写代码</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">02-20</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1313
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_43237362/article/details/104416273" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.7","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-7-104416273-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"7","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_43237362/article/details/104416273"}'  data-report-query='spm=1001.2101.3001.6650.7&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-104416273-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-104416273-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>线程</em><em>中断</em>就是处于运行状态<em>的</em><em>线程</em>被强制打断。<em>线程</em><em>中断</em>总体来说有三种方法：正常退出、stop暴力停止、interrupt异常停止。其中使用stop()方法是不安全<em>的</em>，可能导致数据不同步或者资源无法回收，目前stop()方法已经被标注为作废方法。一般使用interrupt停止<em>线程</em>，这里有几个与之相关<em>的</em>方法：
+
+
+public void interrupt() {} // <em>中断</em><em>线程</em>
+
+public boo...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/qjyws/article/details/117323505"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.8","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-117323505-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"8","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qjyws/article/details/117323505"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/qjyws/article/details/117323505" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.8","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-117323505-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"8","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qjyws/article/details/117323505"}'  data-report-query='spm=1001.2101.3001.6650.8&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-117323505-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-117323505-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1">Java：<em>线程</em><em>的</em>三种<em>中断</em><em>方式</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/qjyws" target="_blank"><span class="blog-title">qjyws的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">05-27</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1676
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/qjyws/article/details/117323505" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.8","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-117323505-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"8","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qjyws/article/details/117323505"}'  data-report-query='spm=1001.2101.3001.6650.8&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-117323505-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-117323505-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1">文章目录前言一、<em>线程</em><em>的</em>Stop（）操作二、<em>线程</em><em>的</em>Interrupt（）方法进行<em>中断</em>操作1.stop（）方法<em>的</em>缺点2.Interrupt（）方法三、使用run标志位进行判断总结
+
+前言
+
+在 Java 中，<em>并发</em>机制非常重要，但并不是所有程序语言都支持<em>线程</em>。在以往<em>的</em>程序中，多以一个任务完成以后再进行下一个任务<em>的</em>模式进行，这样下一个任务<em>的</em>开始必须等待前一个任务<em>的</em>结束。Java 语言提供了<em>并发</em>机制，允许开发人员在程序中执行多个<em>线程</em>，每个<em>线程</em>完成一个功能，并与其他<em>线程</em><em>并发</em>执行。这种机制被称为<em>多线程</em>。
+
+而在<em>多线程</em>当中</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_30505225/article/details/98019936"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.9","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-9-98019936-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"9","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_30505225/article/details/98019936"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_30505225/article/details/98019936" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.9","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-9-98019936-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"9","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_30505225/article/details/98019936"}'  data-report-query='spm=1001.2101.3001.6650.9&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-98019936-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-98019936-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1">Thread<em>的</em><em>中断</em>机制(interrupt)</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_30505225" target="_blank"><span class="blog-title">weixin_30505225的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">02-24</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1985
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_30505225/article/details/98019936" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.9","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-9-98019936-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"9","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_30505225/article/details/98019936"}'  data-report-query='spm=1001.2101.3001.6650.9&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-98019936-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-98019936-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1">先看收集了别人<em>的</em>文章，全面<em>的</em>了解下java<em>的</em><em>中断</em>：
+<em>中断</em><em>线程</em>
+<em>线程</em><em>的</em>thread.interrupt()方法是<em>中断</em><em>线程</em>，将会设置该<em>线程</em><em>的</em><em>中断</em>状态位，即设置为true，<em>中断</em><em>的</em>结果<em>线程</em>是死亡、还是等待新<em>的</em>任务或是继续运行至下一步，就取决于这个程序本身。<em>线程</em>会不时地检测这个<em>中断</em>标示位，以判断<em>线程</em>是否应该被<em>中断</em>（<em>中断</em>标示值是否为true）。它并不像stop方法那样会<em>中断</em>一个正在运行<em>的</em><em>线程</em>。
+判断<em>线程</em>...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/meser88/article/details/120698638"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.10","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-10-120698638-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"10","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/meser88/article/details/120698638"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/meser88/article/details/120698638" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.10","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-10-120698638-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"10","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/meser88/article/details/120698638"}'  data-report-query='spm=1001.2101.3001.6650.10&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-10-120698638-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-10-120698638-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1">什么是<em>线程</em><em>中断</em>？</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/meser88" target="_blank"><span class="blog-title">meser88的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">10-11</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					696
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/meser88/article/details/120698638" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.10","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-10-120698638-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"10","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/meser88/article/details/120698638"}'  data-report-query='spm=1001.2101.3001.6650.10&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-10-120698638-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-10-120698638-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1">下面<em>的</em>这断代码大家应该再熟悉不过了，<em>线程</em>休眠需要捕获或者抛出<em>线程</em><em>中断</em>异常，也就是你在睡觉<em>的</em>时候突然有个人冲进来把你吵醒了。
+
+
+try {
+	Thread.sleep(3000);
+} catch (InterruptedException e) {
+	e.printStackTrace();
+}
+
+
+此时<em>线程</em>被打断后，代码会继续运行或者抛出异常结束运行，这并不是我们需要<em>的</em><em>中断</em><em>线程</em><em>的</em>作用。
+
+到底是什么是<em>线程</em><em>中断</em>？
+
+<em>线程</em><em>中断</em>即<em>线程</em>运行过程中被其他<em>线程</em>给打断了，它与 stop 最大<em>的</em>区别是：stop 是由系</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/qq_45337431/article/details/115335221"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.11","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-11-115335221-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"11","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/qq_45337431/article/details/115335221"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/qq_45337431/article/details/115335221" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.11","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-11-115335221-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"11","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/qq_45337431/article/details/115335221"}'  data-report-query='spm=1001.2101.3001.6650.11&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-11-115335221-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-11-115335221-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>线程</em><em>中断</em>处理</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/qq_45337431" target="_blank"><span class="blog-title">qq_45337431的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">03-30</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					207
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/qq_45337431/article/details/115335221" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.11","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-11-115335221-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"11","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/qq_45337431/article/details/115335221"}'  data-report-query='spm=1001.2101.3001.6650.11&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-11-115335221-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-11-115335221-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>线程</em><em>中断</em><em>的</em>使用，try-catch处理</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/z69183787/article/details/108677735"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.12","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-12-108677735-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"12","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/z69183787/article/details/108677735"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/z69183787/article/details/108677735" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.12","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-12-108677735-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"12","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/z69183787/article/details/108677735"}'  data-report-query='spm=1001.2101.3001.6650.12&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-12-108677735-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-12-108677735-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1">Java<em>并发</em>之<em>线程</em><em>中断</em>（<em>线程</em>不同状态下<em>中断</em>后<em>的</em>表现）</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/z69183787" target="_blank"><span class="blog-title">z69183787的专栏</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">09-19</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1016
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/z69183787/article/details/108677735" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.12","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-12-108677735-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"12","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/z69183787/article/details/108677735"}'  data-report-query='spm=1001.2101.3001.6650.12&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-12-108677735-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-12-108677735-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1">前面<em>的</em>几篇文章主要介绍了<em>线程</em><em>的</em>一些最基本<em>的</em>概念，包括<em>线程</em><em>的</em>间<em>的</em>冲突及其解决办法，以及<em>线程</em>间<em>的</em>协作机制。本篇主要来学习下Java中对<em>线程</em><em>中断</em>机制<em>的</em>实现。在我们<em>的</em>程序中经常会有一些不达到目<em>的</em>不会退出<em>的</em><em>线程</em>，例如：我们有一个下载程序<em>线程</em>，该<em>线程</em>在没有下载成功之前是不会退出<em>的</em>，若此时用户觉得下载速度慢，不想下载了，这时就需要用到我们<em>的</em><em>线程</em><em>中断</em>机制了，告诉<em>线程</em>，你不要继续执行了，准备好退出吧。当然，<em>线程</em>在不同<em>的</em>状态下遇到<em>中断</em>会产生不同<em>的</em>响应，有点会抛出异常，有<em>的</em>则没有变化，有<em>的</em>则会结束<em>线程</em>。本篇将从以下两个方面来介绍</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/CSDN_KONGlX/article/details/125484562"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.13","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-13-125484562-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"13","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/CSDN_KONGlX/article/details/125484562"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/CSDN_KONGlX/article/details/125484562" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.13","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-13-125484562-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"13","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/CSDN_KONGlX/article/details/125484562"}'  data-report-query='spm=1001.2101.3001.6650.13&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-125484562-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-125484562-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1">Java高<em>并发</em>专题之11、<em>中断</em><em>线程</em><em>的</em><em>几种</em><em>方式</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/CSDN_KONGlX" target="_blank"><span class="blog-title">CSDN_KONGlX的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">05-04</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					94
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/CSDN_KONGlX/article/details/125484562" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.13","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-13-125484562-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"13","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/CSDN_KONGlX/article/details/125484562"}'  data-report-query='spm=1001.2101.3001.6650.13&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-125484562-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-125484562-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1">目录本文主要探讨一下<em>中断</em><em>线程</em><em>的</em><em>几种</em><em>方式</em>。
+通过一个变量控制<em>线程</em><em>中断</em>代码：
+package com.itsoku.chat05;import java.util.concurrent.TimeUnit;/** * 微信公众号：路人甲Java，专注于java技术分享(带你玩转 爬虫、分布式事务、异步消息服务、任务调度、分库分表、大数据等)，喜欢请关注！ */public clas...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/Longtermevolution/article/details/105307777"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.14","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-14-105307777-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"14","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/Longtermevolution/article/details/105307777"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/Longtermevolution/article/details/105307777" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.14","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-14-105307777-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"14","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/Longtermevolution/article/details/105307777"}'  data-report-query='spm=1001.2101.3001.6650.14&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-105307777-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-105307777-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>中断</em><em>线程</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/Longtermevolution" target="_blank"><span class="blog-title">Longtermevolution的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">04-04</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					140
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/Longtermevolution/article/details/105307777" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.14","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-14-105307777-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"14","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/Longtermevolution/article/details/105307777"}'  data-report-query='spm=1001.2101.3001.6650.14&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-105307777-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-105307777-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1">1、interrupt()方法
+
+如果<em>线程</em>需要执行一个长时间任务，就可能需要能<em>中断</em><em>线程</em>。<em>中断</em><em>线程</em>就是其他<em>线程</em>给该<em>线程</em>发一个信号，该<em>线程</em>收到信号后结束执行run()方法，使得自身<em>线程</em>能立刻结束运行。
+
+我们举个栗子：假设从网络下载一个100M<em>的</em>文件，如果网速很慢，用户等得不耐烦，就可能在下载过程中点&ldquo;取消&rdquo;，这时，程序就需要<em>中断</em>下载<em>线程</em><em>的</em>执行。
+
+<em>中断</em>一个<em>线程</em>非常简单，只需要在其他<em>线程</em>中对目标...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://zhangjq.blog.csdn.net/article/details/87656044"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.15","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-15-87656044-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"15","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://zhangjq.blog.csdn.net/article/details/87656044"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://zhangjq.blog.csdn.net/article/details/87656044" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.15","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-15-87656044-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"15","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://zhangjq.blog.csdn.net/article/details/87656044"}'  data-report-query='spm=1001.2101.3001.6650.15&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-87656044-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-87656044-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1">原语,<em>中断</em>、异常和系统调用<em>的</em>关系，<em>中断</em><em>的</em>分类，系统调用和过程调用，常见系统调用</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/qq_38998213" target="_blank"><span class="blog-title">ZJQ的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">02-18</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					2709
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://zhangjq.blog.csdn.net/article/details/87656044" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.15","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-15-87656044-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"15","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://zhangjq.blog.csdn.net/article/details/87656044"}'  data-report-query='spm=1001.2101.3001.6650.15&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-87656044-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-87656044-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1">原语 操作系统或计算机网络用语范畴。是由若干条指令组成<em>的</em>，用于完成一定功能<em>的</em>一个过程。primitive or atomic action 是由若干个机器指令构成<em>的</em>完成某种特定功能<em>的</em>一段程序，具有不可分割性&middot;即原语<em>的</em>执行必须是连续<em>的</em>，在执行过程中不允许被<em>中断</em>。
+...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/tianjindong0804/article/details/105134182"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.16","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-16-105134182-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"16","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/tianjindong0804/article/details/105134182"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/tianjindong0804/article/details/105134182" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.16","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-16-105134182-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"16","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/tianjindong0804/article/details/105134182"}'  data-report-query='spm=1001.2101.3001.6650.16&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-105134182-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-105134182-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>线程</em><em>中断</em>到底是什么</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/tianjindong0804" target="_blank"><span class="blog-title">听得到微笑的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">03-27</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					3586
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/tianjindong0804/article/details/105134182" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.16","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-16-105134182-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"16","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/tianjindong0804/article/details/105134182"}'  data-report-query='spm=1001.2101.3001.6650.16&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-105134182-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-105134182-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1">我们如何让<em>线程</em>安全<em>的</em>停止呢？
+1. <em>线程</em>自然终止
+自然执行完或抛出未处理异常。
+2. stop()，resume()，suspend()方法
+stop()，resume(),suspend()已不建议使用，stop()会导致<em>线程</em>不会正确释放资源，suspend()容易导致死锁。
+
+停止<em>多线程</em>： public void stop（）;
+销毁<em>多线程</em>： public void destory();
+挂起...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/qq_44828283/article/details/114807437"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.17","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-17-114807437-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"17","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_44828283/article/details/114807437"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/qq_44828283/article/details/114807437" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.17","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-17-114807437-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"17","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_44828283/article/details/114807437"}'  data-report-query='spm=1001.2101.3001.6650.17&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-114807437-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-114807437-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>线程</em><em>中断</em><em>的</em><em>方式</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/qq_44828283" target="_blank"><span class="blog-title">qq_44828283的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">03-14</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					102
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/qq_44828283/article/details/114807437" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.17","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-17-114807437-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"17","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_44828283/article/details/114807437"}'  data-report-query='spm=1001.2101.3001.6650.17&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-114807437-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-114807437-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>线程</em><em>中断</em><em>的</em><em>方式</em>我在这篇文章<em>多线程</em>基本操作有解释过。这篇文章单独抽离出来
+共享变量<em>的</em><em>方式</em>
+public class MyThread implements Runnable {
+    //使用volatile关键字可以做到变量<em>的</em>可见性，后续会详细<em>的</em>解释
+    static volatile boolean flag = false;
+     @Override
+    public void run() {
+       while (true){
+           System.out.print</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/newbrid007/article/details/120307626"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.18","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-18-120307626-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"18","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/newbrid007/article/details/120307626"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/newbrid007/article/details/120307626" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.18","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-18-120307626-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"18","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/newbrid007/article/details/120307626"}'  data-report-query='spm=1001.2101.3001.6650.18&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-120307626-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-120307626-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>线程</em><em>中断</em> 实现<em>的</em>三种<em>方式</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/newbrid007" target="_blank"><span class="blog-title">newbrid007的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">09-15</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					154
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/newbrid007/article/details/120307626" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.18","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-18-120307626-blog-119569848.pc_relevant_multi_platform_whitelistv4\",\"dist_request_id\":\"1666867031032_78642\"}","dist_request_id":"1666867031032_78642","ab_strategy":"featuressortv4","index":"18","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/newbrid007/article/details/120307626"}'  data-report-query='spm=1001.2101.3001.6650.18&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-120307626-blog-119569848.pc_relevant_multi_platform_whitelistv4&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-120307626-blog-119569848.pc_relevant_multi_platform_whitelistv4'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>线程</em><em>中断</em>  优雅退出
+实现逻辑1
+static volatile boolean flag = false;
+添加一个volatile 修饰符 提示这个 boolean 类型 在其中一个<em>线程</em>修改后另一个<em>线程</em>能感知到
+static volatile boolean flag = false;
+实现逻辑2
+static AtomicBoolean flagAtom=new AtomicBoolean(); 使用原子操作
+实现逻辑三<em>中断</em>
+void-&gt; interrupt   boolean-&gt; isI</div>
+			</a>
+		</div>
+	</div>
+</div>
+            </div>
+<div id="recommendNps" class="recommend-nps-box common-nps-box">
+  <h3 class="aside-title">“相关推荐”对你有帮助么？</h3>
+  <div class="aside-content">
+      <ul class="newnps-list">
+          <li class="newnps-item" data-type="非常没帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel1.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey1.png" alt="">
+              </div>
+              <div class="newnps-text">非常没帮助</div>
+          </li>
+          <li class="newnps-item" data-type="没帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel2.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey2.png" alt="">
+              </div>
+              <div class="newnps-text">没帮助</div>
+          </li>
+          <li class="newnps-item" data-type="一般">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel3.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey3.png" alt="">
+              </div>
+              <div class="newnps-text">一般</div>
+          </li>
+          <li class="newnps-item" data-type="有帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel4.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey4.png" alt="">
+              </div>
+              <div class="newnps-text">有帮助</div>
+          </li>
+          <li class="newnps-item" data-type="非常有帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel5.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey5.png" alt="">
+              </div>
+              <div class="newnps-text">非常有帮助</div>
+          </li>
+      </ul>
+      <div class="newnps-form-box">
+      <div class="newnps-form">
+          <input type="text" placeholder="请输入建议或反馈后点击提交" class="newnps-input">
+          <span class="newnps-btn">提交</span>
+      </div>
+      </div>
+  </div>
+</div>            <div class="template-box">
+                <span>©️2022 CSDN</span>
+                <span>皮肤主题：像素格子</span>
+                <span> 设计师：CSDN官方博客</span>
+                <span>
+                    <a href="https://blog.csdn.net/" class="back-home c-blue c-blue-hover c-blue-focus">返回首页</a>
+                </span>
+            </div>
+<div class="blog-footer-bottom" style="margin-top:10px;"></div>
+<script src="https://g.csdnimg.cn/common/csdn-footer/csdn-footer.js" data-isfootertrack="false" type="text/javascript"></script>
+<script type="text/javascript">
+    window.csdn.csdnFooter.options = {
+        el: '.blog-footer-bottom',
+        type: 2
+    }
+</script>        </main>
+<aside class="blog_container_aside">
+<div id="asideProfile" class="aside-box">
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/a984171281" target="_blank" data-report-click='{"mod":"popu_379","spm":"1001.2101.3001.4121","dest":"https://blog.csdn.net/a984171281","ab":"new"}'>
+                <img src="https://profile.csdnimg.cn/3/D/0/3_a984171281" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex flex-column profile-intro-name-box">
+            <div class="profile-intro-name-boxTop">
+                <a href="https://blog.csdn.net/a984171281" target="_blank" class="" id="uid" title="坚持与努力" data-report-click='{"mod":"popu_379","spm":"1001.2101.3001.4122","dest":"https://blog.csdn.net/a984171281","ab":"new"}'>
+                    <span class="name " username="a984171281">坚持与努力</span>
+                </a>
+                <span>
+                </span>
+                <span class="flag expert-blog">
+                <span class="bubble">CSDN认证博客专家</span>
+                </span>
+                <span class="flag company-blog">
+                <span class="bubble">CSDN认证企业博客</span>
+                </span>
+            </div>
+            <div class="profile-intro-name-boxFooter">
+                <span class="personal-home-page personal-home-years" title="已加入 CSDN 3年">码龄3年</span>
+                    <span class="personal-home-page">
+                    <a class="personal-home-certification" href="https://i.csdn.net/#/uc/profile?utm_source=14998968" target="_blank" title="平安租赁">
+                    <img src="https://csdnimg.cn/identity/enstaf.png" alt="">
+                    平安租赁
+                    </a>
+                    </span>
+            </div>
+        </div>
+    </div>
+    <div class="data-info d-flex item-tiling">
+        <dl class="text-center" title="113">
+            <a href="https://blog.csdn.net/a984171281" data-report-click='{"mod":"1598321000_001","spm":"1001.2101.3001.4310"}' data-report-query="t=1">  
+                <dt><span class="count">113</span></dt>
+                <dd class="font">原创</dd>
+            </a>
+        </dl>
+        <dl class="text-center" data-report-click='{"mod":"1598321000_002","spm":"1001.2101.3001.4311"}' title="45870">
+            <a href="https://blog.csdn.net/rank/list/weekly" target="_blank">
+                <dt><span class="count">4万+</span></dt>
+                <dd class="font">周排名</dd>
+            </a>
+        </dl>
+        <dl class="text-center" title="33455">
+            <a href="https://blog.csdn.net/rank/list/total" data-report-click='{"mod":"1598321000_003","spm":"1001.2101.3001.4312"}' target="_blank">
+                <dt><span class="count">3万+</span></dt>
+                <dd class="font">总排名</dd>
+            </a>
+        </dl>
+        <dl class="text-center" style="min-width:58px" title="284102">  
+            <dt><span class="count">28万+</span></dt>
+            <dd>访问</dd>
+        </dl>
+        <dl class="text-center" title="5级,点击查看等级说明">
+            <dt><a href="https://blog.csdn.net/blogdevteam/article/details/103478461" target="_blank">
+                <img class="level" src="https://csdnimg.cn/identity/blog5.png">
+            </a>
+            </dt>
+            <dd>等级</dd>
+        </dl>
+    </div>
+    <div class="item-rank"></div>
+    <div class="data-info d-flex item-tiling">
+        <dl class="text-center" title="2259">
+            <dt><span class="count">2259</span></dt>
+            <dd>积分</dd>
+        </dl>
+         <dl class="text-center" id="fanBox" title="17">
+            <dt><span class="count" id="fan">17</span></dt>
+            <dd>粉丝</dd>
+        </dl>
+        <dl class="text-center" title="179">
+            <dt><span class="count">179</span></dt>
+            <dd>获赞</dd>
+        </dl>
+        <dl class="text-center" title="56">
+            <dt><span class="count">56</span></dt>
+            <dd>评论</dd>
+        </dl>
+        <dl class="text-center" title="350">
+            <dt><span class="count">350</span></dt>
+            <dd>收藏</dd>
+        </dl>
+    </div>
+    <div class="aside-box-footer" data-report-view='{"spm":"3001.4296"}'>
+        <div class="badge-box d-flex">
+            <div class="badge d-flex">
+                <div class="icon-badge" title="分享学徒">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/fenxiangxuetu@240.png" alt="分享学徒">
+                    </div>
+                </div>
+                <div class="icon-badge" title="分享小兵">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/fengxiangxiaobing@240.png" alt="分享小兵">
+                    </div>
+                </div>
+                <div class="icon-badge" title="签到新秀">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/qiandao20@240.png" alt="签到新秀">
+                    </div>
+                </div>
+                <div class="icon-badge" title="签到达人">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/qiandao50@240.png" alt="签到达人">
+                    </div>
+                </div>
+                <div class="icon-badge" title="领英">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/linkedin@240.png" alt="领英">
+                    </div>
+                </div>
+                <div class="icon-badge" title="持之以恒">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/chizhiyiheng@240.png" alt="持之以恒">
+                    </div>
+                </div>
+                <div class="icon-badge" title="GitHub">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/github@240.png" alt="GitHub">
+                    </div>
+                </div>
+                <div class="icon-badge" title="笔耕不辍">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/c151d54288e14ceba2ee6595d3dec3c7.png" alt="笔耕不辍">
+                    </div>
+                </div>
+                <div class="icon-badge" title="勤写标兵">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/qixiebiaobing4@240.png" alt="勤写标兵">
+                    </div>
+                </div>
+                <div class="icon-badge" title="阅读者勋章">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/yuedu30@240.png" alt="阅读者勋章">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="profile-intro-name-boxOpration">
+        <div class="opt-letter-watch-box">
+        <a class="bt-button personal-letter" href="https://im.csdn.net/chat/a984171281" target="_blank" rel="noopener">私信</a>
+        </div>
+        <div class="opt-letter-watch-box"> 
+            <a class="personal-watch bt-button" id="btnAttent" >关注</a>  
+        </div>
+    </div>
+</div>
+ <div id="asideSearchArticle" class="aside-box">
+	<div class="aside-content search-comter">
+    <div class="aside-search aside-search-blog">         
+        <input type="text" class="input-serch-blog" name="" autocomplete="off" value="" id="search-blog-words" placeholder="搜博主文章">
+        <a class="btn-search-blog">
+                    <img src="//csdnimg.cn/cdn/content-toolbar/csdn-sou.png?v=1587021042">
+        </a>
+    </div>
+    </div>
+</div>
+
+
+<div id="asideHotArticle" class="aside-box">
+	<h3 class="aside-title">热门文章</h3>
+	<div class="aside-content">
+		<ul class="hotArticle-list">
+			<li>
+				<a href="https://blog.csdn.net/a984171281/article/details/114290651" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/a984171281/article/details/114290651","ab":"new"}'>
+				数据库连接报错：connection is being used
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">26159</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/a984171281/article/details/109741415" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/a984171281/article/details/109741415","ab":"new"}'>
+				mybatis中不等于的表示
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">14713</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/a984171281/article/details/107562630" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/a984171281/article/details/107562630","ab":"new"}'>
+				List集合排序之Java8stream流排序
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">11418</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/a984171281/article/details/107256198" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/a984171281/article/details/107256198","ab":"new"}'>
+				@JsonProperty和@JSONField注解的区别以及用法
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">9843</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/a984171281/article/details/105403105" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/a984171281/article/details/105403105","ab":"new"}'>
+				Mac配置 maven以及环境变量设置
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">7434</span>
+                </a>
+			</li>
+		</ul>
+	</div>
+</div>
+<div id="asideCategory" class="aside-box flexible-box">
+    <h3 class="aside-title">分类专栏</h3>
+    <div class="aside-content">
+        <ul>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10585163.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10585163.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        mybatis
+                    </span>
+                </a>
+                <span class="special-column-num">5篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10063978.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10063978.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        sql
+                    </span>
+                </a>
+                <span class="special-column-num">23篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10069904.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10069904.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        Java
+                    </span>
+                </a>
+                <span class="special-column-num">33篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_11150083.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_11150083.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        设计模式
+                    </span>
+                </a>
+                <span class="special-column-num">2篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10423580.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10423580.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        Spring
+                    </span>
+                </a>
+                <span class="special-column-num">17篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10732589.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10732589.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756928.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        小技巧
+                    </span>
+                </a>
+                <span class="special-column-num">6篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10562554.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10562554.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756913.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        多线程
+                    </span>
+                </a>
+                <span class="special-column-num">10篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_11626667.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_11626667.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756930.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        开发救星
+                    </span>
+                </a>
+                <span class="special-column-num">3篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_11340815.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_11340815.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756780.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        zookeeper
+                    </span>
+                </a>
+                <span class="special-column-num">2篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_11440732.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_11440732.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756919.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        elasticsearch
+                    </span>
+                </a>
+                <span class="special-column-num">5篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10063981.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10063981.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756928.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        redis
+                    </span>
+                </a>
+                <span class="special-column-num">3篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10474595.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10474595.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756780.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        idea
+                    </span>
+                </a>
+                <span class="special-column-num">2篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_11279238.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_11279238.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        NoSQL
+                    </span>
+                </a>
+                <span class="special-column-num">2篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_11149994.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_11149994.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756913.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        http
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10063951.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10063951.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        maven
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10106721.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10106721.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756928.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        Jenkins
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10063984.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10063984.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        rabbitMq
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+        </ul>
+    </div>
+    <p class="text-center">
+        <a class="flexible-btn" data-fbox="aside-archive"><img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowDownWhite.png" alt=""></a>
+    </p>
+</div>
+<div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/a984171281/article/details/118176536#comments_23650316" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/a984171281/article/details/118176536#comments_23650316","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/a984171281/article/details/118176536#comments_23650316","ab":"new"}'>java属性为null，序列化时去掉这个属性</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/Julyguang" class="user-name" target="_blank">给大佬们递茶: </a>
+                    <span class="code-comments">还可以这样
+https://blog.csdn.net/qq_39252870/article/details/105728510</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/a984171281/article/details/107562630#comments_23638194" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/a984171281/article/details/107562630#comments_23638194","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/a984171281/article/details/107562630#comments_23638194","ab":"new"}'>List集合排序之Java8stream流排序</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/qq_48683745" class="user-name" target="_blank">老孟M: </a>
+                    <span class="code-comments">您现在已经坚持写了两年多的博客了，看来您也是已经成为了一名优秀的开发工程师了喔。能一直坚持做一件事的人真的很棒<img src="https://g.csdnimg.cn/static/face/emoji/062.png" alt='表情包' ></span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/a984171281/article/details/109327130#comments_23467652" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/a984171281/article/details/109327130#comments_23467652","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/a984171281/article/details/109327130#comments_23467652","ab":"new"}'>@Transactional注解用法</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/a984171281" class="user-name" target="_blank">坚持与努力: </a>
+                    <span class="code-comments">太对了，对上暗号了</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/a984171281/article/details/119883320#comments_23449843" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/a984171281/article/details/119883320#comments_23449843","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/a984171281/article/details/119883320#comments_23449843","ab":"new"}'>java计算两个时间相差的天数、月数、年数</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/a984171281" class="user-name" target="_blank">坚持与努力: </a>
+                    <span class="code-comments">好像是的，哈哈</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/a984171281/article/details/109327130#comments_23449448" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/a984171281/article/details/109327130#comments_23449448","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/a984171281/article/details/109327130#comments_23449448","ab":"new"}'>@Transactional注解用法</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/ITxiaobaimrLIU" class="user-name" target="_blank">Jargos: </a>
+                    <span class="code-comments">day day up</span>
+                </p>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="asideNewNps" class="aside-box common-nps-box">
+    <h3 class="aside-title">您愿意向朋友推荐“博客详情页”吗？</h3>
+    <div class="aside-content">
+        <ul class="newnps-list">
+            <li class="newnps-item" data-type="强烈不推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel1.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey1.png" alt="">
+                </div>
+                <div class="newnps-text">强烈不推荐</div>
+            </li>
+            <li class="newnps-item" data-type="不推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel2.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey2.png" alt="">
+                </div>
+                <div class="newnps-text">不推荐</div>
+            </li>
+            <li class="newnps-item" data-type="一般般">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel3.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey3.png" alt="">
+                </div>
+                <div class="newnps-text">一般般</div>
+            </li>
+            <li class="newnps-item" data-type="推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel4.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey4.png" alt="">
+                </div>
+                <div class="newnps-text">推荐</div>
+            </li>
+            <li class="newnps-item" data-type="强烈推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel5.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey5.png" alt="">
+                </div>
+                <div class="newnps-text">强烈推荐</div>
+            </li>
+        </ul>
+        <div class="newnps-form-box">
+        <div class="newnps-form">
+            <input type="text" placeholder="请输入建议或反馈后点击提交" class="newnps-input">
+            <span class="newnps-btn">提交</span>
+        </div>
+        </div>
+    </div>
+</div>
+<div id="asideArchive" class="aside-box" style="display:block!important; width:300px;">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix">
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/a984171281/article/details/126725102" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/a984171281/article/details/126725102","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/a984171281/article/details/126725102","ab":"new"}'>mybatisPlus 排序后分页数据重复</a>
+            </li>
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/a984171281/article/details/126724710" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/a984171281/article/details/126724710","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/a984171281/article/details/126724710","ab":"new"}'>MySQL增加新的分区</a>
+            </li>
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/a984171281/article/details/126007933" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/a984171281/article/details/126007933","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/a984171281/article/details/126007933","ab":"new"}'>使用自定义注解校验list的大小</a>
+            </li>
+        </ul>
+        <div class="archive-bar"></div>
+        <div class="archive-box">
+                <div class="archive-list-item"><a href="https://blog.csdn.net/a984171281?type=blog&amp;year=2022&amp;month=09" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/a984171281?type=blog&amp;year=2022&amp;month=09"}'><span class="year">2022年</span><span class="num">28篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/a984171281?type=blog&amp;year=2021&amp;month=12" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/a984171281?type=blog&amp;year=2021&amp;month=12"}'><span class="year">2021年</span><span class="num">54篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/a984171281?type=blog&amp;year=2020&amp;month=12" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/a984171281?type=blog&amp;year=2020&amp;month=12"}'><span class="year">2020年</span><span class="num">31篇</span></a></div>
+        </div>
+    </div>
+</div>
+	<div id="footerRightAds" class="isShowFooterAds">
+		<div class="aside-box">
+			<div id="kp_box_57" data-pid="57"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1076724771190722"
+     crossorigin="anonymous"></script>
+<!-- PC-博客-详情页-左下视窗-80-99 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1076724771190722"
+     data-ad-slot="7418711749"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=57&adId=1015194&a=1015194&c=0&k=线程中断的几种方式&spm=1001.2101.3001.5001&articleId=119569848&d=1&t=3&u=ba1b2206e7d64510a0c08912ddfd7d6b" style="display: block;width: 0px;height: 0px;"></div>
+		</div>
+	</div>
+    <!-- 详情页显示目录 -->
+<!--文章目录-->
+<div id="asidedirectory" class="aside-box">
+    <div class='groupfile' id="directory">
+        <h3 class="aside-title">目录</h3>
+        <div class="align-items-stretch group_item">
+            <div class="pos-box">
+            <div class="scroll-box">
+                <div class="toc-box"></div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+</aside>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).parents("p.text-center").remove();
+	})
+</script>
+<script type="text/javascript"  src="https://g.csdnimg.cn/user-tooltip/2.7/user-tooltip.js"></script>
+<script type="text/javascript"  src="https://g.csdnimg.cn/user-medal/2.0.0/user-medal.js"></script>    </div>
+<div class="recommend-right align-items-stretch clearfix" id="rightAside" data-type="recommend">
+    <aside class="recommend-right_aside">
+        <div id="recommend-right" >
+                                <div class="programmer1Box">
+                        <div id="kp_box_530" data-pid="530"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1076724771190722"
+     crossorigin="anonymous"></script>
+<!-- PC-博客-详情页-右上视窗-80-99 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1076724771190722"
+     data-ad-slot="1041005650"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=530&adId=1015191&a=1015191&c=0&k=线程中断的几种方式&spm=1001.2101.3001.4647&articleId=119569848&d=1&t=3&u=668afe0060ee4a40bd42c6fffce0b815" style="display: block;width: 0px;height: 0px;"></div>
+                    </div>
+            <div class='flex-column aside-box groupfile' id="groupfile">
+                <div class="groupfile-div">
+                <h3 class="aside-title">目录</h3>
+                <div class="align-items-stretch group_item">
+                    <div class="pos-box">
+                        <div class="scroll-box">
+                            <div class="toc-box"></div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+                <div id="recommendAdBox">
+                    <div id="kp_box_479" data-pid="479"><div class="_gnumici5vli"></div>
+    <script type="text/javascript">
+        (window.slotbydup = window.slotbydup || []).push({
+            id: "u5883818",
+            container: "_gnumici5vli",
+            async: true
+        });
+    </script>
+    <!-- 多条广告如下脚本只需引入一次 -->
+    <script type="text/javascript" src="//cpro.baidustatic.com/cpro/ui/cm.js" async="async" defer="defer" >
+    </script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=479&adId=1015221&a=1015221&c=0&k=线程中断的几种方式&spm=1001.2101.3001.4834&articleId=119569848&d=1&t=3&u=04819e58d0fc4661be0f11be9acf9177" style="display: block;width: 0px;height: 0px;"></div>
+                </div>
+            <div class='aside-box kind_person d-flex flex-column'>
+                    <h3 class="aside-title">分类专栏</h3>
+                    <div class="align-items-stretch kindof_item" id="kind_person_column">
+                        <div class="aside-content">
+                            <ul>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10585163.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10585163.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            mybatis
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">5篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10063978.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10063978.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            sql
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">23篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10069904.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10069904.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            Java
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">33篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_11150083.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_11150083.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            设计模式
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">2篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10423580.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10423580.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            Spring
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">17篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10732589.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10732589.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756928.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            小技巧
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">6篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10562554.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10562554.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756913.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            多线程
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">10篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_11626667.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_11626667.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756930.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            开发救星
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">3篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_11340815.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_11340815.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756780.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            zookeeper
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">2篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_11440732.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_11440732.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756919.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            elasticsearch
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">5篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10063981.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10063981.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756928.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            redis
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">3篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10474595.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10474595.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756780.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            idea
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">2篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_11279238.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_11279238.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            NoSQL
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">2篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_11149994.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_11149994.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756913.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            http
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10063951.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10063951.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            maven
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10106721.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10106721.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756928.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            Jenkins
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/a984171281/category_10063984.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/a984171281/category_10063984.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            rabbitMq
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<div class="recommend-right1  align-items-stretch clearfix" id="rightAsideConcision" data-type="recommend">
+    <aside class="recommend-right_aside">
+        <div id="recommend-right-concision" >
+            <div class='flex-column aside-box groupfile' id="groupfileConcision">
+                <div class="groupfile-div1">
+                <h3 class="aside-title">目录</h3>
+                <div class="align-items-stretch group_item">
+                    <div class="pos-box">
+                        <div class="scroll-box">
+                            <div class="toc-box"></div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+</div>
+<div class="mask-dark"></div>
+<script src="https://csdnimg.cn/public/sandalstrap/1.4/js/sandalstrap.min.js"></script>
+<div class="skin-boxshadow"></div>
+<div class="directory-boxshadow"></div>
+<div class="comment-side-box-shadow comment-side-tit-close" id="commentSideBoxshadow">
+<div class="comment-side-content">
+	<div class="comment-side-tit">
+	<span class="comment-side-tit-count">评论</span>	
+	<img class="comment-side-tit-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png"></div>
+	<div id="pcCommentSideBox" class="comment-box comment-box-new2 " style="display:block">
+		<div class="comment-edit-box d-flex">
+			<div class="user-img">
+				<a href="https://blog.csdn.net/weixin_46000198" target="_blank">
+					<img src="https://profile.csdnimg.cn/E/D/5/3_weixin_46000198">
+				</a>
+			</div>
+			<form id="commentform">
+				<textarea class="comment-content" name="comment_content" id="comment_content" placeholder="欢迎高质量的评论，低质的评论会被折叠" maxlength="1000"></textarea>
+				<div class="comment-operate-box">
+					<div class="comment-operate-l">
+						<span id="tip_comment" class="tip">还能输入<em>1000</em>个字符</span>
+					</div>
+					<div class="comment-operate-c">
+						&nbsp;
+					</div>
+					<div class="comment-operate-r">
+						<div class="comment-operate-item comment-emoticon">
+							<img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentEmotionIcon.png" alt="表情包">
+							<span class="comment-operate-tip">插入表情</span>
+							<div class="comment-emoticon-box comment-operate-isshow">
+								<div class="comment-emoticon-img-box"></div>
+							</div>
+						</div>
+						<div class="comment-operate-item comment-code">
+							<img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentCodeIcon.png" alt="表情包">
+							<span class="comment-operate-tip">代码片</span>
+							<div class="comment-code-box comment-operate-isshow">
+								<ul id="commentCode">
+									<li><a data-code="html">HTML/XML</a></li>
+									<li><a data-code="objc">objective-c</a></li>
+									<li><a data-code="ruby">Ruby</a></li>
+									<li><a data-code="php">PHP</a></li>
+									<li><a data-code="csharp">C</a></li>
+									<li><a data-code="cpp">C++</a></li>
+									<li><a data-code="javascript">JavaScript</a></li>
+									<li><a data-code="python">Python</a></li>
+									<li><a data-code="java">Java</a></li>
+									<li><a data-code="css">CSS</a></li>
+									<li><a data-code="sql">SQL</a></li>
+									<li><a data-code="plain">其它</a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="comment-operate-item">
+							<input type="hidden" id="comment_replyId" name="comment_replyId">
+							<input type="hidden" id="article_id" name="article_id" value="119569848">
+							<input type="hidden" id="comment_userId" name="comment_userId" value="">
+							<input type="hidden" id="commentId" name="commentId" value="">
+							<a data-report-click='{"mod":"1582594662_003","spm":"1001.2101.3001.4227","ab":"new"}'>
+							<input type="submit" class="btn-comment btn-comment-input" value="评论">
+							</a>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="comment-list-container">
+			<div class="comment-list-box comment-operate-item">
+			</div>
+			<div id="lookFlodComment" class="look-flod-comment">
+					<span class="count"></span>&nbsp;条评论被折叠&nbsp;<a class="look-more-flodcomment">查看</a>
+			</div>
+			<div class="opt-box text-center">
+				<div class="btn btn-sm btn-link-blue" id="btnMoreComment"></div>
+			</div>
+		</div>
+	</div>
+	<div id="pcFlodCommentSideBox" class="pc-flodcomment-sidebox">
+		<div class="comment-fold-tit"><span id="lookUnFlodComment" class="back"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowLeftWhite.png" alt=""></span>被折叠的&nbsp;<span class="count"></span>&nbsp;条评论
+		 <a href="https://blogdev.blog.csdn.net/article/details/122245662" class="tip" target="_blank">为什么被折叠?</a>
+		 <a href="https://bbs.csdn.net/forums/FreeZone" class="park" target="_blank">
+		 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/iconPark.png">到【灌水乐园】发言</a>                                
+		</div>
+		<div class="comment-fold-content"></div>
+		<div id="lookBadComment" class="look-bad-comment side-look-comment">
+			<a class="look-more-comment">查看更多评论<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowDownWhite.png" alt=""></a>
+		</div>
+	</div>
+</div>
+</div>
+<div id="rewardNew" class="reward-popupbox-new">
+	<p class="rewad-title">打赏作者<span class="reward-close"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png"></span></p>
+	<dl class="profile-box">
+		<dd>
+		<a href="https://blog.csdn.net/a984171281" data-report-click='{"mod":"popu_379","dest":"https://blog.csdn.net/a984171281","ab":"new"}'>
+			<img src="https://profile.csdnimg.cn/3/D/0/3_a984171281" class="avatar_pic">
+		</a>
+		</dd>
+		<dt>
+			<p class="blog-name">坚持与努力</p>
+			<p class="blog-discript">你的鼓励将是我创作的最大动力</p>
+		</dt>
+	</dl>
+	<div class="reward-box-new">
+			<div class="reward-content"><div class="reward-right"></div></div>
+	</div>
+	<div class="money-box">
+				<span class="choose-money choosed" data-id="2">¥2</span>
+				<span class="choose-money " data-id="4">¥4</span>
+				<span class="choose-money " data-id="6">¥6</span>
+				<span class="choose-money " data-id="10">¥10</span>
+				<span class="choose-money " data-id="20">¥20</span>
+				<input id="customizeMoney" class="customize-money" name="" type="" value="" placeholder="自定义"/>
+				<div class="customize-tip">输入1-500的整数</div>
+	</div>
+	<div class="pay-box">
+		<div class="pay-type-blance pay-type active" data-type="blance">
+			<img class="unchoose" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnChoose.png" alt="">
+			<img class="choose"src="https://csdnimg.cn/release/blogv2/dist/pc/img/newChoose.png" alt="">
+			<span class="pay-type-name">余额支付</span>
+			<span class="pay-type-num">(余额：-- )</span>
+		</div>
+		<div class="pay-type-money pay-type" data-type="money">
+			<img class="unchoose" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnChoose.png" alt="">
+			<img class="choose"src="https://csdnimg.cn/release/blogv2/dist/pc/img/newChoose.png" alt="">
+			<span class="pay-type-name">扫码支付</span>
+		</div>
+	</div>
+	<div class="sure-box">
+		<div class="sure-box-money">
+			<div class="code-box">
+				<div class="code-num-box">
+					<span class="code-name">扫码支付：</span><span class="code-num">¥2</span>
+				</div>
+				<div class="code-img-box">
+					<div class="renovate">
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png">
+					<span>获取中</span>
+					</div>
+				</div>
+				<div class="code-pay-box">
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newWeiXin.png" alt="">
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newZhiFuBao.png" alt="">
+					<span>扫码支付</span>
+				</div>
+			</div>
+		</div>
+		<div class="sure-box-blance">
+			<p class="tip">您的余额不足，请更换扫码支付或<a target="_blank" data-report-click='{"mod":"1597646289_003","spm":"1001.2101.3001.4302"}' href="https://i.csdn.net/#/wallet/balance/recharge?utm_source=RewardVip" class="go-invest">充值</a></p>
+			<p class="is-have-money"><a class="reward-sure">打赏作者</a></p>
+		</div>
+	</div>
+</div>
+<div class="pay-code">
+    <div class="pay-money">实付<span class="pay-money-span" data-nowprice='' data-oldprice=''>元</span></div>
+    <div class="content-blance"><a class="blance-bt" href="javascript:;">使用余额支付</a></div>
+    <div class="content-code">
+    <div id="payCode" data-id="">
+            <div class="renovate">
+                <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png">
+                <span>点击重新获取</span>
+            </div>
+        </div>
+        <div class="pay-style"><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/weixin.png"></span><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/zhifubao.png"></span><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/jingdong.png"></span><span class="text">扫码支付</span></div>
+    </div>
+    <div class="bt-close"><svg t="1567152543821" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10924" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12"><defs><style type="text/css"></style></defs><path d="M512 438.378667L806.506667 143.893333a52.032 52.032 0 1 1 73.6 73.621334L585.621333 512l294.485334 294.485333a52.074667 52.074667 0 0 1-73.6 73.642667L512 585.621333 217.514667 880.128a52.053333 52.053333 0 1 1-73.621334-73.642667L438.378667 512 143.893333 217.514667a52.053333 52.053333 0 1 1 73.621334-73.621334L512 438.378667z" fill="" p-id="10925"></path></svg></div>
+    <!-- <p style="margin-top: 8px;font-size: 14px;" class="text-center">支付成功即可阅读</p> -->
+    <div class="pay-balance">
+    <input type="radio" class="pay-code-radio" data-type="details"> 
+    <span class="span">钱包余额</span>
+    <span class="balance" style="color:#FC5531;font-size:14px;">0</span>  
+    <div class="pay-code-tile">
+        <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-help.png" alt="">
+        <div class="pay-code-content">
+            <div class="span">
+                <p class="title">抵扣说明：</p>
+                <p> 1.余额是钱包充值的虚拟货币，按照1:1的比例进行支付金额的抵扣。<br> 2.余额无法直接购买下载，可以购买VIP、C币套餐、付费专栏及课程。</p>
+            </div>
+        </div>
+    </div>
+    </div>
+    <a class="pay-balance-con" href="https://i.csdn.net/#/wallet/balance/recharge" target="_blank"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/recharge.png" alt=""><span  >余额充值</span></a>
+</div>
+<div style="display:none;">
+	<img src="" onerror='setTimeout(function(){if(!/(csdn.net|iteye.com|baiducontent.com|googleusercontent.com|360webcache.com|sogoucdn.com|bingj.com|baidu.com)$/.test(window.location.hostname)){window.location.href="\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x63\x73\x64\x6e\x2e\x6e\x65\x74"}},3000);'>
+</div>
+<div class="keyword-dec-box" id="keywordDecBox"></div>
+</body>
+<script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_highlight-2a2586c533.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_common-fbcbe8567e.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/components/js/edit_copy_code-ce0f06f94b.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/codesnippet/lib/highlight/styles/atom-one-light.css">
+<script src="https://g.csdnimg.cn/user-accusation/1.0.5/user-accusation.js" type="text/javascript" ></script>
+<script>
+ // 全局声明
+ if (window.csdn === undefined) {
+      window.csdn = {};
+    }
+    window.csdn.sideToolbar = {
+        options: {
+            report:{
+                isShow: true,
+            },
+            qr: {
+                isShow: false,
+            },
+            guide: {
+                isShow: true
+            }
+        }
+    }
+    $(function(){
+        $(document).on('click',"a.option-box[data-type='report']",function() {
+            window.csdn.userLogin.loadAjax(function(res){
+                window.csdn.feedback({
+                    "type":'blog',
+                    "rtype":'article',
+                    "rid":articleId,
+                    "reportedName":username,
+                    "submitOptions":{
+                        "title":articleTitle,
+                        "contentUrl":articleDetailUrl
+                    },
+                    "callback":function(){
+                        showToast({
+                            text: "感谢您的举报，我们会尽快审核！",
+                            bottom: '10%', 
+                            zindex: 9000, 
+                            speed: 500,
+                            time: 1500
+                        });
+                    }
+                })
+            })
+        });
+    })
+</script>
+    <script src="https://g.csdnimg.cn/baidu-search/1.0.12/baidu-search.js"  type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/download/old_static/js/qrcode.js"></script>
+<script src="https://g.csdnimg.cn/lib/qrcode/1.0.0/qrcode.min.js"></script>
+<script src="https://g.csdnimg.cn/user-ordercart/3.0.1/user-ordercart.js" type="text/javascript"></script>
+<script src="https://g.csdnimg.cn/user-ordertip/5.0.1/user-ordertip.js" type="text/javascript" ></script>
+<script src="https://g.csdnimg.cn/order-payment/4.0.1/order-payment.js" type="text/javascript" ></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/pc/js/common-a1dfbf1dc3.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/pc/js/detail-bff68f3fa1.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/pc/js/column-2e5cf567c5.min.js" type="text/javascript"></script>
+<script src="https://g.csdnimg.cn/side-toolbar/3.4/side-toolbar.js" type="text/javascript"></script>
+<script src="https://g.csdnimg.cn/copyright/1.0.4/copyright.js" type="text/javascript"></script>
+<script>
+    $(".MathJax").remove();
+    if ($('div.markdown_views pre.prettyprint code.hljs').length > 0) {
+        $('div.markdown_views')[0].className = 'markdown_views';
+    }
+</script>
+<script type="text/javascript" src="https://csdnimg.cn/release/blog_mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+            "HTML-CSS": {
+                    linebreaks: { automatic: true, width: "94%container" },
+                    imageFont: null
+            },
+            tex2jax: {
+                preview: "none",
+                ignoreClass:"title-article"
+            },
+            mml2jax: {
+                preview: 'none'
+            }
+    });
+</script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/common/csdn-login-box/csdn-login-box.js"></script></html>

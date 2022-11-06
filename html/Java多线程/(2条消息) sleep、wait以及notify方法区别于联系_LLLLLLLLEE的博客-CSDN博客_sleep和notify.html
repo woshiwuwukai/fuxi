@@ -1,0 +1,2312 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <link rel="canonical" href="https://blog.csdn.net/weixin_30531261/article/details/79126779"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="report" content='{"pid": "blog", "spm":"1001.2101"}'>
+    <meta name="referrer" content="always">
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <meta name="applicable-device" content="pc">
+    <link  href="https://g.csdnimg.cn/static/logo/favicon32.ico"  rel="shortcut icon" type="image/x-icon" />
+    <title>sleep、wait以及notify方法区别于联系_LLLLLLLLEE的博客-CSDN博客_sleep和notify</title>
+    <script>
+      (function(){ 
+        var el = document.createElement("script"); 
+        el.src = "https://s3a.pstatp.com/toutiao/push.js?1abfa13dfe74d72d41d83c86d240de427e7cac50c51ead53b2e79d40c7952a23ed7716d05b4a0f683a653eab3e214672511de2457e74e99286eb2c33f4428830"; 
+        el.id = "ttzz"; 
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(el, s);
+      })(window)
+    </script>
+        <meta name="keywords" content="sleep和notify">
+        <meta name="csdn-baidu-search"  content='{"autorun":true,"install":true,"keyword":"sleep和notify"}'>
+    <meta name="description" content="前言 本文基于源码注释的解读，对sleep、wait、notify方法进行学习与了解。另外，文章中出现了“持有对象锁，释放对象锁”的描述，之所以对对象进行加锁，是因为我们讨论问题的背景是多线程。如果多个线程同时对一个变量进行操作，有可能发生意想不到的情形，因此我们需要对对象先进行加锁，再进行操作。既然有加锁这一操作，当然也就有释放锁这一操作。sleep方法Thread类中的">
+    <script src="//g.csdnimg.cn/tingyun/1.8.5/blog.js" type='text/javascript'></script>
+        <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/css/detail_enter-dbcfbb1ed8.min.css">
+    <script type="application/ld+json">{"@context":"https://ziyuan.baidu.com/contexts/cambrian.jsonld","@id":"https://blog.csdn.net/weixin_30531261/article/details/79126779","appid":"1638831770136827","pubDate":"2018-01-22T11:12:09","title":"sleep、wait以及notify方法区别于联系_LLLLLLLLEE的博客-CSDN博客_sleep和notify","upDate":"2018-01-22T11:12:09"}</script>
+        <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/themesSkin/skin-yellow/skin-yellow-28d34ab5fa.min.css">
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isCorporate = false;//注释删除enterprise
+        var username =  "weixin_30531261";
+        var skinImg = "white";
+        var blog_address = "https://blog.csdn.net/weixin_30531261";
+        var currentUserName = "weixin_46000198";
+        var isOwner = false;
+        var loginUrl = "http://passport.csdn.net/account/login?from=https://blog.csdn.net/weixin_30531261/article/details/79126779";
+        var blogUrl = "https://blog.csdn.net/";
+        var avatar = "https://profile.csdnimg.cn/4/A/C/3_weixin_30531261";
+        var articleTitle = "sleep、wait以及notify方法区别于联系";
+        var articleDesc = "前言 本文基于源码注释的解读，对sleep、wait、notify方法进行学习与了解。另外，文章中出现了“持有对象锁，释放对象锁”的描述，之所以对对象进行加锁，是因为我们讨论问题的背景是多线程。如果多个线程同时对一个变量进行操作，有可能发生意想不到的情形，因此我们需要对对象先进行加锁，再进行操作。既然有加锁这一操作，当然也就有释放锁这一操作。sleep方法Thread类中的";
+        var articleTitles = "sleep、wait以及notify方法区别于联系_LLLLLLLLEE的博客-CSDN博客_sleep和notify";
+        var nickName = "LLLLLLLLEE";
+        var articleDetailUrl = "https://blog.csdn.net/weixin_30531261/article/details/79126779";
+        if(window.location.host.split('.').length == 3) {
+            blog_address = blogUrl + username;
+        }
+        var skinStatus = "White";
+        var blogStaticHost = "https://csdnimg.cn/release/blogv2/"
+        var mallTestStyle = "control"
+    </script>
+    <script src="https://g.csdnimg.cn/??fixed-sidebar/1.1.6/fixed-sidebar.js" type="text/javascript"></script>
+    <script src='//g.csdnimg.cn/common/csdn-report/report.js' type='text/javascript'></script>
+    <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/public/sandalstrap/1.4/css/sandalstrap.min.css">
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+    <script src="https://dup.baidustatic.com/js/ds.js"></script>
+</head>
+  <body class="nodata " style="">
+        <script>
+            var toolbarSearchExt = '{"landingWord":["sleep和notify"],"queryWord":"","tag":["sleep方法wait方法notify方法"],"title":"sleep、wait以及notify方法区别于联系"}';
+        </script>
+    <script src="https://g.csdnimg.cn/common/csdn-toolbar/csdn-toolbar.js" type="text/javascript"></script>
+    <script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        }
+        else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+    </script>
+<link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/pc/css/blog_code-01256533b5.min.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/chart-3456820cac.css" />
+
+<script>
+    var articleId = 79126779;
+    var commentscount = 5;
+    var curentUrl = "https://blog.csdn.net/weixin_30531261/article/details/79126779";
+    var myUrl = "https://my.csdn.net/";
+    var highlight = ["notify","sleep","wait","方法","联系","区别","以及","、","和","于"];//高亮数组
+    var isRecommendModule = true;
+    var isBaiduPre = true;
+    var baiduCount = 2;
+    var setBaiduJsCount = 10;
+    var share_card_url = "https://app-blog.csdn.net/share?article_id=79126779&username=weixin_30531261"
+	var articleType = 1;
+    var baiduKey = "sleep和notify";
+    var userNewReport = true;
+    var needInsertBaidu = true;
+    var recommendRegularDomainArr = ["blog.csdn.net/.+/article/details/","download.csdn.net/download/","edu.csdn.net/course/detail/","ask.csdn.net/questions/","bbs.csdn.net/topics/","www.csdn.net/gather_.+/"]
+    var codeStyle = "";
+    var baiduSearchType = "baidulandingword";
+     var sharData = "{\"hot\":[{\"id\":1,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/a5f4260710904e538002a6ab337939b3.png\"},{\"id\":2,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/188b37199a2c4b74b1d9ffc39e0d52de.png\"},{\"id\":3,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/14ded358b631444581edd98a256bc5af.png\"},{\"id\":4,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/1470f23a770444d986ad551b9c33c5be.png\"},{\"id\":5,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/c329f5181dc74f6c9bd28c982bb9f91d.png\"},{\"id\":6,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ccd8a3305e81460f9c505c95b432a65f.png\"},{\"id\":7,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/bc89d8283389440d97fc4d30e30f45e1.png\"},{\"id\":8,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/452d485b4a654f5592390550d2445edf.png\"},{\"id\":9,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/f8b9939db2ed474a8f43a643015fc8b7.png\"},{\"id\":10,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/6de8864187ab4ed3b1db0856369c36ff.png\"},{\"id\":11,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/673cc3470ff74072acba958dc0c46e2d.png\"},{\"id\":12,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/930c119760ac4491804db80f9c6d4e3f.png\"},{\"id\":13,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/15e6befb05a24233bc2b65e96aa8d972.png\"},{\"id\":14,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/2075fd6822184b95a41e214de4daec13.png\"},{\"id\":15,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/859b1552db244eb6891a809263a5c657.png\"},{\"id\":16,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/0be2f920f1f74290a98921974a9613fd.png\"},{\"id\":17,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/2e97e00b43f14afab494ea55ef3f4a6e.png\"},{\"id\":18,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ff4ab252f46e444686f5135d6ebbfec0.png\"},{\"id\":19,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ae029bbe99564e79911657912d36524f.png\"},{\"id\":20,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/b3ece39963de440388728e9e7b9bf427.png\"},{\"id\":21,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/6f14651a99ba486e926d63b6fa692997.png\"},{\"id\":22,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/83ceddf050084875a341e32dcceca721.png\"},{\"id\":23,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/b90368b8fd5d4c6c8c79a707d877cf7c.png\"},{\"id\":24,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/aeffae14ecf14e079b2616528c9a393b.png\"},{\"id\":25,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/c5a06b5a13d44d16bed868fc3384897a.png\"},{\"id\":26,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/08b697658b844b318cea3b119e9541ef.png\"},{\"id\":27,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/68ccb0b8d09346ac961d2b5c1a8c77bf.png\"},{\"id\":28,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/a2227a247e37418cbe0ea972ba6a859b.png\"},{\"id\":29,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/3a42825fede748f9993e5bb844ad350d.png\"},{\"id\":30,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/8882abc1dd484224b636966ea38555c3.png\"}],\"vip\":[{\"id\":1,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101150.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101154.png\"},{\"id\":2,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101204.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101208.png\"},{\"id\":3,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101211.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101215.png\"},{\"id\":4,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101218.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101220.png\"},{\"id\":5,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101223.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101226.png\"},{\"id\":6,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100635.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100639.png\"},{\"id\":7,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100642.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100644.png\"},{\"id\":8,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100647.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100649.png\"},{\"id\":9,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100652.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100655.png\"}],\"map\":{\"hot\":\"热门\",\"vip\":\"VIP\"}}";
+    
+    var canRead = true;
+    var blogMoveHomeArticle = false;
+    var showPcWindowAd = false;
+    var showHeadWord = true;
+    var showSearchText = "";
+    var linkPage = true;
+    var articleSource = 1;
+    var articleReport = '{"pid": "blog", "spm":"1001.2101"}';
+    var isShowToQuestion = false;
+    var baiduSearchChannel = 'pc_relevant'
+    var baiduSearchIdentification = '.pc_relevant_default'
+    var distRequestId = '1666868434657_49217'
+    var initRewardObject = {
+        giver: "weixin_46000198",
+        anchor: "weixin_30531261",
+        articleId: "79126779",
+        sign: "c7273355974a3a75b6dcbc1f5e21d81d",
+    }
+    var isLikeStatus = false;
+    var isUnLikeStatus = false;
+    var studyLearnWord = "";
+    var isCurrentUserVip = false;
+    var testNewStyle = "oldStyle"
+    var contentViewsHeight = 0;
+    var contentViewsCount = 0;
+    var contentViewsCountLimit = 5;
+    var isShowConcision = true
+    var isCookieConcision = false
+    var isHasDirectoryModel = false
+    var isShowSideModel = false
+    var isShowDirectoryModel = true
+    function getCookieConcision(sName){
+        var allCookie = document.cookie.split("; ");
+        for (var i=0; i < allCookie.length; i++){
+            var aCrumb = allCookie[i].split("=");
+            if (sName == aCrumb[0])
+                return aCrumb[1];
+        }
+        return null;
+    }
+    if (getCookieConcision('blog_details_concision') && getCookieConcision('blog_details_concision') == 0){
+        isCookieConcision = true
+        isShowSideModel = true
+        isShowDirectoryModel = false
+    }
+</script>
+<div class="main_father clearfix d-flex justify-content-center mainfather-concision" style="height:100%;"> 
+    <div class="container clearfix container-concision" id="mainBox">
+        <script>
+        if(!isCookieConcision){
+            $('.main_father').removeClass('mainfather-concision')
+            $('.main_father .container').removeClass('container-concision')
+        }
+        </script>
+        <main>
+<script type="text/javascript">
+    function getQueryString(name) {   
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象  
+      var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+      if( r != null ) return decodeURIComponent( r[2] ); return '';   
+    }
+    function stripscript(s){ 
+      var pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？%]") 
+      var rs = ""; 
+      for (var i = 0; i < s.length; i++) { 
+        rs = rs+s.substr(i, 1).replace(pattern, ''); 
+      } 
+      return rs; 
+    }
+    var blogHotWords = stripscript(getQueryString('utm_term')).length > 1 ? stripscript(getQueryString('utm_term')) : ''
+</script>
+<div class="blog-content-box">
+        <div class="article-header-box">
+        <div class="article-header">
+            <div class="article-title-box">
+                <h1 class="title-article" id="articleContentId">sleep、wait以及notify方法区别于联系</h1>
+            </div>
+            <div class="article-info-box">
+                <div class="article-bar-top">
+                    <img class="article-type-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/original.png" alt="">
+                    <div class="bar-content">
+                    <a class="follow-nickName " href="https://blog.csdn.net/weixin_30531261" target="_blank" rel="noopener">LLLLLLLLEE</a>
+                    <img class="article-time-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCurrentTime2.png" alt="">
+                    <span class="time">于&nbsp;2018-01-22 11:12:09&nbsp;发布</span>
+                    <img class="article-read-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/articleReadEyes2.png" alt="">
+                    <span class="read-count">1648</span>
+                    <a id="blog_detail_zk_collection" class="un-collection" data-report-click='{"mod":"popu_823","spm":"1001.2101.3001.4232","ab":"new"}'>
+                        <img class="article-collect-img article-heard-img un-collect-status isdefault" style="display:inline-block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollect2.png" alt="">
+                        <img class="article-collect-img article-heard-img collect-status isactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive2.png" alt="">
+                        <span class="name">收藏</span>
+                        <span class="get-collection">
+                            1
+                        </span>
+                    </a>
+                    </div>
+                </div>
+                <div class="blog-tags-box">
+                    <div class="tags-box artic-tag-box">
+                            <span class="label">分类专栏：</span>
+                                <a class="tag-link" href="https://blog.csdn.net/weixin_30531261/category_7295298.html" target="_blank" rel="noopener">java-se</a>
+                            <span class="label">文章标签：</span>
+                                <a data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"sleep方法wait方法notify方法","ab":"new","extra":"{\"searchword\":\"sleep方法wait方法notify方法\"}"}' class="tag-link" href="https://so.csdn.net/so/search/s.do?q=sleep%E6%96%B9%E6%B3%95wait%E6%96%B9%E6%B3%95notify%E6%96%B9%E6%B3%95&amp;t=blog&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">sleep方法wait方法notify方法</a>
+                    </div>
+                </div>
+                <div class="slide-content-box">
+                    <div class="article-copyright">
+                        <div class="creativecommons">
+                            版权声明：本文为博主原创文章，遵循<a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。
+                        </div>
+                        <div class="article-source-link">
+                            本文链接：<a href="https://blog.csdn.net/weixin_30531261/article/details/79126779" target="_blank">https://blog.csdn.net/weixin_30531261/article/details/79126779</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="operating">
+                    <a class="href-article-edit slide-toggle">版权</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="blogHuaweiyunAdvert"></div>
+        <div id="blogColumnPayAdvert">
+            <div class="column-group">
+                <div class="column-group-item column-group0 column-group-item-one">
+                    <div class="item-l">
+                        <a class="item-target" href="https://blog.csdn.net/weixin_30531261/category_7295298.html" target="_blank" title="java-se"
+                        data-report-view='{"spm":"1001.2101.3001.6332"}'
+                        data-report-click='{"spm":"1001.2101.3001.6332"}'>
+                            <img class="item-target" src="https://img-blog.csdnimg.cn/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="">
+                            <span class="title item-target">
+                                <span>
+                                <span class="tit">java-se</span>
+                                    <span class="dec">专栏收录该内容</span>
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                    <div class="item-m">
+                        <span>17 篇文章</span>
+                        <span>0 订阅</span>
+                    </div>
+                    <div class="item-r">
+                            <a class="item-target article-column-bt articleColumnFreeBt" data-id="7295298">订阅专栏</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <article class="baidu_pl">
+        <div id="article_content" class="article_content clearfix">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-6e43165c0a.css">
+                <div id="content_views" class="htmledit_views">
+                    <h1><span style="color:#b22222">前言</span></h1> 
+<p><span style="color:#b22222"> </span><span style="color:#000000">本文基于源码注释的解读&#xff0c;对sleep、wait、notify方法进行学习与了解。<br /> 另外&#xff0c;文章中出现了“持有对象锁&#xff0c;释放对象锁”的描述&#xff0c;之所以对对象进行加锁&#xff0c;是因为我们讨论问题的背景是多线程。如果多个线程同时对一个变量进行操作&#xff0c;有可能发生意想不到的情形&#xff0c;因此我们需要对对象先进行加锁&#xff0c;再进行操作。既然有加锁这一操作&#xff0c;当然也就有释放锁这一操作。</span></p> 
+<p><span style="color:#000000"><br /> </span></p> 
+<h1><span style="color:#b22222"><span style="color:#b22222">sleep方法</span></span></h1> 
+<div>
+ <span style="color:#000000">Thread类中的sleep方法&#xff1a;</span>
+ <br /> 
+</div> 
+<div>
+ <span style="color:#b22222"><span style="color:#b22222"></span></span>
+ <pre><code class="language-java">/**
+ * Causes the currently executing thread to sleep (temporarily cease
+ * execution) for the specified number of milliseconds, subject to
+ * the precision and accuracy of system timers and schedulers. The thread
+ * does not lose ownership of any monitors.
+ */
+public static native void sleep(long millis) throws InterruptedException;</code></pre>
+ <span style="color:#000000"> 解析sleep方法的源码注释&#xff1a;<br /> 调用sleep方法可以让当前正在运行的线程进入睡眠状态&#xff0c;即暂时停止运行指定的单位时间。并且该线程在睡眠期间不会释放对象锁。<br /> sleep方法的目的是让当前线程暂停运行一段时间&#xff0c;而与对象锁相关的信息无影响&#xff0c;如果执行sleep方法时是处于持有对象锁的状态&#xff0c;那么睡眠时依然持有对象锁&#xff0c;如果执行sleep方法时不是处于持有对象锁的状态&#xff0c;睡眠期间也不会持有对象锁。</span>
+</div> 
+<div>
+ <br /> 
+</div> 
+<h1><span style="color:#b22222"><span style="color:#b22222"><span style="color:#b22222">wait方法</span></span></span></h1> 
+<div>
+ <span style="color:#000000">Object类中的wait方法&#xff1a;</span>
+</div> 
+<div>
+ <span style="color:#b22222"><span style="color:#b22222"></span></span>
+ <pre><code class="language-java">/**
+ * Causes the current thread to wait until another thread invokes the
+ * {&#64;link java.lang.Object#notify()} method or the
+ * {&#64;link java.lang.Object#notifyAll()} method for this object.
+ * In other words, this method behaves exactly as if it simply
+ * performs the call {&#64;code wait(0)}.
+ * &lt;p&gt;
+ * The current thread must own this object&#39;s monitor. The thread
+ * releases ownership of this monitor and waits until another thread
+ * notifies threads waiting on this object&#39;s monitor to wake up
+ * either through a call to the {&#64;code notify} method or the
+ * {&#64;code notifyAll} method. The thread then waits until it can
+ * re-obtain ownership of the monitor and resumes execution.
+ * &lt;p&gt;
+ * As in the one argument version, interrupts and spurious wakeups are
+ * possible, and this method should always be used in a loop:
+ * &lt;pre&gt;
+ *     synchronized (obj) {
+ *         while (&lt;condition does not hold&gt;)
+ *             obj.wait();
+ *         ... // Perform action appropriate to condition
+ *     }
+ * &lt;/pre&gt;
+ * This method should only be called by a thread that is the owner
+ * of this object&#39;s monitor. See the {&#64;code notify} method for a
+ * description of the ways in which a thread can become the owner of
+ * a monitor.
+ */
+public final native void wait(long timeout) throws InterruptedException;</code></pre>
+ <span style="color:#000000">解析wait方法的源码注释&#xff1a;<br /> 调用wait方法可以让当前线程&#xff08;即调用object.wait方法的那个线程&#xff09;进入等待唤醒状态&#xff0c;该线程会处于等待唤醒状态直到另一个线程调用了object对象的notify方法或者notifyAll方法。该方法没有形参&#xff0c;相当于调用了参数为0的wait&#xff08;long timeout&#xff09;方法。<br /> 同时&#xff0c;要调用wait方法&#xff0c;前提是获取了这个对象的锁。在调用wait方法时&#xff0c;线程会释放锁并进入等待状态。在被唤醒后&#xff0c;该线程会一直处于等待获取锁的状态直到它重新获取到锁&#xff0c;然后才可以重新恢复运行状态。<br /> 注释也强调了&#xff0c;该方法应该只在获取了对象的锁之后才去调用&#xff0c;即wait方法应该放在synchronized(obj){}块中&#xff0c;否则运行期间会抛出IllegalMonitorStateException异常。</span>
+</div> 
+<div>
+ <span style="color:#b22222"><span style="color:#b22222"><br /> </span></span>
+</div> 
+<div> 
+ <h1><span style="color:#b22222"><span style="color:#b22222"><span style="color:#b22222">notify方法和notifyAll方法</span></span></span></h1> 
+ <span style="color:#000000">既然介绍了wait方法&#xff0c;怎能少了notify方法和notifyAll方法。</span>
+</div> 
+<div>
+ <span style="color:#000000">Object类中的notify方法&#xff1a;</span>
+</div> 
+<div>
+ <span style="color:#b22222"><span style="color:#b22222"></span></span>
+ <pre><code class="language-java">/**
+ * Wakes up a single thread that is waiting on this object&#39;s
+ * monitor. If any threads are waiting on this object, one of them
+ * is chosen to be awakened. The choice is arbitrary and occurs at
+ * the discretion of the implementation. A thread waits on an object&#39;s
+ * monitor by calling one of the {&#64;code wait} methods.
+ * &lt;p&gt;
+ * The awakened thread will not be able to proceed until the current
+ * thread relinquishes the lock on this object. The awakened thread will
+ * compete in the usual manner with any other threads that might be
+ * actively competing to synchronize on this object; for example, the
+ * awakened thread enjoys no reliable privilege or disadvantage in being
+ * the next thread to lock this object.
+ * &lt;p&gt;
+ * This method should only be called by a thread that is the owner
+ * of this object&#39;s monitor. A thread becomes the owner of the
+ * object&#39;s monitor in one of three ways:
+ * &lt;ul&gt;
+ * &lt;li&gt;By executing a synchronized instance method of that object.
+ * &lt;li&gt;By executing the body of a {&#64;code synchronized} statement
+ *     that synchronizes on the object.
+ * &lt;li&gt;For objects of type {&#64;code Class,} by executing a
+ *     synchronized static method of that class.
+ * &lt;/ul&gt;
+ * &lt;p&gt;
+ * Only one thread at a time can own an object&#39;s monitor.
+ *
+ * &#64;throws  IllegalMonitorStateException  if the current thread is not
+ *               the owner of this object&#39;s monitor.
+ * &#64;see        java.lang.Object#notifyAll()
+ * &#64;see        java.lang.Object#wait()
+ */
+public final native void notify();</code></pre>
+ <span style="color:#000000">解析notify方法的源码注释&#xff1a;<br /> 举例来解释&#xff0c;比方说多线程下&#xff0c;object对象是共享对象&#xff0c;那么对object对象的操作可以放在synchronized(object)同步块中&#xff0c;当线程A在同步块中执行object.wait方法&#xff0c;线程A就进入了等待状态。这时在线程Q中的同步块中执行object.notify()&#xff0c;就能唤醒线程A。另一种情形&#xff0c;假如线程ABC都执行了object.wait方法&#xff0c;那么当线程Q中执行了object.notify()&#xff0c;则只能唤醒其中一个&#xff0c;至于具体是哪一个&#xff0c;是任意的。<br /> 调用notify唤醒的线程&#xff0c;处于等待获取锁状态&#xff0c;且这个被唤醒的线程&#xff0c;相对于其他在等待获取锁的线程&#xff0c;没有任何特权&#xff0c;也没有任何劣势&#xff0c;即公平竞争。<br /> 如注释中所描述&#xff0c;同步块&#xff0c;可以是对共享对象进行同步处理&#xff0c;也可以直接对实例方法进行同步处理&#xff0c;还可以对类进行同步处理。<br /> 如果&#xff0c;当前调用notify方法的线程没有获取对象锁&#xff0c;则将抛出IllegalMonitorStateException异常。<br /> <br /> notifyAll方法与notify方法很类似&#xff0c;不同之处是notify方法唤醒任意一个线程而notifyAll方法唤醒的是所有线程。</span>
+</div> 
+<div>
+ <br /> 
+</div> 
+<div> 
+ <h1><span style="color:#b22222"><span style="color:#b22222"><span style="color:#b22222">wait方法和sleep方法的对比</span></span></span></h1> 
+ <ol><li><span style="color:#000000"> 正如方法定义所描述&#xff0c;这两个方法都是native方法&#xff0c;且都会抛出InterruptedException&#xff0c;其中sleep方法是类方法&#xff0c;而wait方法是实例方法。</span></li><li><span style="color:#000000">sleep方法是Thread类的方法&#xff0c;而wait方法是Object类的方法&#xff0c;由于一切类都是继承自Object类&#xff0c;因此Thread类中也有wait方法。</span></li><li><span style="color:#000000">wait方法和sleep方法都可以通过interrupt方法打断线程的暂停状态&#xff0c;从而使得线程立刻抛出IntterruptedException。</span></li><li><span style="color:#000000">sleep方法的作用是让当前线程暂停指定的时间&#xff0c;无关对象锁&#xff1b;而wait方法则是用于多个线程间的信息交互&#xff0c;与对象锁有关。</span></li><li><span style="color:#000000">sleep方法是类方法&#xff0c;而锁是对象级别的。因此sleep方法并不影响锁的相关行为。因此如果在调用sleep方法时该线程是处理持有对象锁的状态&#xff0c;睡眠状态中仍然持有锁。而wait方法能安全使用的前提是获取了对象锁&#xff0c;wait方法之所以可以用于多个线程间的信息交流&#xff0c;正是它会释放对象锁。</span></li><li><span style="color:#000000">这里引用知乎用户“孙立伟”的一段话&#xff1a;Thread.sleep和Object.wait都会暂停当前的线程&#xff0c;对于CPU资源来说&#xff0c;不管是哪种方式暂停的线程&#xff0c;都表示它暂时不再需要CPU的执行时间。操作系统会将执行时间分配给其它线程。区别是&#xff0c;调用wait后&#xff0c;需要别的线程执行notify/notifyAll才能够重新获得CPU执行时间。</span></li></ol> 
+</div> 
+<div> 
+ <h1><span style="color:#b22222"><span style="color:#b22222"><span style="color:#b22222">参考文章</span></span></span></h1> 
+ <span style="color:#b22222"><span style="color:#b22222"><a target="_blank" href="http://blog.csdn.net/kaka534/article/details/51849285" rel="noopener noreferrer">http://blog.csdn.net/kaka534/article/details/51849285</a><br /> </span></span>
+</div> 
+<div>
+ <span style="color:#b22222"><span style="color:#b22222"><a target="_blank" href="https://www.zhihu.com/question/23328075" rel="noopener noreferrer">https://www.zhihu.com/question/23328075</a><br /> </span></span>
+</div>
+                </div>
+        </div>
+        <div id="treeSkill"></div>
+    </article>
+  <script>
+  $(function() {
+    setTimeout(function () {
+      var mathcodeList = document.querySelectorAll('.htmledit_views img.mathcode');
+      if (mathcodeList.length > 0) {
+        var testImg = new Image();
+        testImg.onerror = function () {
+          mathcodeList.forEach(function (item) {
+            $(item).before('<span class="img-codecogs">\\(' + item.alt + '\\)</span>');
+            $(item).remove();
+          })
+          MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+        }
+        testImg.src = mathcodeList[0].src;
+      }
+    }, 1000)
+  })
+  </script>
+</div>
+<div class="more-toolbox-new" id="toolBarBox">
+    <div class="left-toolbox">
+        <div class="toolbox-left">
+            <div class="profile-box"><a class="profile-href" target="_blank" href="https://blog.csdn.net/weixin_30531261"><img class="profile-img" src="https://profile.csdnimg.cn/4/A/C/3_weixin_30531261"><span class="profile-name">LLLLLLLLEE</span></a></div>
+            <div class="profile-attend">
+                    <a class="tool-attend tool-bt-button tool-bt-attend" href="javascript:;" data-report-view='{"mod":"1592215036_002","spm":"1001.2101.3001.4232","extend1":"关注"}'>关注</a>
+                <a class="tool-item-follow active-animation" style="display:none;">关注</a>
+            </div>
+        </div>
+        <div class="toolbox-middle">
+        <ul class="toolbox-list">
+            <li class="tool-item tool-item-size tool-active is-like" id="is-like">
+            <a class="tool-item-href">
+                <img style="display:none;" id="is-like-imgactive-animation-like" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarThumbUpactive.png" alt="">
+                <img class="isactive" style="display:none" id="is-like-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2021Active.png" alt="">
+                <img class="isdefault" style="display:block" id="is-like-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2021Black.png" alt="">  
+                <span id="spanCount" class="count ">
+                        6
+                </span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">点赞</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active is-unlike" id="is-unlike">
+            <a class="tool-item-href">
+                <img class="isactive" style="margin-right:0px;display:none" id="is-unlike-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnHeart2021Active.png" alt="">
+                <img class="isdefault" style="margin-right:0px;display:block" id="is-unlike-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnHeart2021Black.png" alt="">
+                <span id="unlikeCount" class="count "></span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">踩</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active is-collection ">
+            <a class="tool-item-href" href="javascript:;" data-report-click='{"mod":"popu_824","spm":"1001.2101.3001.4130","ab":"new"}'>
+                <img style="display:none" id="is-collection-img-collection" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive.png" alt="">
+                <img class="isdefault" id="is-collection-img" style="display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectBlack.png" alt="">
+                <img class="isactive" id="is-collection-imgactive" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectActive.png" alt="">
+                <span class="count get-collection " id="get-collection">
+                    1
+                </span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">收藏</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-item-reward">
+                <a class="tool-item-href" href="javascript:;" data-report-click='{"mod":"popu_830","spm":"1001.2101.3001.4237","dest":"","ab":"new"}'>
+                <img class="isdefault reward-bt" id="rewardBtNew" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newRewardBlack.png" alt="打赏">
+                <span class="count"></span>
+                </a>
+                <div class="tool-hover-tip"><span class="text space">打赏</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-item-comment">
+            <a class="tool-item-href go-side-comment" data-report-click='{"spm":"1001.2101.3001.7009"}'>
+                <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newComment2021Black.png" alt="">
+                <span class="count">
+                    5
+                </span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">评论</span></div>
+            </li>
+            <li class="tool-item tool-item-bar">
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-QRcode" id="tool-share">
+                <a class="tool-item-href" href="javascript:;" data-report-click='{"mod":"1582594662_002","spm":"1001.2101.3001.4129","ab":"new"}'>
+                    <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newShareBlack.png" alt="">
+                </a>
+                <div class="QRcode" id="tool-QRcode">
+                    <div class="share-bg-icon icon1" id="shareBgIcon"></div>
+                    <div class="share-bg-box">
+                        <div class="share-content">
+                            <img class="share-avatar" src="https://profile.csdnimg.cn/4/A/C/3_weixin_30531261" alt="">
+                            <div class="share-tit">sleep、wait以及notify方法区别于联系</div>
+                            <div class="share-dec">前言 本文基于源码注释的解读，对sleep、wait、notify方法进行学习与了解。另外，文章中出现了“持有对象锁，释放对象锁”的描述，之所以对对象进行加锁，是因为我们讨论问题的背景是多线程。如果多个线程同时对一个变量进行操作，有可能发生意想不到的情形，因此我们需要对对象先进行加锁，再进行操作。既然有加锁这一操作，当然也就有释放锁这一操作。sleep方法Thread类中的</div>
+                            <a id="copyPosterUrl" class="url" data-report-click='{"spm":"1001.2101.3001.7493"}' data-report-view='{"spm":"1001.2101.3001.7493"}'>复制链接</a>
+                        </div>
+                        <div class="share-code">
+                            <div class="share-code-box" id='shareCode'></div>
+                            <div class="share-code-text">扫一扫</div>
+                        </div>
+                        
+                    </div>
+                    <div class="share-code-type">
+                      
+                    </div>
+                </div>
+            </li>
+        </ul>
+        </div>
+        <div class="toolbox-right">
+                <div class="tool-directory">
+                    <a class="bt-columnlist-show"
+                    data-id="7295298"
+                    data-free="true"
+                    data-subscribe="false"
+                    data-title="java-se"
+                    data-img="https://img-blog.csdnimg.cn/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64"
+                    data-url="https://blog.csdn.net/weixin_30531261/category_7295298.html"
+                    data-sum="17"
+                    data-people="0"
+                    data-price="0"
+                    data-oldprice="0"
+                    data-join="false"
+                    data-studyvip="false"
+                    data-studysubscribe="false"
+                    data-report-view='{"spm":"1001.2101.3001.6334","extend1":"专栏目录"}'
+                    data-report-click='{"spm":"1001.2101.3001.6334","extend1":"专栏目录"}'
+                    >专栏目录</a>
+                </div>
+        </div>
+    </div>  
+</div>
+<script type=text/javascript crossorigin src="https://csdnimg.cn/release/phoenix/production/qrcode-7c90a92189.min.js"></script>
+<script src="//g.csdnimg.cn/??sharewx/1.2.1/sharewx.js" type="text/javascript"></script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/user-login/3.0.1/user-login.js"></script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/collection-box/2.1.0/collection-box.js"></script>
+                <div class="first-recommend-box recommend-box ">
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/m0_61210742/article/details/126096911"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6661.1","mod":"popu_871","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant_t0.none-task-blog-2~default~YuanLiJiHua~Position-1-126096911-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"1","strategy":"2~default~YuanLiJiHua~Position","dest":"https://blog.csdn.net/m0_61210742/article/details/126096911"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/m0_61210742/article/details/126096911" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6661.1","mod":"popu_871","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant_t0.none-task-blog-2~default~YuanLiJiHua~Position-1-126096911-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"1","strategy":"2~default~YuanLiJiHua~Position","dest":"https://blog.csdn.net/m0_61210742/article/details/126096911"}'  data-report-query='spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EYuanLiJiHua%7EPosition-1-126096911-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EYuanLiJiHua%7EPosition-1-126096911-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>wait</em>() ,<em>notify</em>(),<em>notify</em>All()<em>以及</em><em>wait</em>()与<em>sleep</em>()比较</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/m0_61210742" target="_blank"><span class="blog-title">欢迎来到我的博客，在这里我会用我的方式来讲解知识，请大家多多关照</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">08-01</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					100
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/m0_61210742/article/details/126096911" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6661.1","mod":"popu_871","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant_t0.none-task-blog-2~default~YuanLiJiHua~Position-1-126096911-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"1","strategy":"2~default~YuanLiJiHua~Position","dest":"https://blog.csdn.net/m0_61210742/article/details/126096911"}'  data-report-query='spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EYuanLiJiHua%7EPosition-1-126096911-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EYuanLiJiHua%7EPosition-1-126096911-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">等待通知两个操作可以很好的解决多线程之间的并发执行.比如在饭店做饭,厨师要做好饭端给服务员,然后服务员在端给客人,在厨师正在做菜的过程中服务员就在等待中,等厨师做好菜之后按下铃就通知服务员来取菜.线程也一样,线程A要进行计算结果,而线程B要利用线程A计算的结果,此时在线程A进行计算时,线程B就在等待,等线程A计算完之后立马通知线程B.两个线程很好地进行了线程间通信.............</div>
+			</a>
+		</div>
+	</div>
+</div>
+                </div>
+            <script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_commontools-d5fda285fa.min.js" type="text/javascript" async></script>
+            <div class="second-recommend-box recommend-box ">
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_30410473/article/details/114206610"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.1","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-114206610-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"1","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_30410473/article/details/114206610"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_30410473/article/details/114206610" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.1","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-114206610-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"1","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_30410473/article/details/114206610"}'  data-report-query='spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-114206610-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-114206610-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">java <em>sleep</em>唤醒_JAVA <em>wait</em>(), <em>notify</em>(),<em>sleep</em>详解(转)</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_30410473" target="_blank"><span class="blog-title">weixin_30410473的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">02-16</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					351
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_30410473/article/details/114206610" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.1","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-1-114206610-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"1","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_30410473/article/details/114206610"}'  data-report-query='spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-114206610-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-1-114206610-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">在JAVA中，是没有类似<em>于</em>PV操作<em>、</em>进程互斥等相干的<em>方法</em>的。JAVA的进程同步是通过synchronized()来实现的，需要说明的是，JAVA的synchronized()<em>方法</em>类似<em>于</em>操作系统概念中的互斥内存块，在JAVA中的Object类型中，都是带有1个内存锁的，在有线程获得该内存锁后，其它线程没法访问该内存，从而实现JAVA中简单的同步<em>、</em>互斥操作。明白这个原理，就可以理解为何synchron...</div>
+			</a>
+		</div>
+	</div>
+</div>
+            </div>
+<a id="commentBox" name="commentBox"></a>
+<div id="pcCommentBox" class="comment-box comment-box-new2  login-comment-box-new" style="display:block">
+		<div class="has-comment" style="display:block">
+		<div class="has-comment-tit">评论<span class="count go-side-comment">5</span><span class="text go-side-comment">条</span><img class="go-side-comment more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowRightWhite.png" alt=""><a class="has-comment-bt-right go-side-comment focus">写评论</a></div>
+			<div class="has-comment-con comment-operate-item"></div>
+		</div>
+		<div class="unhas-comment" style="display:none">
+			<div class="unhas-comment-left">评论</div>
+			<div class="unhas-comment-right"><a class="go-side-comment focus">写评论</a></div>
+		</div>
+</div>
+            <div class="recommend-box insert-baidu-box recommend-box-style ">
+                <div class="recommend-item-box no-index" style="display:none"></div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/LeoHan163/article/details/124827512"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.2","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-124827512-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"2","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/LeoHan163/article/details/124827512"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/LeoHan163/article/details/124827512" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.2","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-124827512-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"2","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/LeoHan163/article/details/124827512"}'  data-report-query='spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-124827512-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-124827512-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">java中<em>wait</em>,<em>notify</em>,<em>notify</em>All,<em>sleep</em><em>方法</em>的作用<em>和</em><em>区别</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/LeoHan163" target="_blank"><span class="blog-title">LeoHan</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">05-17</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					138
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/LeoHan163/article/details/124827512" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.2","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-2-124827512-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"2","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/LeoHan163/article/details/124827512"}'  data-report-query='spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-124827512-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-2-124827512-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">在进行多线程编程时，进程会遇到多线程之前的同步已经等待场景。
+在java中，Object类提供了<em>wait</em><em>、</em>nofity<em>、</em><em>notify</em>All用来进行线程间的同步。一般如果我们调用<em>wait</em><em>、</em>nofity<em>、</em><em>notify</em>All都是结合synchronized同步关键字来使用：
+ new Thread(()-&gt;{
+            synchronized (monitor){
+
+                try {
+                    System.out.println(&quot;1</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/wyg1973017714/article/details/116985077"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.3","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-3-116985077-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"3","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/wyg1973017714/article/details/116985077"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/wyg1973017714/article/details/116985077" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.3","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-3-116985077-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"3","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/wyg1973017714/article/details/116985077"}'  data-report-query='spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-3-116985077-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-3-116985077-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">Java之<em>sleep</em><em>和</em><em>wait</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/wyg1973017714" target="_blank"><span class="blog-title">wyg1973017714的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">05-18</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1302
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/wyg1973017714/article/details/116985077" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.3","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-3-116985077-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"3","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/wyg1973017714/article/details/116985077"}'  data-report-query='spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-3-116985077-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-3-116985077-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">Java之<em>sleep</em><em>和</em><em>wait</em>
+<em>sleep</em><em>和</em><em>wait</em><em>方法</em>都是native关键字修饰的<em>方法</em>，这说明这两个<em>方法</em>是原生函数，也就是由C/C++实现的，那么我们就暂时不关心它的具体实现了。
+<em>sleep</em><em>方法</em>是Thread类中的<em>方法</em>，而<em>wait</em><em>方法</em>是Object中的<em>方法</em>，那么我们首先看看<em>wait</em><em>方法</em>。
+Object#<em>wait</em>()
+从Object源码中，我们可以发现，<em>wait</em>有三个重载<em>方法</em>，分别是无参的<em>wait</em><em>方法</em>，带有long<em>和</em>int类型参数的的<em>wait</em><em>方法</em>，<em>以及</em>带有long类型参数的<em>方法</em>。其实前两个<em>方法</em>最终都是调用了</div>
+			</a>
+		</div>
+	</div>
+</div>
+		<dl id="recommend-item-box-tow" class="recommend-item-box type_blog clearfix">
+			
+		</dl>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/qq_36819098/article/details/80458967"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.4","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-4-80458967-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"4","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_36819098/article/details/80458967"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/qq_36819098/article/details/80458967" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.4","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-4-80458967-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"4","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_36819098/article/details/80458967"}'  data-report-query='spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-4-80458967-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-4-80458967-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>sleep</em>()，<em>wait</em>()，<em>notify</em>()三者的<em>区别</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/qq_36819098" target="_blank"><span class="blog-title">梦合九千的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">05-26</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					2755
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/qq_36819098/article/details/80458967" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.4","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-4-80458967-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"4","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_36819098/article/details/80458967"}'  data-report-query='spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-4-80458967-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-4-80458967-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">----------------非本人原创，是本人电脑里的一个别人总结的文档内容------------------（网上的答案：<em>sleep</em>是线程类（Thread）的<em>方法</em>，导致此线程暂停执行指定时间，给执行机会给其他线程，但是监控状态依然保持，到时后会自动恢复。调用<em>sleep</em>不会释放对象锁。 <em>wait</em>是Object类的<em>方法</em>，对此对象调用<em>wait</em><em>方法</em>导致本线程放弃对象锁，进入等待此对象的等待锁定池，...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/qq_39890679/article/details/123923007"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.5","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-5-123923007-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"5","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_39890679/article/details/123923007"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/qq_39890679/article/details/123923007" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.5","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-5-123923007-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"5","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_39890679/article/details/123923007"}'  data-report-query='spm=1001.2101.3001.6650.5&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-5-123923007-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-5-123923007-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">java多线程中<em>sleep</em><em>和</em><em>wait</em>的4个<em>区别</em>，你知道几个？</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/qq_39890679" target="_blank"><span class="blog-title">qq_39890679的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">04-02</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1710
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/qq_39890679/article/details/123923007" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.5","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-5-123923007-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"5","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_39890679/article/details/123923007"}'  data-report-query='spm=1001.2101.3001.6650.5&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-5-123923007-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-5-123923007-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>sleep</em><em>和</em><em>wait</em>的<em>区别</em>是面试中一个非常常见的问题，因为从表象来看，好像<em>sleep</em><em>和</em><em>wait</em>都能使线程处<em>于</em>阻塞状态，但是却有着本质上的却别。这篇文章就来好好分析一下。
+
+整体的<em>区别</em>其实是有四个：
+
+1<em>、</em><em>sleep</em>是线程中的<em>方法</em>，但是<em>wait</em>是Object中的<em>方法</em>。
+
+2<em>、</em><em>sleep</em><em>方法</em>不会释放lock，但是<em>wait</em>会释放，而且会加入到等待队列中。
+
+3<em>、</em><em>sleep</em><em>方法</em>不依赖<em>于</em>同步器synchronized，但是<em>wait</em>需要依赖synchronized关键字。
+
+4<em>、</em><em>sleep</em>不需要被唤醒（休眠之后推出阻塞</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/zheng12tian/article/details/84059188"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.6","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-6-84059188-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"6","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/zheng12tian/article/details/84059188"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/zheng12tian/article/details/84059188" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.6","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-6-84059188-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"6","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/zheng12tian/article/details/84059188"}'  data-report-query='spm=1001.2101.3001.6650.6&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-84059188-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-84059188-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">Java线程中<em>sleep</em>()<em>、</em><em>wait</em>()<em>和</em><em>notify</em>()<em>和</em><em>notify</em>All()<em>、</em>yield()<em>、</em>join()等<em>方法</em>的用法<em>和</em><em>区别</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/zheng12tian" target="_blank"><span class="blog-title">深蓝色的忧伤</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">11-03</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					267
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/zheng12tian/article/details/84059188" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.6","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-6-84059188-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"6","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/zheng12tian/article/details/84059188"}'  data-report-query='spm=1001.2101.3001.6650.6&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-84059188-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-84059188-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">[b]Java线程中<em>sleep</em>()<em>、</em><em>wait</em>()<em>和</em><em>notify</em>()<em>和</em><em>notify</em>All()<em>、</em>suspend<em>和</em>resume()<em>、</em>yield()<em>、</em>join()<em>、</em>interrupt()的用法<em>和</em><em>区别</em>[/b]
+
+从操作系统的角度讲，os会维护一个ready queue（就绪的线程队列）。并且在某一时刻cpu只为ready queue中位<em>于</em>队列头部的线程服务。
+但是当前正在被服务的线程可能觉得cpu的服...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/sunlihuo/article/details/105316478"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.7","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-7-105316478-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"7","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/sunlihuo/article/details/105316478"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/sunlihuo/article/details/105316478" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.7","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-7-105316478-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"7","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/sunlihuo/article/details/105316478"}'  data-report-query='spm=1001.2101.3001.6650.7&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-105316478-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-105316478-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>sleep</em>与<em>wait</em><em>、</em><em>notify</em><em>和</em><em>区别</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/sunlihuo" target="_blank"><span class="blog-title">sunlihuo的专栏</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">04-04</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					615
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/sunlihuo/article/details/105316478" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.7","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-7-105316478-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"7","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/sunlihuo/article/details/105316478"}'  data-report-query='spm=1001.2101.3001.6650.7&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-105316478-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-105316478-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">基本的差别：
+
+<em>sleep</em>是Thread类的<em>方法</em>，<em>wait</em>是Object类的定义的<em>方法</em>
+
+<em>sleep</em><em>方法</em>可以在任何地方使用
+
+<em>wait</em><em>方法</em>只能在synchronized<em>方法</em>或 synchronized块中使用
+
+最主要的本质<em>区别</em>
+
+thread.<em>sleep</em>只会让出cpu不会导致锁行为的改变
+
+object.<em>wait</em>不仅让出cpu，还会释放已经占有的同步资源锁
+
+
+
+<em>notify</em><em>和</em><em>notify</em>al...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://hamburger.blog.csdn.net/article/details/103220207"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.8","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-103220207-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"8","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://hamburger.blog.csdn.net/article/details/103220207"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://hamburger.blog.csdn.net/article/details/103220207" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.8","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-103220207-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"8","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://hamburger.blog.csdn.net/article/details/103220207"}'  data-report-query='spm=1001.2101.3001.6650.8&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-103220207-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-103220207-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>wait</em><em>、</em><em>sleep</em><em>、</em><em>notify</em><em>、</em><em>notify</em>All<em>方法</em>总结</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/Tracycater" target="_blank"><span class="blog-title">Tracycater的专栏</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">11-23</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					236
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://hamburger.blog.csdn.net/article/details/103220207" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.8","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-103220207-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"8","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://hamburger.blog.csdn.net/article/details/103220207"}'  data-report-query='spm=1001.2101.3001.6650.8&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-103220207-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-103220207-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>wait</em><em>和</em><em>sleep</em><em>方法</em><em>区别</em>
+
+<em>wait</em><em>方法</em>位<em>于</em>Object类中，<em>sleep</em><em>方法</em>位<em>于</em>Thread类中
+	在调用<em>wait</em><em>方法</em>时，线程必须持有被调用对象的锁，当调用<em>wait</em><em>方法</em>后，线程就会释放掉该对象的锁（monitor）；<em>sleep</em><em>方法</em>不会释放对象锁
+	<em>wait</em><em>方法</em>需要在同步<em>方法</em>或者代码块中执行，<em>sleep</em>没有限制
+	<em>wait</em><em>方法</em>执行后唤醒需要等待其他线程调用对象的<em>notify</em>或者<em>notify</em>All...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_39616547/article/details/114313224"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.9","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-9-114313224-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"9","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_39616547/article/details/114313224"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_39616547/article/details/114313224" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.9","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-9-114313224-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"9","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_39616547/article/details/114313224"}'  data-report-query='spm=1001.2101.3001.6650.9&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-114313224-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-114313224-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">java <em>wait</em> abc_JAVA 的<em>wait</em>(), <em>notify</em>()与synchronized同步机制</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_39616547" target="_blank"><span class="blog-title">weixin_39616547的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">02-17</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					35
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_39616547/article/details/114313224" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.9","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-9-114313224-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"9","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_39616547/article/details/114313224"}'  data-report-query='spm=1001.2101.3001.6650.9&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-114313224-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-114313224-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">转自：http://blog.csdn.net/zyplus/article/details/6672775在JAVA中，是没有类似<em>于</em>PV操作<em>、</em>进程互斥等相关的<em>方法</em>的。JAVA的进程同步是通过synchronized()来实现的，需要说明的是，JAVA的synchronized()<em>方法</em>类似<em>于</em>操作系统概念中的互斥内存块，在JAVA中的Object类型中，都是带有一个内存锁的，在有线程获取该内存锁后，...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/qq_41640103/article/details/115465754"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.10","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-10-115465754-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"10","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_41640103/article/details/115465754"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/qq_41640103/article/details/115465754" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.10","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-10-115465754-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"10","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_41640103/article/details/115465754"}'  data-report-query='spm=1001.2101.3001.6650.10&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-10-115465754-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-10-115465754-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">java,<em>sleep</em>() <em>和</em> <em>wait</em>() 有什么<em>区别</em>？<em>notify</em>()<em>和</em> <em>notify</em>All()有什么<em>区别</em>？</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/qq_41640103" target="_blank"><span class="blog-title">qq_41640103的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">04-06</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					61
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/qq_41640103/article/details/115465754" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.10","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-10-115465754-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"10","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_41640103/article/details/115465754"}'  data-report-query='spm=1001.2101.3001.6650.10&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-10-115465754-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-10-115465754-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>sleep</em>() <em>和</em> <em>wait</em>() 有<em>区别</em>:
+
+1.<em>Sleep</em><em>方法</em>让正在执行的线程主动让出cpu（进行其他任务），在<em>sleep</em>时间结束后CPU再让线程回到刚才执行的地方继续执行；（<em>sleep</em>只是让出cpu并没有释放同步资源锁）
+
+<em>Wait</em><em>方法</em>是让当前线程让自己暂时退让出同步资源锁，以便其他正在等待资源的线程获得资源进而运行，只有调用了<em>notify</em><em>方法</em>，之前调用的<em>wait</em>线程才能解除<em>wait</em>状态，可以去竞争同步资源锁，进而得到执行（<em>notify</em>只是唤醒之前<em>wait</em>的任务并不是给它重新分配任务）
+
+2.<em>sleep</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/wtopps/article/details/81431540"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.11","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-11-81431540-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"11","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/wtopps/article/details/81431540"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/wtopps/article/details/81431540" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.11","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-11-81431540-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"11","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/wtopps/article/details/81431540"}'  data-report-query='spm=1001.2101.3001.6650.11&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-11-81431540-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-11-81431540-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">聊聊并发：（三）<em>wait</em><em>、</em><em>sleep</em><em>、</em><em>notify</em><em>、</em><em>notify</em>All分析</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/wtopps" target="_blank"><span class="blog-title">wtopps的专栏</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">08-05</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1万+
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/wtopps/article/details/81431540" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.11","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-11-81431540-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"11","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/wtopps/article/details/81431540"}'  data-report-query='spm=1001.2101.3001.6650.11&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-11-81431540-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-11-81431540-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">前言
+
+在上一篇中，我们介绍了Java中的线程的基本概念，我们了解到线程是有很多种状态的，本章，我们就来聊聊线程中的状态是如何进行控制与切换的。Java中提供了很多种<em>方法</em>对线程的状态进行控制<em>以及</em>线程之间的通信，包括<em>wait</em><em>、</em><em>notify</em><em>、</em><em>notify</em>All<em>、</em><em>sleep</em>，下面我们就来看一下它们之间有什么<em>区别</em>，<em>以及</em>如何使用这些<em>方法</em>进行线程状态的控制与通信。
+
+
+
+线程之间的通信
+
+在Java中可以用w...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/mulanlong/article/details/84328814"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.12","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-12-84328814-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"12","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/mulanlong/article/details/84328814"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/mulanlong/article/details/84328814" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.12","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-12-84328814-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"12","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/mulanlong/article/details/84328814"}'  data-report-query='spm=1001.2101.3001.6650.12&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-12-84328814-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-12-84328814-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">java中的<em>sleep</em>()<em>、</em><em>wait</em>()<em>、</em><em>notify</em>()的<em>区别</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/mulanlong" target="_blank"><span class="blog-title">mulanlong的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">11-21</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					139
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/mulanlong/article/details/84328814" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.12","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-12-84328814-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"12","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/mulanlong/article/details/84328814"}'  data-report-query='spm=1001.2101.3001.6650.12&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-12-84328814-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-12-84328814-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">1.调用<em>wait</em>()<em>方法</em>，线程会放弃对象锁，进入等待此对象的等待锁定池
+
+2.<em>sleep</em>()<em>方法</em>导致了程序暂停执行指定的时间，让出cpu该其他线程， 但是他的监控状态依然保持者，当指定的时间到了又会自动恢复运行状态。 在调用<em>sleep</em>()<em>方法</em>的过程中，线程不会释放对象锁。
+
+3.只有针对锁对象调用<em>notify</em>()<em>方法</em>后<em>wait</em>线程才进入对象锁定池准备获取对象锁进入运行状态。
+
+
+public cl...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_30827565/article/details/97787238"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.13","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-13-97787238-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"13","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_30827565/article/details/97787238"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_30827565/article/details/97787238" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.13","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-13-97787238-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"13","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_30827565/article/details/97787238"}'  data-report-query='spm=1001.2101.3001.6650.13&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-97787238-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-97787238-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">Java多线程学习之<em>wait</em><em>、</em><em>notify</em>/<em>notify</em>All 详解</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_30827565" target="_blank"><span class="blog-title">weixin_30827565的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">10-06</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					355
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_30827565/article/details/97787238" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.13","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-13-97787238-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"13","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_30827565/article/details/97787238"}'  data-report-query='spm=1001.2101.3001.6650.13&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-97787238-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-97787238-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">1<em>、</em><em>wait</em>()<em>、</em><em>notify</em>/<em>notify</em>All() <em>方法</em>是Object的本地final<em>方法</em>，无法被重写。
+2<em>、</em><em>wait</em>()使当前线程阻塞，前提是 必须先获得锁，一般配合synchronized 关键字使用，即，一般在synchronized 同步代码块里使用 <em>wait</em>()<em>、</em><em>notify</em>/<em>notify</em>All() <em>方法</em>。
+3<em>、</em> 由<em>于</em> <em>wait</em>()<em>、</em><em>notify</em>/<em>notify</em>All() 在syn...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/zyplus/article/details/6672775"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.14","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-14-6672775-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"14","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/zyplus/article/details/6672775"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/zyplus/article/details/6672775" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.14","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-14-6672775-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"14","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/zyplus/article/details/6672775"}'  data-report-query='spm=1001.2101.3001.6650.14&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-6672775-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-6672775-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">JAVA <em>wait</em>(), <em>notify</em>(),<em>sleep</em>详解</div>
+					<div class="tag">热门推荐</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/zyplus" target="_blank"><span class="blog-title"></span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">08-10</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					14万+
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/zyplus/article/details/6672775" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.14","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-14-6672775-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"14","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/zyplus/article/details/6672775"}'  data-report-query='spm=1001.2101.3001.6650.14&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-6672775-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-6672775-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">在CSDN开了博客后，一直也没在上面发布过文章，直到前一段时间与一位前辈的对话，才发现技术博客的重要，立志要把CSDN的博客建好。但一直没有找到好的开篇的主题，今天再看JAVA线程互斥<em>、</em>同步的时候又有了新的体会，就以他作为开篇吧。
+&nbsp;&nbsp;&nbsp; 在JAVA中，是没有类似<em>于</em>PV操作<em>、</em>进</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/u011696282/article/details/107501982"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.15","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-15-107501982-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"15","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/u011696282/article/details/107501982"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/u011696282/article/details/107501982" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.15","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-15-107501982-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"15","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/u011696282/article/details/107501982"}'  data-report-query='spm=1001.2101.3001.6650.15&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-107501982-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-107501982-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">java并发学习&mdash;&mdash;<em>wait</em>,<em>sleep</em>,<em>notify</em>,<em>notify</em>All<em>方法</em>的总结</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/u011696282" target="_blank"><span class="blog-title">u011696282的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">07-22</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					82
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/u011696282/article/details/107501982" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.15","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-15-107501982-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"15","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/u011696282/article/details/107501982"}'  data-report-query='spm=1001.2101.3001.6650.15&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-107501982-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-107501982-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">（1）几个Object类中涉及到线程并发的理解<em>和</em>比较（简说，后续会写详细）：
+
+1.<em>wait</em><em>方法</em><em>和</em><em>sleep</em><em>方法</em>的比较：
+
+在调用<em>wait</em><em>方法</em>时，线程必须要持有被调用对象的锁，当调用<em>wait</em><em>方法</em>后，线程就会释放掉该对象的锁（monitor）。
+
+在调用Thread类的<em>sleep</em><em>方法</em>时，线程不会释放掉对象的锁。
+
+2.关<em>于</em><em>wait</em>与<em>notify</em><em>和</em><em>notify</em>All<em>方法</em>的总结：
+
+（1）当调用<em>wait</em><em>方法</em>时，首先需要确保调用了<em>wait</em><em>方法</em>的线程已经持有了对象的锁。
+
+（2）当调用<em>wait</em><em>方法</em>后，该线程就会释放掉</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/m0_52053621/article/details/126302353"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.16","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-16-126302353-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"16","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/m0_52053621/article/details/126302353"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/m0_52053621/article/details/126302353" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.16","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-16-126302353-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"16","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/m0_52053621/article/details/126302353"}'  data-report-query='spm=1001.2101.3001.6650.16&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-126302353-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-126302353-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">java中<em>sleep</em>()<em>和</em><em>wait</em>()的<em>区别</em></div>
+					<div class="tag">最新发布</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/m0_52053621" target="_blank"><span class="blog-title">m0_52053621的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">08-12</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					462
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/m0_52053621/article/details/126302353" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.16","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-16-126302353-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"16","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/m0_52053621/article/details/126302353"}'  data-report-query='spm=1001.2101.3001.6650.16&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-126302353-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-126302353-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">java中<em>sleep</em>()<em>和</em><em>wait</em>()的<em>区别</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_43101144/article/details/85232320"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.17","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-17-85232320-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"17","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_43101144/article/details/85232320"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_43101144/article/details/85232320" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.17","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-17-85232320-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"17","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_43101144/article/details/85232320"}'  data-report-query='spm=1001.2101.3001.6650.17&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-85232320-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-85232320-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">Java Object</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_43101144" target="_blank"><span class="blog-title">benhz的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">12-24</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					263
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_43101144/article/details/85232320" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.17","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-17-85232320-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"17","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_43101144/article/details/85232320"}'  data-report-query='spm=1001.2101.3001.6650.17&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-85232320-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-85232320-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">Java object类
+默认情况下，Object类是java中所有类的父类，它是java的顶级类。
+如果想引用你不知道的类型的对象，使用Object类是没有错的，可以向上转型。
+
+Object类的<em>方法</em>
+
+
+
+
+<em>方法</em>
+描述
+
+
+
+
+public final Class getClass()
+返回此对象的Class类对象。 Class类可以进一步用<em>于</em>获取此类的元数据。
+
+
+public int ha...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/u012719153/article/details/78915034"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.18","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-18-78915034-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"18","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/u012719153/article/details/78915034"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/u012719153/article/details/78915034" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.18","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-18-78915034-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"18","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/u012719153/article/details/78915034"}'  data-report-query='spm=1001.2101.3001.6650.18&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-78915034-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-78915034-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">java并发之<em>sleep</em>与<em>wait</em><em>、</em><em>notify</em>与<em>notify</em>All的<em>区别</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/u012719153" target="_blank"><span class="blog-title">sanmianti</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">12-27</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					2140
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/u012719153/article/details/78915034" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.18","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-18-78915034-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"18","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/u012719153/article/details/78915034"}'  data-report-query='spm=1001.2101.3001.6650.18&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-78915034-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-78915034-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>wait</em>()<em>方法</em>的意思是持有该锁对象的线程对象进入<em>wait</em>状态：释放锁，然后将当前线程放入等待池中。
+<em>sleep</em>()的作用是将当前线程暂停一定的时间，但在这期间并不释放锁。
+<em>notify</em>()会在等待池中随机选择一个线程对象放入锁池中。而<em>notify</em>All会将所有等待该锁的线程放入锁池中。</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/Kaka534/article/details/51849285"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.19","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-19-51849285-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"19","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/Kaka534/article/details/51849285"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/Kaka534/article/details/51849285" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.19","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-19-51849285-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"19","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/Kaka534/article/details/51849285"}'  data-report-query='spm=1001.2101.3001.6650.19&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-19-51849285-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-19-51849285-blog-79126779.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">深入理解Java多线程中的<em>wait</em>()，<em>notify</em>()<em>和</em><em>sleep</em>()</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/Kaka534" target="_blank"><span class="blog-title">小游的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">07-07</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					2万+
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/Kaka534/article/details/51849285" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.19","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-19-51849285-blog-79126779.pc_relevant_default\",\"dist_request_id\":\"1666868434657_49217\"}","dist_request_id":"1666868434657_49217","ab_strategy":"default","index":"19","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/Kaka534/article/details/51849285"}'  data-report-query='spm=1001.2101.3001.6650.19&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-19-51849285-blog-79126779.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-19-51849285-blog-79126779.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">大家在学习Java的过程中，势必要进行多线程的系统学习，这部分内容知识对<em>于</em>你在工作中的影响是极大的，并且在面试的过程中，这部分知识也是必然会被问到的。既然多线程的知识如此重要，那么我们就不能浅尝辄止。在这篇文章中，我想通过阅读源码的方式给大家分享一下我自己对<em>于</em>Java中<em>wait</em>()，<em>notify</em>()<em>和</em><em>sleep</em>()的理解，并且在后面我也做一些内容上的扩展，与大家共同思考。如果在文章中有描述不妥或者</div>
+			</a>
+		</div>
+	</div>
+</div>
+            </div>
+<div id="recommendNps" class="recommend-nps-box common-nps-box">
+  <h3 class="aside-title">“相关推荐”对你有帮助么？</h3>
+  <div class="aside-content">
+      <ul class="newnps-list">
+          <li class="newnps-item" data-type="非常没帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel1.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey1.png" alt="">
+              </div>
+              <div class="newnps-text">非常没帮助</div>
+          </li>
+          <li class="newnps-item" data-type="没帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel2.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey2.png" alt="">
+              </div>
+              <div class="newnps-text">没帮助</div>
+          </li>
+          <li class="newnps-item" data-type="一般">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel3.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey3.png" alt="">
+              </div>
+              <div class="newnps-text">一般</div>
+          </li>
+          <li class="newnps-item" data-type="有帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel4.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey4.png" alt="">
+              </div>
+              <div class="newnps-text">有帮助</div>
+          </li>
+          <li class="newnps-item" data-type="非常有帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel5.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey5.png" alt="">
+              </div>
+              <div class="newnps-text">非常有帮助</div>
+          </li>
+      </ul>
+      <div class="newnps-form-box">
+      <div class="newnps-form">
+          <input type="text" placeholder="请输入建议或反馈后点击提交" class="newnps-input">
+          <span class="newnps-btn">提交</span>
+      </div>
+      </div>
+  </div>
+</div>            <div class="template-box">
+                <span>©️2022 CSDN</span>
+                <span>皮肤主题：编程工作室</span>
+                <span> 设计师：CSDN官方博客</span>
+                <span>
+                    <a href="https://blog.csdn.net/" class="back-home c-blue c-blue-hover c-blue-focus">返回首页</a>
+                </span>
+            </div>
+<div class="blog-footer-bottom" style="margin-top:10px;"></div>
+<script src="https://g.csdnimg.cn/common/csdn-footer/csdn-footer.js" data-isfootertrack="false" type="text/javascript"></script>
+<script type="text/javascript">
+    window.csdn.csdnFooter.options = {
+        el: '.blog-footer-bottom',
+        type: 2
+    }
+</script>        </main>
+<aside class="blog_container_aside">
+<div id="asideProfile" class="aside-box">
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/weixin_30531261" target="_blank" data-report-click='{"mod":"popu_379","spm":"1001.2101.3001.4121","dest":"https://blog.csdn.net/weixin_30531261","ab":"new"}'>
+                <img src="https://profile.csdnimg.cn/4/A/C/3_weixin_30531261" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex flex-column profile-intro-name-box">
+            <div class="profile-intro-name-boxTop">
+                <a href="https://blog.csdn.net/weixin_30531261" target="_blank" class="" id="uid" title="LLLLLLLLEE" data-report-click='{"mod":"popu_379","spm":"1001.2101.3001.4122","dest":"https://blog.csdn.net/weixin_30531261","ab":"new"}'>
+                    <span class="name " username="weixin_30531261">LLLLLLLLEE</span>
+                </a>
+                <span>
+                </span>
+                <span class="flag expert-blog">
+                <span class="bubble">CSDN认证博客专家</span>
+                </span>
+                <span class="flag company-blog">
+                <span class="bubble">CSDN认证企业博客</span>
+                </span>
+            </div>
+            <div class="profile-intro-name-boxFooter">
+                <span class="personal-home-page personal-home-years" title="已加入 CSDN 7年">码龄7年</span>
+                    <span class="personal-home-page">
+                    <a class="personal-home-certification" href="https://i.csdn.net/#/uc/profile?utm_source=14998968" target="_blank" title="暂无认证">
+                    <img src="https://csdnimg.cn/identity/nocErtification.png" alt="">
+                    暂无认证
+                    </a>
+                    </span>
+            </div>
+        </div>
+    </div>
+    <div class="data-info d-flex item-tiling">
+        <dl class="text-center" title="119">
+            <a href="https://blog.csdn.net/weixin_30531261" data-report-click='{"mod":"1598321000_001","spm":"1001.2101.3001.4310"}' data-report-query="t=1">  
+                <dt><span class="count">119</span></dt>
+                <dd class="font">原创</dd>
+            </a>
+        </dl>
+        <dl class="text-center" data-report-click='{"mod":"1598321000_002","spm":"1001.2101.3001.4311"}' title="49649">
+            <a href="https://blog.csdn.net/rank/list/weekly" target="_blank">
+                <dt><span class="count">4万+</span></dt>
+                <dd class="font">周排名</dd>
+            </a>
+        </dl>
+        <dl class="text-center" title="1857621">
+            <a href="https://blog.csdn.net/rank/list/total" data-report-click='{"mod":"1598321000_003","spm":"1001.2101.3001.4312"}' target="_blank">
+                <dt><span class="count">185万+</span></dt>
+                <dd class="font">总排名</dd>
+            </a>
+        </dl>
+        <dl class="text-center" style="min-width:58px" title="277707">  
+            <dt><span class="count">27万+</span></dt>
+            <dd>访问</dd>
+        </dl>
+        <dl class="text-center" title="5级,点击查看等级说明">
+            <dt><a href="https://blog.csdn.net/blogdevteam/article/details/103478461" target="_blank">
+                <img class="level" src="https://csdnimg.cn/identity/blog5.png">
+            </a>
+            </dt>
+            <dd>等级</dd>
+        </dl>
+    </div>
+    <div class="item-rank"></div>
+    <div class="data-info d-flex item-tiling">
+        <dl class="text-center" title="3316">
+            <dt><span class="count">3316</span></dt>
+            <dd>积分</dd>
+        </dl>
+         <dl class="text-center" id="fanBox" title="72">
+            <dt><span class="count" id="fan">72</span></dt>
+            <dd>粉丝</dd>
+        </dl>
+        <dl class="text-center" title="193">
+            <dt><span class="count">193</span></dt>
+            <dd>获赞</dd>
+        </dl>
+        <dl class="text-center" title="83">
+            <dt><span class="count">83</span></dt>
+            <dd>评论</dd>
+        </dl>
+        <dl class="text-center" title="409">
+            <dt><span class="count">409</span></dt>
+            <dd>收藏</dd>
+        </dl>
+    </div>
+    <div class="aside-box-footer" data-report-view='{"spm":"3001.4296"}'>
+        <div class="badge-box d-flex">
+            <div class="badge d-flex">
+                <div class="icon-badge" title="专栏达人">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/zhuanlandaren@240.png" alt="专栏达人">
+                    </div>
+                </div>
+                <div class="icon-badge" title="持之以恒">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/chizhiyiheng@240.png" alt="持之以恒">
+                    </div>
+                </div>
+                <div class="icon-badge" title="笔耕不辍">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/02d34b42a3ee476fb50850304ab67017.png" alt="笔耕不辍">
+                    </div>
+                </div>
+                <div class="icon-badge" title="勤写标兵">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/qixiebiaobing4@240.png" alt="勤写标兵">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="profile-intro-name-boxOpration">
+        <div class="opt-letter-watch-box">
+        <a class="bt-button personal-letter" href="https://im.csdn.net/chat/weixin_30531261" target="_blank" rel="noopener">私信</a>
+        </div>
+        <div class="opt-letter-watch-box"> 
+            <a class="personal-watch bt-button" id="btnAttent" >关注</a>  
+        </div>
+    </div>
+</div>
+ <div id="asideSearchArticle" class="aside-box">
+	<div class="aside-content search-comter">
+    <div class="aside-search aside-search-blog">         
+        <input type="text" class="input-serch-blog" name="" autocomplete="off" value="" id="search-blog-words" placeholder="搜博主文章">
+        <a class="btn-search-blog">
+                    <img src="//csdnimg.cn/cdn/content-toolbar/csdn-sou.png?v=1587021042">
+        </a>
+    </div>
+    </div>
+</div>
+
+
+<div id="asideHotArticle" class="aside-box">
+	<h3 class="aside-title">热门文章</h3>
+	<div class="aside-content">
+		<ul class="hotArticle-list">
+			<li>
+				<a href="https://blog.csdn.net/weixin_30531261/article/details/80891360" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/weixin_30531261/article/details/80891360","ab":"new"}'>
+				pem文件的生成
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">47228</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/weixin_30531261/article/details/79329722" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/weixin_30531261/article/details/79329722","ab":"new"}'>
+				联合索引在B+树上的结构
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">28702</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/weixin_30531261/article/details/79312676" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/weixin_30531261/article/details/79312676","ab":"new"}'>
+				一步步分析为什么B+树适合作为索引的结构
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">27925</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/weixin_30531261/article/details/80672012" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/weixin_30531261/article/details/80672012","ab":"new"}'>
+				0612 grep查找关键字所在行以及其上下几行
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">22337</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/weixin_30531261/article/details/79434364" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/weixin_30531261/article/details/79434364","ab":"new"}'>
+				一次提交却发起了多次请求的一种可能的原因
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">16306</span>
+                </a>
+			</li>
+		</ul>
+	</div>
+</div>
+<div id="asideCategory" class="aside-box flexible-box">
+    <h3 class="aside-title">分类专栏</h3>
+    <div class="aside-content">
+        <ul>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7677847.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7677847.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756930.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        工作总结、记录
+                    </span>
+                </a>
+                <span class="special-column-num">57篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_9274898.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_9274898.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="//img-blog.csdn.net/column?imageView2/1/w/64/h/64/interlace/1" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        linux学习之路
+                    </span>
+                </a>
+                <span class="special-column-num">10篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_9535662.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_9535662.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        SpringCloud
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7287268.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7287268.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756923.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        spring学习笔记
+                    </span>
+                </a>
+                <span class="special-column-num">4篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7293384.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7293384.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        计算机网络基础
+                    </span>
+                </a>
+                <span class="special-column-num">5篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7295298.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7295298.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        java-se
+                    </span>
+                </a>
+                <span class="special-column-num">17篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7296724.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7296724.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        java-web
+                    </span>
+                </a>
+                <span class="special-column-num">29篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7327880.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7327880.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        数据库
+                    </span>
+                </a>
+                <span class="special-column-num">9篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7374233.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7374233.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756916.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        python
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7427729.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7427729.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756928.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        java并发
+                    </span>
+                </a>
+                <span class="special-column-num">2篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7428497.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7428497.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756754.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        面试题编程题
+                    </span>
+                </a>
+                <span class="special-column-num">6篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7433619.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7433619.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756724.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        面试题选择题
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7435225.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7435225.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        集合框架
+                    </span>
+                </a>
+                <span class="special-column-num">2篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7476148.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7476148.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756923.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        前端框架
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7476149.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7476149.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756928.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        easyui
+                    </span>
+                </a>
+                <span class="special-column-num">2篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7584635.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7584635.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756780.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        重构
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7632478.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7632478.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        架构
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7664480.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7664480.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        linux
+                    </span>
+                </a>
+                <span class="special-column-num">19篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_8858457.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_8858457.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756754.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        流媒体知识
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+        </ul>
+    </div>
+    <p class="text-center">
+        <a class="flexible-btn" data-fbox="aside-archive"><img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowDownWhite.png" alt=""></a>
+    </p>
+</div>
+<div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/weixin_30531261/article/details/79329722#comments_21973981" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/weixin_30531261/article/details/79329722#comments_21973981","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/weixin_30531261/article/details/79329722#comments_21973981","ab":"new"}'>联合索引在B+树上的结构</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/qq_40019838" class="user-name" target="_blank">做技术不可耻: </a>
+                    <span class="code-comments">你不能确定就去看书啊， 别自己瞎猜</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/weixin_30531261/article/details/80891360#comments_21631251" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/weixin_30531261/article/details/80891360#comments_21631251","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/weixin_30531261/article/details/80891360#comments_21631251","ab":"new"}'>pem文件的生成</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/weixin_48095961" class="user-name" target="_blank">weixin_48095961: </a>
+                    <span class="code-comments">描述浅显易懂，能加上pem文件使用加解密的过程就更好了。</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/weixin_30531261/article/details/80891360#comments_21631250" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/weixin_30531261/article/details/80891360#comments_21631250","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/weixin_30531261/article/details/80891360#comments_21631250","ab":"new"}'>pem文件的生成</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/weixin_48095961" class="user-name" target="_blank">weixin_48095961: </a>
+                    <span class="code-comments">描述浅显易懂，能加上pem文件使用加解密的过程就更好了。</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/weixin_30531261/article/details/80891360#comments_21631249" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/weixin_30531261/article/details/80891360#comments_21631249","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/weixin_30531261/article/details/80891360#comments_21631249","ab":"new"}'>pem文件的生成</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/weixin_48095961" class="user-name" target="_blank">weixin_48095961: </a>
+                    <span class="code-comments">描述浅显易懂，能加上pem文件使用加解密的过程就更好了。</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/weixin_30531261/article/details/79329722#comments_20357001" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/weixin_30531261/article/details/79329722#comments_20357001","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/weixin_30531261/article/details/79329722#comments_20357001","ab":"new"}'>联合索引在B+树上的结构</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/t384061961" class="user-name" target="_blank">芮芮子天下第一: </a>
+                    <span class="code-comments">究极误导</span>
+                </p>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="asideNewNps" class="aside-box common-nps-box">
+    <h3 class="aside-title">您愿意向朋友推荐“博客详情页”吗？</h3>
+    <div class="aside-content">
+        <ul class="newnps-list">
+            <li class="newnps-item" data-type="强烈不推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel1.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey1.png" alt="">
+                </div>
+                <div class="newnps-text">强烈不推荐</div>
+            </li>
+            <li class="newnps-item" data-type="不推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel2.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey2.png" alt="">
+                </div>
+                <div class="newnps-text">不推荐</div>
+            </li>
+            <li class="newnps-item" data-type="一般般">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel3.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey3.png" alt="">
+                </div>
+                <div class="newnps-text">一般般</div>
+            </li>
+            <li class="newnps-item" data-type="推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel4.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey4.png" alt="">
+                </div>
+                <div class="newnps-text">推荐</div>
+            </li>
+            <li class="newnps-item" data-type="强烈推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel5.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey5.png" alt="">
+                </div>
+                <div class="newnps-text">强烈推荐</div>
+            </li>
+        </ul>
+        <div class="newnps-form-box">
+        <div class="newnps-form">
+            <input type="text" placeholder="请输入建议或反馈后点击提交" class="newnps-input">
+            <span class="newnps-btn">提交</span>
+        </div>
+        </div>
+    </div>
+</div>
+<div id="asideArchive" class="aside-box" style="display:block!important; width:300px;">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix">
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/weixin_30531261/article/details/104744767" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/weixin_30531261/article/details/104744767","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/weixin_30531261/article/details/104744767","ab":"new"}'>20200308 SpringBoot自动配置学习笔记1</a>
+            </li>
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/weixin_30531261/article/details/104526432" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/weixin_30531261/article/details/104526432","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/weixin_30531261/article/details/104526432","ab":"new"}'>20200226 windows下JavaService注册成功启动失败的原因</a>
+            </li>
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/weixin_30531261/article/details/104437467" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/weixin_30531261/article/details/104437467","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/weixin_30531261/article/details/104437467","ab":"new"}'>20200221 工作中遇到奇怪的问题</a>
+            </li>
+        </ul>
+        <div class="archive-bar"></div>
+        <div class="archive-box">
+                <div class="archive-list-item"><a href="https://blog.csdn.net/weixin_30531261?type=blog&amp;year=2020&amp;month=03" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/weixin_30531261?type=blog&amp;year=2020&amp;month=03"}'><span class="year">2020年</span><span class="num">3篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/weixin_30531261?type=blog&amp;year=2019&amp;month=12" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/weixin_30531261?type=blog&amp;year=2019&amp;month=12"}'><span class="year">2019年</span><span class="num">27篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/weixin_30531261?type=blog&amp;year=2018&amp;month=12" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/weixin_30531261?type=blog&amp;year=2018&amp;month=12"}'><span class="year">2018年</span><span class="num">79篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/weixin_30531261?type=blog&amp;year=2017&amp;month=12" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/weixin_30531261?type=blog&amp;year=2017&amp;month=12"}'><span class="year">2017年</span><span class="num">12篇</span></a></div>
+        </div>
+    </div>
+</div>
+	<div id="footerRightAds" class="isShowFooterAds">
+		<div class="aside-box">
+			<div id="kp_box_57" data-pid="57"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1076724771190722"
+     crossorigin="anonymous"></script>
+<!-- PC-博客-详情页-左下视窗-80-99 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1076724771190722"
+     data-ad-slot="7418711749"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=57&adId=1015194&a=1015194&c=0&k=sleep、wait以及notify方法区别于联系&spm=1001.2101.3001.5001&articleId=79126779&d=1&t=3&u=65da13692abf4d5db68f7523accbd781" style="display: block;width: 0px;height: 0px;"></div>
+		</div>
+	</div>
+    <!-- 详情页显示目录 -->
+<!--文章目录-->
+<div id="asidedirectory" class="aside-box">
+    <div class='groupfile' id="directory">
+        <h3 class="aside-title">目录</h3>
+        <div class="align-items-stretch group_item">
+            <div class="pos-box">
+            <div class="scroll-box">
+                <div class="toc-box"></div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+</aside>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).parents("p.text-center").remove();
+	})
+</script>
+<script type="text/javascript"  src="https://g.csdnimg.cn/user-tooltip/2.7/user-tooltip.js"></script>
+<script type="text/javascript"  src="https://g.csdnimg.cn/user-medal/2.0.0/user-medal.js"></script>    </div>
+<div class="recommend-right align-items-stretch clearfix" id="rightAside" data-type="recommend">
+    <aside class="recommend-right_aside">
+        <div id="recommend-right" >
+                                <div class="programmer1Box">
+                        <div id="kp_box_530" data-pid="530"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1076724771190722"
+     crossorigin="anonymous"></script>
+<!-- PC-博客-详情页-右上视窗-80-99 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1076724771190722"
+     data-ad-slot="1041005650"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=530&adId=1015191&a=1015191&c=0&k=sleep、wait以及notify方法区别于联系&spm=1001.2101.3001.4647&articleId=79126779&d=1&t=3&u=1c3e209c5b204d3ba43288b48662761a" style="display: block;width: 0px;height: 0px;"></div>
+                    </div>
+            <div class='flex-column aside-box groupfile' id="groupfile">
+                <div class="groupfile-div">
+                <h3 class="aside-title">目录</h3>
+                <div class="align-items-stretch group_item">
+                    <div class="pos-box">
+                        <div class="scroll-box">
+                            <div class="toc-box"></div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+                <div id="recommendAdBox">
+                    <div id="kp_box_479" data-pid="479"><div class="_gnumici5vli"></div>
+    <script type="text/javascript">
+        (window.slotbydup = window.slotbydup || []).push({
+            id: "u5883818",
+            container: "_gnumici5vli",
+            async: true
+        });
+    </script>
+    <!-- 多条广告如下脚本只需引入一次 -->
+    <script type="text/javascript" src="//cpro.baidustatic.com/cpro/ui/cm.js" async="async" defer="defer" >
+    </script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=479&adId=1015221&a=1015221&c=0&k=sleep、wait以及notify方法区别于联系&spm=1001.2101.3001.4834&articleId=79126779&d=1&t=3&u=359a1b2901f6421791abf045bcfe8298" style="display: block;width: 0px;height: 0px;"></div>
+                </div>
+            <div class='aside-box kind_person d-flex flex-column'>
+                    <h3 class="aside-title">分类专栏</h3>
+                    <div class="align-items-stretch kindof_item" id="kind_person_column">
+                        <div class="aside-content">
+                            <ul>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7677847.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7677847.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756930.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            工作总结、记录
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">57篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_9274898.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_9274898.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="//img-blog.csdn.net/column?imageView2/1/w/64/h/64/interlace/1" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            linux学习之路
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">10篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_9535662.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_9535662.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756927.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            SpringCloud
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7287268.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7287268.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756923.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            spring学习笔记
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">4篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7293384.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7293384.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            计算机网络基础
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">5篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7295298.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7295298.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            java-se
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">17篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7296724.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7296724.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            java-web
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">29篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7327880.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7327880.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            数据库
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">9篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7374233.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7374233.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756916.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            python
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7427729.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7427729.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756928.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            java并发
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">2篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7428497.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7428497.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756754.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            面试题编程题
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">6篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7433619.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7433619.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756724.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            面试题选择题
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7435225.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7435225.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756925.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            集合框架
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">2篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7476148.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7476148.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756923.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            前端框架
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7476149.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7476149.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756928.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            easyui
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">2篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7584635.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7584635.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756780.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            重构
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7632478.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7632478.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756738.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            架构
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_7664480.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_7664480.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            linux
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">19篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/weixin_30531261/category_8858457.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/weixin_30531261/category_8858457.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756754.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            流媒体知识
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<div class="recommend-right1  align-items-stretch clearfix" id="rightAsideConcision" data-type="recommend">
+    <aside class="recommend-right_aside">
+        <div id="recommend-right-concision" >
+            <div class='flex-column aside-box groupfile' id="groupfileConcision">
+                <div class="groupfile-div1">
+                <h3 class="aside-title">目录</h3>
+                <div class="align-items-stretch group_item">
+                    <div class="pos-box">
+                        <div class="scroll-box">
+                            <div class="toc-box"></div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+</div>
+<div class="mask-dark"></div>
+<script src="https://csdnimg.cn/public/sandalstrap/1.4/js/sandalstrap.min.js"></script>
+<div class="skin-boxshadow"></div>
+<div class="directory-boxshadow"></div>
+<div class="comment-side-box-shadow comment-side-tit-close" id="commentSideBoxshadow">
+<div class="comment-side-content">
+	<div class="comment-side-tit">
+	<div class="comment-side-tit-count">评论&nbsp;<span class="count">5</span></div>
+	<img class="comment-side-tit-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png"></div>
+	<div id="pcCommentSideBox" class="comment-box comment-box-new2 " style="display:block">
+		<div class="comment-edit-box d-flex">
+			<div class="user-img">
+				<a href="https://blog.csdn.net/weixin_46000198" target="_blank">
+					<img src="https://profile.csdnimg.cn/E/D/5/3_weixin_46000198">
+				</a>
+			</div>
+			<form id="commentform">
+				<textarea class="comment-content" name="comment_content" id="comment_content" placeholder="欢迎高质量的评论，低质的评论会被折叠" maxlength="1000"></textarea>
+				<div class="comment-operate-box">
+					<div class="comment-operate-l">
+						<span id="tip_comment" class="tip">还能输入<em>1000</em>个字符</span>
+					</div>
+					<div class="comment-operate-c">
+						&nbsp;
+					</div>
+					<div class="comment-operate-r">
+						<div class="comment-operate-item comment-emoticon">
+							<img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentEmotionIcon.png" alt="表情包">
+							<span class="comment-operate-tip">插入表情</span>
+							<div class="comment-emoticon-box comment-operate-isshow">
+								<div class="comment-emoticon-img-box"></div>
+							</div>
+						</div>
+						<div class="comment-operate-item comment-code">
+							<img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentCodeIcon.png" alt="表情包">
+							<span class="comment-operate-tip">代码片</span>
+							<div class="comment-code-box comment-operate-isshow">
+								<ul id="commentCode">
+									<li><a data-code="html">HTML/XML</a></li>
+									<li><a data-code="objc">objective-c</a></li>
+									<li><a data-code="ruby">Ruby</a></li>
+									<li><a data-code="php">PHP</a></li>
+									<li><a data-code="csharp">C</a></li>
+									<li><a data-code="cpp">C++</a></li>
+									<li><a data-code="javascript">JavaScript</a></li>
+									<li><a data-code="python">Python</a></li>
+									<li><a data-code="java">Java</a></li>
+									<li><a data-code="css">CSS</a></li>
+									<li><a data-code="sql">SQL</a></li>
+									<li><a data-code="plain">其它</a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="comment-operate-item">
+							<input type="hidden" id="comment_replyId" name="comment_replyId">
+							<input type="hidden" id="article_id" name="article_id" value="79126779">
+							<input type="hidden" id="comment_userId" name="comment_userId" value="">
+							<input type="hidden" id="commentId" name="commentId" value="">
+							<a data-report-click='{"mod":"1582594662_003","spm":"1001.2101.3001.4227","ab":"new"}'>
+							<input type="submit" class="btn-comment btn-comment-input" value="评论">
+							</a>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="comment-list-container">
+			<div class="comment-list-box comment-operate-item">
+			</div>
+			<div id="lookGoodComment" class="look-good-comment side-look-comment">
+				<a class="look-more-comment">查看更多评论<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowDownWhite.png" alt=""></a>
+			</div>
+			<div id="lookFlodComment" class="look-flod-comment">
+					<span class="count"></span>&nbsp;条评论被折叠&nbsp;<a class="look-more-flodcomment">查看</a>
+			</div>
+			<div class="opt-box text-center">
+				<div class="btn btn-sm btn-link-blue" id="btnMoreComment"></div>
+			</div>
+		</div>
+	</div>
+	<div id="pcFlodCommentSideBox" class="pc-flodcomment-sidebox">
+		<div class="comment-fold-tit"><span id="lookUnFlodComment" class="back"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowLeftWhite.png" alt=""></span>被折叠的&nbsp;<span class="count"></span>&nbsp;条评论
+		 <a href="https://blogdev.blog.csdn.net/article/details/122245662" class="tip" target="_blank">为什么被折叠?</a>
+		 <a href="https://bbs.csdn.net/forums/FreeZone" class="park" target="_blank">
+		 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/iconPark.png">到【灌水乐园】发言</a>                                
+		</div>
+		<div class="comment-fold-content"></div>
+		<div id="lookBadComment" class="look-bad-comment side-look-comment">
+			<a class="look-more-comment">查看更多评论<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowDownWhite.png" alt=""></a>
+		</div>
+	</div>
+</div>
+</div>
+<div id="rewardNew" class="reward-popupbox-new">
+	<p class="rewad-title">打赏作者<span class="reward-close"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png"></span></p>
+	<dl class="profile-box">
+		<dd>
+		<a href="https://blog.csdn.net/weixin_30531261" data-report-click='{"mod":"popu_379","dest":"https://blog.csdn.net/weixin_30531261","ab":"new"}'>
+			<img src="https://profile.csdnimg.cn/4/A/C/3_weixin_30531261" class="avatar_pic">
+		</a>
+		</dd>
+		<dt>
+			<p class="blog-name">LLLLLLLLEE</p>
+			<p class="blog-discript">你的鼓励将是我创作的最大动力</p>
+		</dt>
+	</dl>
+	<div class="reward-box-new">
+			<div class="reward-content"><div class="reward-right"></div></div>
+	</div>
+	<div class="money-box">
+				<span class="choose-money choosed" data-id="2">¥2</span>
+				<span class="choose-money " data-id="4">¥4</span>
+				<span class="choose-money " data-id="6">¥6</span>
+				<span class="choose-money " data-id="10">¥10</span>
+				<span class="choose-money " data-id="20">¥20</span>
+				<input id="customizeMoney" class="customize-money" name="" type="" value="" placeholder="自定义"/>
+				<div class="customize-tip">输入1-500的整数</div>
+	</div>
+	<div class="pay-box">
+		<div class="pay-type-blance pay-type active" data-type="blance">
+			<img class="unchoose" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnChoose.png" alt="">
+			<img class="choose"src="https://csdnimg.cn/release/blogv2/dist/pc/img/newChoose.png" alt="">
+			<span class="pay-type-name">余额支付</span>
+			<span class="pay-type-num">(余额：-- )</span>
+		</div>
+		<div class="pay-type-money pay-type" data-type="money">
+			<img class="unchoose" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnChoose.png" alt="">
+			<img class="choose"src="https://csdnimg.cn/release/blogv2/dist/pc/img/newChoose.png" alt="">
+			<span class="pay-type-name">扫码支付</span>
+		</div>
+	</div>
+	<div class="sure-box">
+		<div class="sure-box-money">
+			<div class="code-box">
+				<div class="code-num-box">
+					<span class="code-name">扫码支付：</span><span class="code-num">¥2</span>
+				</div>
+				<div class="code-img-box">
+					<div class="renovate">
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png">
+					<span>获取中</span>
+					</div>
+				</div>
+				<div class="code-pay-box">
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newWeiXin.png" alt="">
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newZhiFuBao.png" alt="">
+					<span>扫码支付</span>
+				</div>
+			</div>
+		</div>
+		<div class="sure-box-blance">
+			<p class="tip">您的余额不足，请更换扫码支付或<a target="_blank" data-report-click='{"mod":"1597646289_003","spm":"1001.2101.3001.4302"}' href="https://i.csdn.net/#/wallet/balance/recharge?utm_source=RewardVip" class="go-invest">充值</a></p>
+			<p class="is-have-money"><a class="reward-sure">打赏作者</a></p>
+		</div>
+	</div>
+</div>
+<div class="pay-code">
+    <div class="pay-money">实付<span class="pay-money-span" data-nowprice='' data-oldprice=''>元</span></div>
+    <div class="content-blance"><a class="blance-bt" href="javascript:;">使用余额支付</a></div>
+    <div class="content-code">
+    <div id="payCode" data-id="">
+            <div class="renovate">
+                <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png">
+                <span>点击重新获取</span>
+            </div>
+        </div>
+        <div class="pay-style"><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/weixin.png"></span><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/zhifubao.png"></span><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/jingdong.png"></span><span class="text">扫码支付</span></div>
+    </div>
+    <div class="bt-close"><svg t="1567152543821" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10924" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12"><defs><style type="text/css"></style></defs><path d="M512 438.378667L806.506667 143.893333a52.032 52.032 0 1 1 73.6 73.621334L585.621333 512l294.485334 294.485333a52.074667 52.074667 0 0 1-73.6 73.642667L512 585.621333 217.514667 880.128a52.053333 52.053333 0 1 1-73.621334-73.642667L438.378667 512 143.893333 217.514667a52.053333 52.053333 0 1 1 73.621334-73.621334L512 438.378667z" fill="" p-id="10925"></path></svg></div>
+    <!-- <p style="margin-top: 8px;font-size: 14px;" class="text-center">支付成功即可阅读</p> -->
+    <div class="pay-balance">
+    <input type="radio" class="pay-code-radio" data-type="details"> 
+    <span class="span">钱包余额</span>
+    <span class="balance" style="color:#FC5531;font-size:14px;">0</span>  
+    <div class="pay-code-tile">
+        <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-help.png" alt="">
+        <div class="pay-code-content">
+            <div class="span">
+                <p class="title">抵扣说明：</p>
+                <p> 1.余额是钱包充值的虚拟货币，按照1:1的比例进行支付金额的抵扣。<br> 2.余额无法直接购买下载，可以购买VIP、C币套餐、付费专栏及课程。</p>
+            </div>
+        </div>
+    </div>
+    </div>
+    <a class="pay-balance-con" href="https://i.csdn.net/#/wallet/balance/recharge" target="_blank"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/recharge.png" alt=""><span  >余额充值</span></a>
+</div>
+<div style="display:none;">
+	<img src="" onerror='setTimeout(function(){if(!/(csdn.net|iteye.com|baiducontent.com|googleusercontent.com|360webcache.com|sogoucdn.com|bingj.com|baidu.com)$/.test(window.location.hostname)){window.location.href="\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x63\x73\x64\x6e\x2e\x6e\x65\x74"}},3000);'>
+</div>
+<div class="keyword-dec-box" id="keywordDecBox"></div>
+</body>
+    <!-- 富文本柱状图  -->
+	<link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/chart.css"/>
+	<script type="text/javascript" src="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/lib/chart.min.js"></script>
+    <script type="text/javascript" src="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/widget2chart.js"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_highlight-2a2586c533.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_common-fbcbe8567e.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/components/js/edit_copy_code-ce0f06f94b.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/codesnippet/lib/highlight/styles/atom-one-light.css">
+<script src="https://g.csdnimg.cn/user-accusation/1.0.5/user-accusation.js" type="text/javascript" ></script>
+<script>
+ // 全局声明
+ if (window.csdn === undefined) {
+      window.csdn = {};
+    }
+    window.csdn.sideToolbar = {
+        options: {
+            report:{
+                isShow: true,
+            },
+            qr: {
+                isShow: false,
+            },
+            guide: {
+                isShow: true
+            }
+        }
+    }
+    $(function(){
+        $(document).on('click',"a.option-box[data-type='report']",function() {
+            window.csdn.userLogin.loadAjax(function(res){
+                window.csdn.feedback({
+                    "type":'blog',
+                    "rtype":'article',
+                    "rid":articleId,
+                    "reportedName":username,
+                    "submitOptions":{
+                        "title":articleTitle,
+                        "contentUrl":articleDetailUrl
+                    },
+                    "callback":function(){
+                        showToast({
+                            text: "感谢您的举报，我们会尽快审核！",
+                            bottom: '10%', 
+                            zindex: 9000, 
+                            speed: 500,
+                            time: 1500
+                        });
+                    }
+                })
+            })
+        });
+    })
+</script>
+    <script src="https://g.csdnimg.cn/baidu-search/1.0.12/baidu-search.js"  type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/download/old_static/js/qrcode.js"></script>
+<script src="https://g.csdnimg.cn/lib/qrcode/1.0.0/qrcode.min.js"></script>
+<script src="https://g.csdnimg.cn/user-ordercart/3.0.1/user-ordercart.js" type="text/javascript"></script>
+<script src="https://g.csdnimg.cn/user-ordertip/5.0.1/user-ordertip.js" type="text/javascript" ></script>
+<script src="https://g.csdnimg.cn/order-payment/4.0.1/order-payment.js" type="text/javascript" ></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/pc/js/common-a1dfbf1dc3.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/pc/js/detail-bff68f3fa1.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/pc/js/column-2e5cf567c5.min.js" type="text/javascript"></script>
+<script src="https://g.csdnimg.cn/side-toolbar/3.4/side-toolbar.js" type="text/javascript"></script>
+<script src="https://g.csdnimg.cn/copyright/1.0.4/copyright.js" type="text/javascript"></script>
+<script>
+    $(".MathJax").remove();
+    if ($('div.markdown_views pre.prettyprint code.hljs').length > 0) {
+        $('div.markdown_views')[0].className = 'markdown_views';
+    }
+</script>
+<script type="text/javascript" src="https://csdnimg.cn/release/blog_mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+            "HTML-CSS": {
+                    linebreaks: { automatic: true, width: "94%container" },
+                    imageFont: null
+            },
+            tex2jax: {
+                preview: "none",
+                ignoreClass:"title-article"
+            },
+            mml2jax: {
+                preview: 'none'
+            }
+    });
+</script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/common/csdn-login-box/csdn-login-box.js"></script></html>

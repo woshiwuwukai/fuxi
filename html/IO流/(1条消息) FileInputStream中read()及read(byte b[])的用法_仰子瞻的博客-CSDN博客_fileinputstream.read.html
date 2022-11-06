@@ -1,0 +1,2146 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <link rel="canonical" href="https://blog.csdn.net/u010389391/article/details/95508722"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="report" content='{"pid": "blog", "spm":"1001.2101"}'>
+    <meta name="referrer" content="always">
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <meta name="applicable-device" content="pc">
+    <link  href="https://g.csdnimg.cn/static/logo/favicon32.ico"  rel="shortcut icon" type="image/x-icon" />
+    <title>FileInputStream中read()及read(byte b[])的用法_仰子瞻的博客-CSDN博客_fileinputstream.read</title>
+    <script>
+      (function(){ 
+        var el = document.createElement("script"); 
+        el.src = "https://s3a.pstatp.com/toutiao/push.js?1abfa13dfe74d72d41d83c86d240de427e7cac50c51ead53b2e79d40c7952a23ed7716d05b4a0f683a653eab3e214672511de2457e74e99286eb2c33f4428830"; 
+        el.id = "ttzz"; 
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(el, s);
+      })(window)
+    </script>
+        <meta name="keywords" content="fileinputstream.read">
+        <meta name="csdn-baidu-search"  content='{"autorun":true,"install":true,"keyword":"fileinputstream.read"}'>
+    <meta name="description" content="编码1、ANSI编码：American National Standards Institute，即美国国家标准协会。当记事本或者软件采用Windows代码页中对应的&quot;ANSI&quot;编码时，在不同地区&quot;ANSI&quot;编码是不同的，在中国，&quot;ANSI&quot;就是GBK编码2、ASCII编码：American Standard Code for Information Interchange，即美国信息交换...">
+    <script src="//g.csdnimg.cn/tingyun/1.8.5/blog.js" type='text/javascript'></script>
+        <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/css/detail_enter-dbcfbb1ed8.min.css">
+    <script type="application/ld+json">{"@context":"https://ziyuan.baidu.com/contexts/cambrian.jsonld","@id":"https://blog.csdn.net/u010389391/article/details/95508722","appid":"1638831770136827","pubDate":"2019-07-11T19:14:38","title":"FileInputStream中read()及read(byte b[])的用法_仰子瞻的博客-CSDN博客_fileinputstream.read","upDate":"2019-07-11T19:14:38"}</script>
+        <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/release/blogv2/dist/pc/themesSkin/skin3-template/skin3-template-762f7595fd.min.css">
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isCorporate = false;//注释删除enterprise
+        var username =  "u010389391";
+        var skinImg = "white";
+        var blog_address = "https://blog.csdn.net/u010389391";
+        var currentUserName = "weixin_46000198";
+        var isOwner = false;
+        var loginUrl = "http://passport.csdn.net/account/login?from=https://blog.csdn.net/u010389391/article/details/95508722";
+        var blogUrl = "https://blog.csdn.net/";
+        var avatar = "https://profile.csdnimg.cn/1/E/A/3_u010389391";
+        var articleTitle = "FileInputStream中read()及read(byte b[])的用法";
+        var articleDesc = "编码1、ANSI编码：American National Standards Institute，即美国国家标准协会。当记事本或者软件采用Windows代码页中对应的\&quot;ANSI\&quot;编码时，在不同地区\&quot;ANSI\&quot;编码是不同的，在中国，\&quot;ANSI\&quot;就是GBK编码2、ASCII编码：American Standard Code for Information Interchange，即美国信息交换...";
+        var articleTitles = "FileInputStream中read()及read(byte b[])的用法_仰子瞻的博客-CSDN博客_fileinputstream.read";
+        var nickName = "仰子瞻";
+        var articleDetailUrl = "https://blog.csdn.net/u010389391/article/details/95508722";
+        if(window.location.host.split('.').length == 3) {
+            blog_address = blogUrl + username;
+        }
+        var skinStatus = "White";
+        var blogStaticHost = "https://csdnimg.cn/release/blogv2/"
+        var mallTestStyle = "control"
+    </script>
+    <script src="https://g.csdnimg.cn/??fixed-sidebar/1.1.6/fixed-sidebar.js" type="text/javascript"></script>
+    <script src='//g.csdnimg.cn/common/csdn-report/report.js' type='text/javascript'></script>
+    <link rel="stylesheet" type="text/css" href="https://csdnimg.cn/public/sandalstrap/1.4/css/sandalstrap.min.css">
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+    <script src="https://dup.baidustatic.com/js/ds.js"></script>
+</head>
+  <body class="nodata " style="">
+        <script>
+            var toolbarSearchExt = '{"landingWord":["fileinputstream.read"],"queryWord":"","tag":["FileInputStream"],"title":"FileInputStream中read()及read(byte b[])的用法"}';
+        </script>
+    <script src="https://g.csdnimg.cn/common/csdn-toolbar/csdn-toolbar.js" type="text/javascript"></script>
+    <script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        }
+        else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+    </script>
+<link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/pc/css/blog_code-01256533b5.min.css">
+<link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/chart-3456820cac.css" />
+
+<script>
+    var articleId = 95508722;
+    var commentscount = 0;
+    var curentUrl = "https://blog.csdn.net/u010389391/article/details/95508722";
+    var myUrl = "https://my.csdn.net/";
+    var highlight = ["fileinputstream","read","byte","用法","的","(",")","及","[","]","中","."];//高亮数组
+    var isRecommendModule = true;
+    var isBaiduPre = true;
+    var baiduCount = 2;
+    var setBaiduJsCount = 10;
+    var share_card_url = "https://app-blog.csdn.net/share?article_id=95508722&username=u010389391"
+	var articleType = 1;
+    var baiduKey = "fileinputstream.read";
+    var userNewReport = true;
+    var needInsertBaidu = true;
+    var recommendRegularDomainArr = ["blog.csdn.net/.+/article/details/","download.csdn.net/download/","edu.csdn.net/course/detail/","ask.csdn.net/questions/","bbs.csdn.net/topics/","www.csdn.net/gather_.+/"]
+    var codeStyle = "";
+    var baiduSearchType = "baidulandingword";
+     var sharData = "{\"hot\":[{\"id\":1,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/a5f4260710904e538002a6ab337939b3.png\"},{\"id\":2,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/188b37199a2c4b74b1d9ffc39e0d52de.png\"},{\"id\":3,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/14ded358b631444581edd98a256bc5af.png\"},{\"id\":4,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/1470f23a770444d986ad551b9c33c5be.png\"},{\"id\":5,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/c329f5181dc74f6c9bd28c982bb9f91d.png\"},{\"id\":6,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ccd8a3305e81460f9c505c95b432a65f.png\"},{\"id\":7,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/bc89d8283389440d97fc4d30e30f45e1.png\"},{\"id\":8,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/452d485b4a654f5592390550d2445edf.png\"},{\"id\":9,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/f8b9939db2ed474a8f43a643015fc8b7.png\"},{\"id\":10,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/6de8864187ab4ed3b1db0856369c36ff.png\"},{\"id\":11,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/673cc3470ff74072acba958dc0c46e2d.png\"},{\"id\":12,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/930c119760ac4491804db80f9c6d4e3f.png\"},{\"id\":13,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/15e6befb05a24233bc2b65e96aa8d972.png\"},{\"id\":14,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/2075fd6822184b95a41e214de4daec13.png\"},{\"id\":15,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/859b1552db244eb6891a809263a5c657.png\"},{\"id\":16,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/0be2f920f1f74290a98921974a9613fd.png\"},{\"id\":17,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/2e97e00b43f14afab494ea55ef3f4a6e.png\"},{\"id\":18,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ff4ab252f46e444686f5135d6ebbfec0.png\"},{\"id\":19,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/ae029bbe99564e79911657912d36524f.png\"},{\"id\":20,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/b3ece39963de440388728e9e7b9bf427.png\"},{\"id\":21,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/6f14651a99ba486e926d63b6fa692997.png\"},{\"id\":22,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/83ceddf050084875a341e32dcceca721.png\"},{\"id\":23,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/b90368b8fd5d4c6c8c79a707d877cf7c.png\"},{\"id\":24,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/aeffae14ecf14e079b2616528c9a393b.png\"},{\"id\":25,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/c5a06b5a13d44d16bed868fc3384897a.png\"},{\"id\":26,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/08b697658b844b318cea3b119e9541ef.png\"},{\"id\":27,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/68ccb0b8d09346ac961d2b5c1a8c77bf.png\"},{\"id\":28,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/a2227a247e37418cbe0ea972ba6a859b.png\"},{\"id\":29,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/3a42825fede748f9993e5bb844ad350d.png\"},{\"id\":30,\"url\":\"https:\\/\\/img-blog.csdnimg.cn\\/8882abc1dd484224b636966ea38555c3.png\"}],\"vip\":[{\"id\":1,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101150.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101154.png\"},{\"id\":2,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101204.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101208.png\"},{\"id\":3,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101211.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101215.png\"},{\"id\":4,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101218.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101220.png\"},{\"id\":5,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101223.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220920101226.png\"},{\"id\":6,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100635.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100639.png\"},{\"id\":7,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100642.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100644.png\"},{\"id\":8,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100647.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100649.png\"},{\"id\":9,\"vipUrl\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100652.png\",\"url\":\"https:\\/\\/img-home.csdnimg.cn\\/images\\/20220922100655.png\"}],\"map\":{\"hot\":\"热门\",\"vip\":\"VIP\"}}";
+    
+    var canRead = true;
+    var blogMoveHomeArticle = false;
+    var showPcWindowAd = false;
+    var showHeadWord = true;
+    var showSearchText = "";
+    var linkPage = true;
+    var articleSource = 1;
+    var articleReport = '{"pid": "blog", "spm":"1001.2101"}';
+    var isShowToQuestion = false;
+    var baiduSearchChannel = 'pc_relevant'
+    var baiduSearchIdentification = '.pc_relevant_default'
+    var distRequestId = '1666347403832_54290'
+    var initRewardObject = {
+        giver: "weixin_46000198",
+        anchor: "u010389391",
+        articleId: "95508722",
+        sign: "6debb76eced9d5eb181023b84d1d5fe2",
+    }
+    var isLikeStatus = false;
+    var isUnLikeStatus = false;
+    var studyLearnWord = "";
+    var isCurrentUserVip = false;
+    var testNewStyle = "oldStyle"
+    var contentViewsHeight = 0;
+    var contentViewsCount = 0;
+    var contentViewsCountLimit = 5;
+    var isShowConcision = true
+    var isCookieConcision = false
+    var isHasDirectoryModel = false
+    var isShowSideModel = false
+    var isShowDirectoryModel = true
+    function getCookieConcision(sName){
+        var allCookie = document.cookie.split("; ");
+        for (var i=0; i < allCookie.length; i++){
+            var aCrumb = allCookie[i].split("=");
+            if (sName == aCrumb[0])
+                return aCrumb[1];
+        }
+        return null;
+    }
+    if (getCookieConcision('blog_details_concision') && getCookieConcision('blog_details_concision') == 0){
+        isCookieConcision = true
+        isShowSideModel = true
+        isShowDirectoryModel = false
+    }
+</script>
+<div class="main_father clearfix d-flex justify-content-center mainfather-concision" style="height:100%;"> 
+    <div class="container clearfix container-concision" id="mainBox">
+        <script>
+        if(!isCookieConcision){
+            $('.main_father').removeClass('mainfather-concision')
+            $('.main_father .container').removeClass('container-concision')
+        }
+        </script>
+        <main>
+<script type="text/javascript">
+    function getQueryString(name) {   
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象  
+      var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+      if( r != null ) return decodeURIComponent( r[2] ); return '';   
+    }
+    function stripscript(s){ 
+      var pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？%]") 
+      var rs = ""; 
+      for (var i = 0; i < s.length; i++) { 
+        rs = rs+s.substr(i, 1).replace(pattern, ''); 
+      } 
+      return rs; 
+    }
+    var blogHotWords = stripscript(getQueryString('utm_term')).length > 1 ? stripscript(getQueryString('utm_term')) : ''
+</script>
+<div class="blog-content-box">
+        <div class="article-header-box">
+        <div class="article-header">
+            <div class="article-title-box">
+                <h1 class="title-article" id="articleContentId">FileInputStream中read()及read(byte b[])的用法</h1>
+            </div>
+            <div class="article-info-box">
+                <div class="article-bar-top">
+                    <img class="article-type-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/original.png" alt="">
+                    <div class="bar-content">
+                    <a class="follow-nickName " href="https://blog.csdn.net/u010389391" target="_blank" rel="noopener">仰子瞻</a>
+                    <img class="article-time-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCurrentTime2.png" alt="">
+                    <span class="time">于&nbsp;2019-07-11 19:14:38&nbsp;发布</span>
+                    <img class="article-read-img article-heard-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/articleReadEyes2.png" alt="">
+                    <span class="read-count">6600</span>
+                    <a id="blog_detail_zk_collection" class="un-collection" data-report-click='{"mod":"popu_823","spm":"1001.2101.3001.4232","ab":"new"}'>
+                        <img class="article-collect-img article-heard-img un-collect-status isdefault" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollect2.png" alt="">
+                        <img class="article-collect-img article-heard-img collect-status isactive" style="display:inline-block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive2.png" alt="">
+                        <span class="name">收藏</span>
+                        <span class="get-collection">
+                            18
+                        </span>
+                    </a>
+                    </div>
+                </div>
+                <div class="blog-tags-box">
+                    <div class="tags-box artic-tag-box">
+                            <span class="label">文章标签：</span>
+                                <a data-report-click='{"mod":"popu_626","spm":"1001.2101.3001.4223","strategy":"FileInputStream","ab":"new","extra":"{\"searchword\":\"FileInputStream\"}"}' class="tag-link" href="https://so.csdn.net/so/search/s.do?q=FileInputStream&amp;t=blog&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">FileInputStream</a>
+                    </div>
+                </div>
+                <div class="slide-content-box">
+                    <div class="article-copyright">
+                        <div class="creativecommons">
+                            版权声明：本文为博主原创文章，遵循<a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。
+                        </div>
+                        <div class="article-source-link">
+                            本文链接：<a href="https://blog.csdn.net/u010389391/article/details/95508722" target="_blank">https://blog.csdn.net/u010389391/article/details/95508722</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="operating">
+                    <a class="href-article-edit slide-toggle">版权</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="blogHuaweiyunAdvert"></div>
+    <article class="baidu_pl">
+        <div id="article_content" class="article_content clearfix">
+        <link rel="stylesheet" href="https://csdnimg.cn/release/blogv2/dist/mdeditor/css/editerView/ck_htmledit_views-6e43165c0a.css">
+                <div id="content_views" class="htmledit_views">
+                    <p id="main-toc"><strong>目录</strong></p> 
+<p id="%E4%B8%80%E3%80%81%E7%BC%96%E7%A0%81-toc" style="margin-left:0px;"><a href="#%E4%B8%80%E3%80%81%E7%BC%96%E7%A0%81">一、编码</a></p> 
+<p id="1%E3%80%81ANSI%E7%BC%96%E7%A0%81-toc" style="margin-left:40px;"><a href="#1%E3%80%81ANSI%E7%BC%96%E7%A0%81">1、ANSI编码</a></p> 
+<p id="2%E3%80%81ASCII%E7%BC%96%E7%A0%81-toc" style="margin-left:40px;"><a href="#2%E3%80%81ASCII%E7%BC%96%E7%A0%81">2、ASCII编码</a></p> 
+<p id="3%E3%80%81UTF-8%E7%BC%96%E7%A0%81-toc" style="margin-left:40px;"><a href="#3%E3%80%81UTF-8%E7%BC%96%E7%A0%81">3、UTF-8编码</a></p> 
+<p id="%E7%BC%96%E7%A0%81-toc" style="margin-left:0px;"><a href="#%E7%BC%96%E7%A0%81">二、FileInputStream</a></p> 
+<p id="1%E3%80%81read()-toc" style="margin-left:40px;"><a href="#1%E3%80%81read%28%29">1、read()</a></p> 
+<p id="2%E3%80%81read(byte%20b%5B%5D)-toc" style="margin-left:40px;"><a href="#2%E3%80%81read%28byte%20b%5B%5D%29">2、read(byte b[])</a></p> 
+<p id="3%E3%80%81%E6%80%BB%E7%BB%93-toc" style="margin-left:40px;"><a href="#3%E3%80%81%E6%80%BB%E7%BB%93">3、总结</a></p> 
+<p id="3%E3%80%81%E6%AD%A3%E7%A1%AE%E8%AF%BB%E5%8F%96%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84%E6%96%87%E6%9C%AC-toc" style="margin-left:40px;"><a href="#3%E3%80%81%E6%AD%A3%E7%A1%AE%E8%AF%BB%E5%8F%96%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84%E6%96%87%E6%9C%AC">4、正确读取文件中的文本</a></p> 
+<p id="1%EF%BC%89%E3%80%81%E9%94%99%E8%AF%AF%E6%96%B9%E6%B3%951-toc" style="margin-left:80px;"><a href="#1%EF%BC%89%E3%80%81%E9%94%99%E8%AF%AF%E6%96%B9%E6%B3%951">1&#xff09;、错误方法1</a></p> 
+<p id="2%EF%BC%89%E3%80%81%E9%94%99%E8%AF%AF%E6%96%B9%E6%B3%952-toc" style="margin-left:80px;"><a href="#2%EF%BC%89%E3%80%81%E9%94%99%E8%AF%AF%E6%96%B9%E6%B3%952">2&#xff09;、错误方法2</a></p> 
+<p id="3%EF%BC%89%E3%80%81ByteArrayOutputStream-toc" style="margin-left:80px;"><a href="#3%EF%BC%89%E3%80%81ByteArrayOutputStream">3&#xff09;、ByteArrayOutputStream</a></p> 
+<hr id="hr-toc" />
+<p>在介绍FileInputStream中的方法前&#xff0c;先简单介绍下编码相关的知识</p> 
+<h1 id="%E4%B8%80%E3%80%81%E7%BC%96%E7%A0%81">一、编码</h1> 
+<h2 id="1%E3%80%81ANSI%E7%BC%96%E7%A0%81">1、ANSI编码</h2> 
+<p>American National Standards Institute &#xff0c;即美国国家标准协会。当记事本或者软件采用Windows代码页中对应的&#34;ANSI&#34;编码时&#xff0c;在不同地区&#34;ANSI&#34;编码是不同的&#xff0c;在中国&#xff0c;&#34;ANSI&#34;就是GBK编码</p> 
+<h2 id="2%E3%80%81ASCII%E7%BC%96%E7%A0%81">2、ASCII编码</h2> 
+<p>American Standard Code for Information Interchange&#xff0c;即美国信息交换标准代码。只能表示符合、字母、数字等&#xff0c;无法表示汉字&#xff0c;具体见&#xff1a;ASCII码对照表。</p> 
+<h2 id="3%E3%80%81UTF-8%E7%BC%96%E7%A0%81">3、UTF-8编码</h2> 
+<p>Unicode Transformation Format&#xff0c;是一套以8位为一个编码单位的针对Unicode的可变长度字符编码&#xff0c;所谓的可变长度&#xff0c;就是说针对不同的字符会分配不同长度的位数&#xff0c;范围在1~4个字节&#xff0c;英文用1个字节表示&#xff0c;中文用三个或四个字节表示&#xff08;四个字节占少部分&#xff0c;如&#xff1a;&#x2a6a5;&#xff09;。通常情况下&#xff0c;一个汉字&#xff0c;utf-8编码时需要三个字节&#xff0c;gbk需要两个。<br /><span style="color:#f33b45;"><em><strong>注意&#xff1a;微软自带的记事本&#xff0c;使用utf-8编码时&#xff0c;会在最前面加上三个字节&#xff0c;因此不推荐使用记事本&#xff0c;推荐使用notepad</strong></em></span></p> 
+<h1 id="%E7%BC%96%E7%A0%81">二、FileInputStream</h1> 
+<h2 id="1%E3%80%81read()">1、read()</h2> 
+<pre class="has"><code class="language-java">/**
+     * Reads a byte of data from this input stream. This method blocks
+     * if no input is yet available.
+     *
+     * &#64;return     the next byte of data, or &lt;code&gt;-1&lt;/code&gt; if the end of the
+     *             file is reached.
+     * &#64;exception  IOException  if an I/O error occurs.
+     */
+    public int read() throws IOException {
+        return read0();
+    }</code></pre> 
+<p>注释的意思是&#xff1a;从当前输入流中读取一个字节&#xff08;即8位二进制&#xff09;的数据&#xff0c;返回值为该二进制数据的十进制值&#xff08;范围&#xff1a;0~255&#xff09;&#xff0c;当到达该文件的末尾时&#xff0c;返回-1&#xff08;要实现当前开始读取的位置紧跟上一次结束读取的位置&#xff0c;猜测有一个类似指针的东西指向下一次读取的位置&#xff09;</p> 
+<p>下面用一段简单的代码演示<br /> 1&#xff09;、打开notepad并简单的写入一个字“你”&#xff0c;将编码设置为UTF-8<br /> 2&#xff09;、编码如下</p> 
+<pre class="has"><code class="language-java">public static void main(String[] args) throws Exception {
+    FileInputStream inputStream &#61; new FileInputStream(&#34;f:\\test&#34;);
+    int b;
+    while ((b &#61; inputStream.read()) !&#61; -1) {
+        System.out.print(b &#43; &#34; &#34;);//结果&#xff1a;228 189 160
+    }
+}</code></pre> 
+<h2 id="2%E3%80%81read(byte%20b%5B%5D)">2、read(byte b[])</h2> 
+<pre class="has"><code class="language-java">/**
+ * Reads up to &lt;code&gt;b.length&lt;/code&gt; bytes of data from this input
+ * stream into an array of bytes. This method blocks until some input
+ * is available.
+ *
+ * &#64;param      b   the buffer into which the data is read.
+ * &#64;return     the total number of bytes read into the buffer, or
+ *             &lt;code&gt;-1&lt;/code&gt; if there is no more data because the end of
+ *             the file has been reached.
+ * &#64;exception  IOException  if an I/O error occurs.
+ */
+public int read(byte b[]) throws IOException {
+    return readBytes(b, 0, b.length);
+}</code></pre> 
+<p>从该输入流中读取最多b.length个字节的数据&#xff0c;并存储到字节数组b中。返回值&#xff1a;返回存储到字节数据b中的字节总数&#xff08;≤b.length&#xff09;或者当到达该文件的末尾时返回-1。内部调用的readBytes方法是native类型&#xff0c;无法查看具体细节</p> 
+<pre class="has"><code class="language-java">/**
+ * Reads a subarray as a sequence of bytes.
+ * &#64;param b the data to be written
+ * &#64;param off the start offset in the data
+ * &#64;param len the number of bytes that are written
+ * &#64;exception IOException If an I/O error has occurred.
+ */
+private native int readBytes(byte b[], int off, int len) throws IOException;</code></pre> 
+<p>不过我们可以参考InputStream中的read(byte b[])方法</p> 
+<pre class="has"><code class="language-java">public int read(byte b[]) throws IOException {
+    return read(b, 0, b.length);
+}
+
+public int read(byte b[], int off, int len) throws IOException {
+    if (b &#61;&#61; null) {
+        throw new NullPointerException();
+    } else if (off &lt; 0 || len &lt; 0 || len &gt; b.length - off) {
+        throw new IndexOutOfBoundsException();
+    } else if (len &#61;&#61; 0) {
+        return 0;
+    }
+
+    int c &#61; read();
+    if (c &#61;&#61; -1) {
+        return -1;
+    }
+    b[off] &#61; (byte)c;
+
+    int i &#61; 1;
+    try {
+        for (; i &lt; len ; i&#43;&#43;) {
+            c &#61; read();
+            if (c &#61;&#61; -1) {
+                break;
+            }
+            b[off &#43; i] &#61; (byte)c;
+        }
+    } catch (IOException ee) {
+    }
+    return i;
+}</code></pre> 
+<p>看其中的第二个方法<br /> 1、首先调用read()方法&#xff0c;返回读取到的一个字节的十进制数或者当到达文件尾部时返回-1<br /> 2、为-1则整个方法直接返回-1<br /> 3、不为-1则将读取到的值赋值给b[off]&#xff0c;此处的off为0&#xff0c;表示将字节数组b从头开始赋值<br /> 4、开始for循环&#xff0c;循环中也是先调用read()方法&#xff0c;如果返回值为-1则终止该循环。如果返回值不为-1&#xff0c;则将读取到的值赋值给b[off &#43; i]&#xff0c;依次循环<br /> 5、最后返回本次已经读取到的字节个数&#xff08;字节个数不是b.length的值&#xff0c;而是i的值。且此时的字节个数至少为1&#xff0c;因此第3步已经读取了一次&#xff09;</p> 
+<h2 id="3%E3%80%81%E6%80%BB%E7%BB%93">3、总结</h2> 
+<p><span style="color:#7c79e5;">read()方法返回字节的十进制数&#xff0c;或当到达文件尾部时返回-1&#xff1b;<br /> read(byte b[])方法返回本次读取到的字节个数&#xff0c;且将读取到的字节存储到b中&#xff0c;或当到达文件尾部时返回-1</span></p> 
+<h2 id="3%E3%80%81%E6%AD%A3%E7%A1%AE%E8%AF%BB%E5%8F%96%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84%E6%96%87%E6%9C%AC">4、正确读取文件中的文本</h2> 
+<p>将上面文件中的内容改成“你好世界”&#xff0c;大小为12个字节&#xff0c;通过调用read()方法&#xff0c;其UTF-8编码下的十进制值为&#xff1a;<u>228 189 160</u> <u>229 165 189</u> <u>228 184 150</u> <u>231 149 140</u></p> 
+<h3 id="1%EF%BC%89%E3%80%81%E9%94%99%E8%AF%AF%E6%96%B9%E6%B3%951">1&#xff09;、错误方法1</h3> 
+<pre><code class="language-java">public static void main(String[] args) throws Exception {
+    FileInputStream inputStream &#61; new FileInputStream(&#34;f:\\test&#34;);
+    byte[] bytes &#61; new byte[1024];
+    while (inputStream.read(bytes) !&#61; -1) {
+        String s &#61; new String(bytes,&#34;UTF-8&#34;);
+        System.out.println(s);
+    }
+}</code></pre> 
+<p>确实在当前情况下它能正常输出&#xff0c;但是如果文件中内容的字节数大于定义数组的长度1024时就会出现异常。可以改成&#xff1a;byte[] bytes &#61; new byte[10]&#xff0c;此时输出结果为&#xff1a;<br /> 你好世&#xfffd;<br /> &#xfffd;&#xfffd;&#xfffd;好世&#xfffd;<br /> 造成这个问题的本质原因是这段代码&#xff1a;String s &#61; new String(bytes,&#34;UTF-8&#34;)&#xff0c;通过调试模式&#xff08;注意&#xff1a;在调试模式下每执行一次inputStream.read(bytes)&#xff0c;其返回结果都可能不同&#xff0c;因为它会从上一次读取的地方开始读&#xff09;查看while中第一次读取到的bytes值为&#xff1a;-28 -67 -96 -27 -91 -67 -28 -72 -106 -25&#xff08;byte数据类型的取值范围为-127~128&#xff0c;可以理解为在每个值上加上256&#xff0c;也就是228 189 160 229 165 189 228 184 150 231&#xff09;&#xff1b;第二次读取到的值为&#xff1a;-107 -116 -96 -27 -91 -67 -28 -72 -106 -25&#xff08;也就是149 140 160 229 165 189 228 184 150 231&#xff09;。对比两次获取到的值发现&#xff0c;只有前两个十进制数值不一样&#xff0c;这是因为根据上面的read(byte b[])方法&#xff0c;第二次只读取了最后两个字节&#xff0c;且将这两个字节赋值给了字节数组bytes的前两位&#xff0c;因此才会出现这种错误。</p> 
+<h3 id="2%EF%BC%89%E3%80%81%E9%94%99%E8%AF%AF%E6%96%B9%E6%B3%952">2&#xff09;、错误方法2</h3> 
+<p>那么改成下面这样呢&#xff0c;第一次将10个字节数据转换成字符串&#xff0c;第二次只将2个字节数据转换成字符串&#xff0c;通过输出来看也没有解决问题</p> 
+<pre><code class="language-java">public static void main(String[] args) throws Exception {
+    FileInputStream inputStream &#61; new FileInputStream(&#34;f:\\test&#34;);
+    byte[] bytes &#61; new byte[10];
+    int b;
+    while ((b &#61; inputStream.read(bytes)) !&#61; -1) {
+        String s &#61; new String(bytes, 0, b, &#34;UTF-8&#34;);
+        System.out.println(s);
+    }
+}
+//输出
+你好世&#xfffd;
+&#xfffd;&#xfffd;</code></pre> 
+<p>问题就出在将一段完整的字节数据分割成多段并分别解码&#xff0c;那肯定会有问题。因此解决思路是额外定义一个字节数组byte[] newBytes&#xff0c;将每次while循环中获取到的bytes的bytes[0]到bytes[b-1]值追加到newBytes中&#xff0c;并且当newBytes长度不够时能自动扩容且拷贝数据。</p> 
+<h3 id="3%EF%BC%89%E3%80%81ByteArrayOutputStream">3&#xff09;、ByteArrayOutputStream</h3> 
+<p>其实JDK已经提供了这样的一个类&#xff1a;ByteArrayOutputStream&#xff0c;此时无论buffer的长度设置多少都可以&#xff0c;且最后可直接调用其toString()获得文本内容</p> 
+<pre><code class="language-java">public static void main(String[] args) throws Exception {
+    FileInputStream inputStream &#61; new FileInputStream(&#34;f:\\test&#34;);
+    ByteArrayOutputStream out &#61; new ByteArrayOutputStream();
+    byte[] buffer &#61; new byte[10];
+    int n ;
+    while ((n &#61; inputStream.read(buffer)) !&#61; -1) {
+        out.write(buffer, 0, n);
+    }
+    System.out.println(out.toString());
+}</code></pre> 
+<p> </p>
+                </div>
+        </div>
+        <div id="treeSkill"></div>
+    </article>
+  <script>
+  $(function() {
+    setTimeout(function () {
+      var mathcodeList = document.querySelectorAll('.htmledit_views img.mathcode');
+      if (mathcodeList.length > 0) {
+        var testImg = new Image();
+        testImg.onerror = function () {
+          mathcodeList.forEach(function (item) {
+            $(item).before('<span class="img-codecogs">\\(' + item.alt + '\\)</span>');
+            $(item).remove();
+          })
+          MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+        }
+        testImg.src = mathcodeList[0].src;
+      }
+    }, 1000)
+  })
+  </script>
+</div>
+<div class="more-toolbox-new" id="toolBarBox">
+    <div class="left-toolbox">
+        <div class="toolbox-left">
+            <div class="profile-box"><a class="profile-href" target="_blank" href="https://blog.csdn.net/u010389391"><img class="profile-img" src="https://profile.csdnimg.cn/1/E/A/3_u010389391"><span class="profile-name">仰子瞻</span></a></div>
+            <div class="profile-attend">
+                    <a class="tool-attend tool-bt-button tool-bt-attend" href="javascript:;" data-report-view='{"mod":"1592215036_002","spm":"1001.2101.3001.4232","extend1":"关注"}'>关注</a>
+                <a class="tool-item-follow active-animation" style="display:none;">关注</a>
+            </div>
+        </div>
+        <div class="toolbox-middle">
+        <ul class="toolbox-list">
+            <li class="tool-item tool-item-size tool-active is-like" id="is-like">
+            <a class="tool-item-href">
+                <img style="display:none;" id="is-like-imgactive-animation-like" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarThumbUpactive.png" alt="">
+                <img class="isactive" style="display:none" id="is-like-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2021Active.png" alt="">
+                <img class="isdefault" style="display:block" id="is-like-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newHeart2021Black.png" alt="">  
+                <span id="spanCount" class="count ">
+                        2
+                </span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">点赞</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active is-unlike" id="is-unlike">
+            <a class="tool-item-href">
+                <img class="isactive" style="margin-right:0px;display:none" id="is-unlike-imgactive" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnHeart2021Active.png" alt="">
+                <img class="isdefault" style="margin-right:0px;display:block" id="is-unlike-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnHeart2021Black.png" alt="">
+                <span id="unlikeCount" class="count "></span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">踩</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active is-collection ">
+            <a class="tool-item-href" href="javascript:;" data-report-click='{"mod":"popu_824","spm":"1001.2101.3001.4130","ab":"new"}'>
+                <img style="display:none" id="is-collection-img-collection" class="animation-dom active-animation" src="https://csdnimg.cn/release/blogv2/dist/pc/img/tobarCollectionActive.png" alt="">
+                <img class="isdefault" id="is-collection-img" style="display:none" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectBlack.png" alt="">
+                <img class="isactive" id="is-collection-imgactive" style="display:block" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newCollectActive.png" alt="">
+                <span class="count get-collection active" id="get-collection">
+                    18
+                </span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">收藏</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-item-reward">
+                <a class="tool-item-href" href="javascript:;" data-report-click='{"mod":"popu_830","spm":"1001.2101.3001.4237","dest":"","ab":"new"}'>
+                <img class="isdefault reward-bt" id="rewardBtNew" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newRewardBlack.png" alt="打赏">
+                <span class="count"></span>
+                </a>
+                <div class="tool-hover-tip"><span class="text space">打赏</span></div>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-item-comment">
+            <a class="tool-item-href go-side-comment" data-report-click='{"spm":"1001.2101.3001.7009"}'>
+                <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newComment2021Black.png" alt="">
+                <span class="count">
+                    0
+                </span>
+            </a>
+            <div class="tool-hover-tip"><span class="text space">评论</span></div>
+            </li>
+            <li class="tool-item tool-item-bar">
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-QRcode" id="tool-share">
+                <a class="tool-item-href" href="javascript:;" data-report-click='{"mod":"1582594662_002","spm":"1001.2101.3001.4129","ab":"new"}'>
+                    <img class="isdefault" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newShareBlack.png" alt="">
+                </a>
+                <div class="QRcode" id="tool-QRcode">
+                    <div class="share-bg-icon icon1" id="shareBgIcon"></div>
+                    <div class="share-bg-box">
+                        <div class="share-content">
+                            <img class="share-avatar" src="https://profile.csdnimg.cn/1/E/A/3_u010389391" alt="">
+                            <div class="share-tit">FileInputStream中read()及read(byte b[])的用法</div>
+                            <div class="share-dec">编码1、ANSI编码：American National Standards Institute，即美国国家标准协会。当记事本或者软件采用Windows代码页中对应的&quot;ANSI&quot;编码时，在不同地区&quot;ANSI&quot;编码是不同的，在中国，&quot;ANSI&quot;就是GBK编码2、ASCII编码：American Standard Code for Information Interchange，即美国信息交换...</div>
+                            <a id="copyPosterUrl" class="url" data-report-click='{"spm":"1001.2101.3001.7493"}' data-report-view='{"spm":"1001.2101.3001.7493"}'>复制链接</a>
+                        </div>
+                        <div class="share-code">
+                            <div class="share-code-box" id='shareCode'></div>
+                            <div class="share-code-text">扫一扫</div>
+                        </div>
+                        
+                    </div>
+                    <div class="share-code-type">
+                      
+                    </div>
+                </div>
+            </li>
+        </ul>
+        </div>
+        <div class="toolbox-right">
+        </div>
+    </div>  
+</div>
+<script type=text/javascript crossorigin src="https://csdnimg.cn/release/phoenix/production/qrcode-7c90a92189.min.js"></script>
+<script src="//g.csdnimg.cn/??sharewx/1.2.1/sharewx.js" type="text/javascript"></script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/user-login/3.0.1/user-login.js"></script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/collection-box/2.1.0/collection-box.js"></script>
+                <div class="first-recommend-box recommend-box ">
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/a909301740/article/details/52574602"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6661.1","mod":"popu_871","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1-52574602-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"1","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/a909301740/article/details/52574602"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/a909301740/article/details/52574602" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6661.1","mod":"popu_871","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1-52574602-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"1","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/a909301740/article/details/52574602"}'  data-report-query='spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-52574602-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-52574602-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>FileInputStream</em>读取文件数据<em>的</em>两种方式</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/a909301740" target="_blank"><span class="blog-title">.</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">09-18</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					7万+
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/a909301740/article/details/52574602" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6661.1","mod":"popu_871","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant_t0.none-task-blog-2~default~CTRLIST~Rate-1-52574602-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"1","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/a909301740/article/details/52574602"}'  data-report-query='spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-52574602-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-52574602-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>FileInputStream</em><em>(</em>文件字节读取流<em>)</em>:
+
+<em>read</em><em>(</em><em>)</em>:一个一个字节<em>的</em>读
+
+<em>read</em><em>(</em><em>byte</em><em>[</em><em>]</em> buf<em>)</em>:先把字节存入到缓冲区字节数组<em>中</em>，一下读一个数组（常用）
+
+
+
+
+
+
+import java<em>.</em>io<em>.</em>File;
+import java<em>.</em>io<em>.</em><em>FileInputStream</em>;
+import java<em>.</em>io<em>.</em>FileNotFoundException;
+import java<em>.</em><em>.</em><em>.</em><em>.</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+                </div>
+            <script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_commontools-d5fda285fa.min.js" type="text/javascript" async></script>
+            <div class="second-recommend-box recommend-box ">
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_34292402/article/details/92590401"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.1","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-1-92590401-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"1","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weixin_34292402/article/details/92590401"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_34292402/article/details/92590401" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.1","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-1-92590401-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"1","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weixin_34292402/article/details/92590401"}'  data-report-query='spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-92590401-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-92590401-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>FileInputStream</em>读取文件数据<em>的</em>两种方式:<em>read</em><em>(</em><em>)</em>,<em>read</em><em>(</em><em>byte</em> b<em>[</em><em>]</em><em>)</em></div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_34292402" target="_blank"><span class="blog-title">weixin_34292402的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">06-22</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					867
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_34292402/article/details/92590401" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.1","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-1-92590401-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"1","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weixin_34292402/article/details/92590401"}'  data-report-query='spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-92590401-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-92590401-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">2019独角兽企业重金招聘Python工程师标准&gt;&gt;&gt;   
+                                        
+         <em>.</em><em>.</em><em>.</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+            </div>
+<a id="commentBox" name="commentBox"></a>
+<div id="pcCommentBox" class="comment-box comment-box-new2  login-comment-box-new" style="display:block">
+		<div class="has-comment" style="display:none">
+		<div class="has-comment-tit">评论<span class="count go-side-comment">0</span><span class="text go-side-comment">条</span><img class="go-side-comment more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowRightWhite.png" alt=""><a class="has-comment-bt-right go-side-comment focus">写评论</a></div>
+			<div class="has-comment-con comment-operate-item"></div>
+		</div>
+		<div class="unhas-comment" style="display:flex">
+			<div class="unhas-comment-left">评论</div>
+			<div class="unhas-comment-right"><a class="go-side-comment focus">写评论</a></div>
+		</div>
+</div>
+            <div class="recommend-box insert-baidu-box recommend-box-style ">
+                <div class="recommend-item-box no-index" style="display:none"></div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_41720428/article/details/105448493"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.2","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-2-105448493-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"2","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weixin_41720428/article/details/105448493"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_41720428/article/details/105448493" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.2","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-2-105448493-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"2","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weixin_41720428/article/details/105448493"}'  data-report-query='spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2-105448493-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2-105448493-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">【<em>FileInputStream</em>】<em>read</em><em>(</em><em>)</em>读取字节<em>的</em>一些疑惑<em>的</em>试验记录</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_41720428" target="_blank"><span class="blog-title">weixin_41720428的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">04-11</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					65
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_41720428/article/details/105448493" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.2","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-2-105448493-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"2","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weixin_41720428/article/details/105448493"}'  data-report-query='spm=1001.2101.3001.6650.2&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2-105448493-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2-105448493-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">package cn<em>.</em><em>fileinputstream</em><em>.</em><em>read</em>;
+
+import java<em>.</em>io<em>.</em>File;
+import java<em>.</em>io<em>.</em><em>FileInputStream</em>;
+import java<em>.</em>io<em>.</em>FileNotFoundException;
+import java<em>.</em>io<em>.</em>IOException;
+import java<em>.</em>util<em>.</em>Arrays;
+
+
+public class Test1 {<em>.</em><em>.</em><em>.</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/TP89757/article/details/85014516"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.3","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-3-85014516-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"3","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/TP89757/article/details/85014516"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/TP89757/article/details/85014516" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.3","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-3-85014516-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"3","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/TP89757/article/details/85014516"}'  data-report-query='spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-85014516-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-85014516-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">输入流InputStream<em>的</em><em>read</em><em>(</em><em>byte</em> b<em>[</em><em>]</em>, int off, int len<em>)</em>方法<em>的</em>使用</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/TP89757" target="_blank"><span class="blog-title">过河的小卒子的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">12-15</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					3244
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/TP89757/article/details/85014516" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.3","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-3-85014516-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"3","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/TP89757/article/details/85014516"}'  data-report-query='spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-85014516-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-85014516-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">输入流InputStream<em>的</em><em>read</em><em>(</em><em>byte</em> b<em>[</em><em>]</em>, int off, int len<em>)</em>方法<em>的</em>使用
+
+
+	参数
+
+	<em>byte</em> b<em>[</em><em>]</em> : the buffer into which the data is <em>read</em><em>.</em> 读取数据<em>的</em>缓冲区
+
+	int off ： the start offset in array <em>byte</em> b<em>[</em><em>]</em> <em>.</em> <em>byte</em> b<em>[</em><em>]</em><em>中</em><em>的</em>起始偏移量
+
+	int len： the<em>.</em><em>.</em><em>.</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+		<dl id="recommend-item-box-tow" class="recommend-item-box type_blog clearfix">
+			
+		</dl>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weilaidedakejilu/article/details/114018716"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.4","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4-114018716-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"4","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weilaidedakejilu/article/details/114018716"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weilaidedakejilu/article/details/114018716" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.4","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4-114018716-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"4","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weilaidedakejilu/article/details/114018716"}'  data-report-query='spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4-114018716-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4-114018716-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">文件操作输入流，输出流，BufferedWriter/<em>Read</em>er，FileWriter/<em>Read</em>er,<em>read</em>/<em>read</em>y,</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weilaidedakejilu" target="_blank"><span class="blog-title">eastlin</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">02-24</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					109
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weilaidedakejilu/article/details/114018716" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.4","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-4-114018716-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"4","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weilaidedakejilu/article/details/114018716"}'  data-report-query='spm=1001.2101.3001.6650.4&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4-114018716-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-4-114018716-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">public class Circle{
+
+    public static void main<em>(</em>String<em>[</em><em>]</em> args<em>)</em> {
+        circle<em>(</em>5<em>)</em>; // 输出半径为5<em>的</em>圆
+    }
+
+    public static void circle<em>(</em>int r<em>)</em> {
+        for <em>(</em>int y = 0; y &lt;= 2 * r; y += 2<em>)</em> {//0，2，4，6，8，10
+            int x = <em>(</em>int<em>)</em> Math<em>.</em>round<em>(</em>r - Math<em>.</em>sqr</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_30568591/article/details/95714038"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.5","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-5-95714038-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"5","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_30568591/article/details/95714038"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_30568591/article/details/95714038" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.5","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-5-95714038-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"5","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_30568591/article/details/95714038"}'  data-report-query='spm=1001.2101.3001.6650.5&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-5-95714038-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-5-95714038-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">JAVA-<em>FileInputStream</em>之<em>read</em>方法</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_30568591" target="_blank"><span class="blog-title">weixin_30568591的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">08-26</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1211
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_30568591/article/details/95714038" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.5","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-5-95714038-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"5","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_30568591/article/details/95714038"}'  data-report-query='spm=1001.2101.3001.6650.5&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-5-95714038-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-5-95714038-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">　　今天一个友询问FileInputStrem方法<em>的</em><em>read</em><em>(</em><em>)</em>和<em>read</em><em>(</em><em>byte</em> b<em>)</em> 方法为什么都用-1来判断读文件结束<em>的</em>问题，在此和大家一起学习下。
+
+　　关于<em>FileInputStream</em>
+
+　　　　它用于读取本地文件<em>中</em><em>的</em>字节数据，继承自InputStream类，由于所有<em>的</em>文件都是以字节为向导，因此它适用于操作于任何形式<em>的</em>文件。
+ 关于其最重要<em>的</em>两个方法<em>Read</em><em>(</em><em>)</em>和<em>.</em><em>.</em><em>.</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_42378072/article/details/110632743"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.6","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-6-110632743-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"6","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_42378072/article/details/110632743"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_42378072/article/details/110632743" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.6","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-6-110632743-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"6","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_42378072/article/details/110632743"}'  data-report-query='spm=1001.2101.3001.6650.6&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-110632743-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-110632743-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>FileInputStream</em><em>中</em><em>的</em><em>read</em><em>(</em><em>)</em>方法</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_42378072" target="_blank"><span class="blog-title">weixin_42378072的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">12-04</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					892
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_42378072/article/details/110632743" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.6","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-6-110632743-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"6","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_42378072/article/details/110632743"}'  data-report-query='spm=1001.2101.3001.6650.6&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-110632743-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-6-110632743-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">首先这是我自己写代码<em>的</em>时候遇到<em>的</em>一个问题，我思来想去，终于想通透了，所以想分享给大家，当然这也是一个非常简单<em>的</em>问题，大神勿喷。
+public class IO_InputStream
+  public static void main<em>(</em>String<em>[</em><em>]</em> args<em>)</em>{//需要导包<em>的</em>，图方便我就不写了
+//1<em>.</em>new一个<em>FileInputStream</em>对象
+   <em>FileInputStream</em> fis = new <em>FileInputStream</em><em>(</em>&quot;chifan<em>.</em>next<em>)</em><em>)</em> ;
+   //例如这个文本里面我放了1</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/Amo_te_ama_me/article/details/40587997"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.7","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-7-40587997-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"7","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/Amo_te_ama_me/article/details/40587997"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/Amo_te_ama_me/article/details/40587997" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.7","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-7-40587997-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"7","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/Amo_te_ama_me/article/details/40587997"}'  data-report-query='spm=1001.2101.3001.6650.7&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-40587997-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-40587997-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>FileInputStream</em><em>的</em><em>read</em>方法</div>
+					<div class="tag">热门推荐</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/Amo_te_ama_me" target="_blank"><span class="blog-title">渴望飞翔的猪</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">10-29</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1万+
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/Amo_te_ama_me/article/details/40587997" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.7","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-7-40587997-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"7","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/Amo_te_ama_me/article/details/40587997"}'  data-report-query='spm=1001.2101.3001.6650.7&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-40587997-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-40587997-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">今天写android程序时，被这一句搞迷糊了：</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/kendleo/article/details/105253030"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.8","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-105253030-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"8","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/kendleo/article/details/105253030"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/kendleo/article/details/105253030" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.8","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-105253030-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"8","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/kendleo/article/details/105253030"}'  data-report-query='spm=1001.2101.3001.6650.8&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-105253030-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-105253030-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">java <em>FileInputStream</em> 三种<em>read</em><em>(</em><em>)</em>函数</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/kendleo" target="_blank"><span class="blog-title">kendleo的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">04-01</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					8129
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/kendleo/article/details/105253030" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.8","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-8-105253030-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"8","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/kendleo/article/details/105253030"}'  data-report-query='spm=1001.2101.3001.6650.8&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-105253030-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-8-105253030-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1"><em>FileInputStream</em>流<em>的</em>三种<em>read</em><em>(</em><em>)</em>函数对比
+首先我们先创建FileIputStream流对文件进行读取
+	public static void main<em>(</em>String<em>[</em><em>]</em> args<em>)</em> throws IOException {
+		//创建File对象，保存文件夹路径iu
+		File fin_floder = new File<em>(</em>&quot;C:\\test<em>.</em>txt&quot;<em>)</em>;	
+	
+		//创建从<em>.</em><em>.</em><em>.</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_39809584/article/details/114800382"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.9","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-9-114800382-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"9","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_39809584/article/details/114800382"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_39809584/article/details/114800382" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.9","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-9-114800382-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"9","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_39809584/article/details/114800382"}'  data-report-query='spm=1001.2101.3001.6650.9&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-114800382-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-114800382-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">java <em>fileinputstream</em><em>.</em><em>read</em><em>(</em><em>byte</em><em>[</em><em>]</em><em>)</em>_初学Java，IO流<em>中</em><em>FileInputStream</em>采用<em>byte</em><em>[</em><em>]</em>方式读取</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_39809584" target="_blank"><span class="blog-title">weixin_39809584的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">02-27</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					545
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_39809584/article/details/114800382" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.9","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-9-114800382-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"9","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_39809584/article/details/114800382"}'  data-report-query='spm=1001.2101.3001.6650.9&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-114800382-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-9-114800382-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">IO流<em>中</em><em>FileInputStream</em>采用<em>byte</em><em>[</em><em>]</em>方式读取。相比单纯使用<em>read</em><em>(</em><em>)</em>方法读取文件，采用<em>byte</em><em>[</em><em>]</em>方式读取占用资源较少，一次读取<em>的</em>量较大，也就是<em>read</em><em>(</em><em>byte</em> b<em>[</em><em>]</em><em>)</em>。声明<em>byte</em><em>[</em><em>]</em>时采用静态初始化，这里让他每次读8<em>byte</em>输出时使用String<em>(</em><em>byte</em> <em>byte</em>s<em>[</em><em>]</em>, int offset, int length<em>)</em><em>的</em>方式输出，length就是最终<em>read</em><em>(</em><em>byte</em><em>.</em><em>.</em><em>.</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_41866717/article/details/116516871"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.10","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-10-116516871-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"10","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weixin_41866717/article/details/116516871"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_41866717/article/details/116516871" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.10","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-10-116516871-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"10","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weixin_41866717/article/details/116516871"}'  data-report-query='spm=1001.2101.3001.6650.10&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-10-116516871-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-10-116516871-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>FileInputStream</em><em>.</em><em>read</em><em>(</em><em>)</em>返回int类型原因</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_41866717" target="_blank"><span class="blog-title">weixin_41866717的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">05-08</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					428
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_41866717/article/details/116516871" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.10","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-10-116516871-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"10","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weixin_41866717/article/details/116516871"}'  data-report-query='spm=1001.2101.3001.6650.10&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-10-116516871-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-10-116516871-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">当我用<em>fileinputstream</em>流读取文件<em>的</em>时候，然后用<em>fileinputstream</em><em>.</em><em>read</em><em>(</em><em>)</em>方法读取文件<em>的</em>时候，当我查看API<em>的</em>时候，发现<em>read</em><em>(</em><em>)</em>是读取每个字节，然后返回一个int类型，有没有很纳闷，读取<em>的</em>字节，为什么返回一个int呢？
+<em>FileInputStream</em><em>.</em><em>read</em><em>(</em><em>)</em>读取一个<em>byte</em>却返回一个int<em>的</em>原因如下：
+因为字节输入流可以操作任意类型<em>的</em>文件,比如图片音频等,这些文件底层都是以二进制形式<em>的</em>存储<em>的</em>,如果每次读取都返回<em>byte</em>,有可能在读到<em>中</em>间<em>的</em>时候遇到111111111
+那</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/lucky_liuxiang/article/details/46777125"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.11","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-11-46777125-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"11","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/lucky_liuxiang/article/details/46777125"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/lucky_liuxiang/article/details/46777125" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.11","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-11-46777125-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"11","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/lucky_liuxiang/article/details/46777125"}'  data-report-query='spm=1001.2101.3001.6650.11&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-11-46777125-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-11-46777125-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">慎用InputStream<em>的</em><em>read</em><em>(</em><em>)</em>方法</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/lucky_liuxiang" target="_blank"><span class="blog-title">The more effort ,the more lucky</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">07-06</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					2661
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/lucky_liuxiang/article/details/46777125" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.11","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-11-46777125-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"11","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/lucky_liuxiang/article/details/46777125"}'  data-report-query='spm=1001.2101.3001.6650.11&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-11-46777125-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-11-46777125-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">InputStream&nbsp;此抽象类是表示字节输入流<em>的</em>所有类<em>的</em>超类。
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们从输入流<em>中</em>读取数据最常用<em>的</em>方法基本上就是如下&nbsp;3&nbsp;个&nbsp;<em>read</em><em>(</em><em>)</em>&nbsp;方法了：
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;、&nbsp;<em>read</em>&nbsp;<em>(</em><em>)</em>&nbsp;方法，这个方法&nbsp;从输入流<em>中</em>读取数据<em>的</em>下一个字节。返回
+ 0&nbsp;到&nbsp;255&nbsp;范围内<em>的</em>&nbsp;int&nbsp;字节值。如果因为已经到达流末尾而没有可用<em>的</em>字节，则返回值&nbsp;-1&nbsp;。
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_33719619/article/details/93806032"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.12","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-12-93806032-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"12","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weixin_33719619/article/details/93806032"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_33719619/article/details/93806032" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.12","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-12-93806032-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"12","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weixin_33719619/article/details/93806032"}'  data-report-query='spm=1001.2101.3001.6650.12&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-12-93806032-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-12-93806032-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">Java分享笔记：<em>FileInputStream</em>流<em>的</em> <em>read</em><em>(</em><em>)</em>方法 和 <em>read</em><em>(</em><em>byte</em><em>[</em><em>]</em> b<em>)</em>方法</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_33719619" target="_blank"><span class="blog-title">weixin_33719619的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">07-24</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					547
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_33719619/article/details/93806032" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.12","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~CTRLIST~Rate-12-93806032-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"12","strategy":"2~default~CTRLIST~Rate","dest":"https://blog.csdn.net/weixin_33719619/article/details/93806032"}'  data-report-query='spm=1001.2101.3001.6650.12&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-12-93806032-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-12-93806032-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">1 /*------------------------
+ 2 <em>FileInputStream</em>:
+ 3 <em>.</em><em>.</em><em>.</em><em>.</em>//输入流，字节流
+ 4 <em>.</em><em>.</em><em>.</em><em>.</em>//从硬盘<em>中</em>存在<em>的</em>一个文件<em>中</em>读取内容，读取到程序<em>中</em>
+ 5 <em>.</em><em>.</em><em>.</em><em>.</em>//<em>read</em><em>(</em><em>)</em>方法：从此输入流<em>中</em>读取一个数据字节
+ 6 <em>.</em><em>.</em><em>.</em><em>.</em>//<em>read</em><em>(</em><em>byte</em><em>[</em><em>]</em> b<em>)</em>方法：从此输入流<em>中</em>将最多b<em>.</em>length个字节<em>的</em>数据读入一个字节数组<em>中</em>
+<em>.</em><em>.</em><em>.</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/qq_51939838/article/details/119653800"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.13","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-13-119653800-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"13","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_51939838/article/details/119653800"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/qq_51939838/article/details/119653800" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.13","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-13-119653800-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"13","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_51939838/article/details/119653800"}'  data-report-query='spm=1001.2101.3001.6650.13&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-119653800-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-119653800-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">Java IO流 File类学习总结 文件<em>的</em>读取，写入和复制</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/qq_51939838" target="_blank"><span class="blog-title">qq_51939838的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">08-12</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					375
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/qq_51939838/article/details/119653800" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.13","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-13-119653800-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"13","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_51939838/article/details/119653800"}'  data-report-query='spm=1001.2101.3001.6650.13&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-119653800-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-13-119653800-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">IO流
+File类
+
+测试用例
+public class Dkdir1 {
+    public static void main<em>(</em>String<em>[</em><em>]</em> args<em>)</em> throws IOException {
+        File file = new File<em>(</em>&quot;E:\\JavaIdea\\te728\\mkdir&quot;<em>)</em>;
+        System<em>.</em>out<em>.</em>println<em>(</em>file<em>.</em>exists<em>(</em><em>)</em><em>)</em>;  //判断是否是存在
+        // System<em>.</em>out<em>.</em>println<em>(</em>file<em>.</em>creat</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/dubo_csdn/article/details/103450317"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.14","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-14-103450317-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"14","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/dubo_csdn/article/details/103450317"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/dubo_csdn/article/details/103450317" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.14","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-14-103450317-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"14","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/dubo_csdn/article/details/103450317"}'  data-report-query='spm=1001.2101.3001.6650.14&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-103450317-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-103450317-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">Java 拷贝文件<em>的</em> 9 种方式和<em>FileInputStream</em>，BufferedInputStream 和 File<em>Read</em>er 区别</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/dubo_csdn" target="_blank"><span class="blog-title">bobo的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">12-08</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					458
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/dubo_csdn/article/details/103450317" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.14","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-14-103450317-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"14","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/dubo_csdn/article/details/103450317"}'  data-report-query='spm=1001.2101.3001.6650.14&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-103450317-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-14-103450317-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">先放总结
+
+如果是对图片、音乐、视频、压缩包等文件<em>的</em>拷贝，推荐使用缓冲字节输入/输出流<em>(</em>BufferedOutputStream<em>)</em>+字节数组<em>(</em>第4种<em>)</em>
+
+如果是对文本文件<em>的</em>读取和拷贝，推荐使用字符缓存输入/输出流<em>(</em>BufferedWriter<em>)</em> + 按行读取<em>(</em>第9种<em>)</em>
+
+对于特大文件，比如 1 个 G 以上<em>的</em>，多线程操作可以使用 NIO <em>(</em>第 10 种<em>)</em>。
+
+
+
+一、字节流
+
+1、Fil<em>.</em><em>.</em><em>.</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_47267628/article/details/123337929"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.15","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-15-123337929-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"15","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_47267628/article/details/123337929"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_47267628/article/details/123337929" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.15","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-15-123337929-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"15","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_47267628/article/details/123337929"}'  data-report-query='spm=1001.2101.3001.6650.15&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-123337929-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-123337929-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">IO流原理<em>及</em>流<em>的</em>分类<em>FileInputStream</em>类和FileOutputStream类基本介绍</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_47267628" target="_blank"><span class="blog-title">weixin_47267628的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">03-07</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					529
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_47267628/article/details/123337929" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.15","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-15-123337929-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"15","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_47267628/article/details/123337929"}'  data-report-query='spm=1001.2101.3001.6650.15&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-123337929-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-15-123337929-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">IO流原理<em>及</em>流<em>的</em>分类
+java IO流工作原理
+
+I/O是Input【输入流】   /  Output【输出流】<em>的</em>缩写，I/O技术是非常实用技术，用于处理数据传输。如读、写文件，网络通讯等。
+Java程序<em>中</em>，对于数据<em>的</em>输入/输出操作以流【stream】<em>的</em>方式进行
+java<em>.</em>io包下提供了各种 &rdquo;流&ldquo; 类和接口，用以获取不同种类<em>的</em>数据，并通过方法输入或输出数据
+输入 input：读取外部数据【如：磁盘，光盘等存储设备<em>的</em>数据】到程序【内存】<em>中</em>
+输出output：将程序【内存】数据输出到磁盘<em>中</em>，光盘等存储设备<em>中</em>
+</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/qq_51328499/article/details/121455817"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.16","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-16-121455817-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"16","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_51328499/article/details/121455817"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/qq_51328499/article/details/121455817" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.16","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-16-121455817-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"16","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_51328499/article/details/121455817"}'  data-report-query='spm=1001.2101.3001.6650.16&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-121455817-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-121455817-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1"><em>FileInputStream</em> 和 FileOutputStream</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/qq_51328499" target="_blank"><span class="blog-title">qq_51328499的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">11-21</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					1456
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/qq_51328499/article/details/121455817" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.16","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-16-121455817-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"16","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/qq_51328499/article/details/121455817"}'  data-report-query='spm=1001.2101.3001.6650.16&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-121455817-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-16-121455817-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">1、什么是流
+
+流是一连串流动<em>的</em>字符, 是一组有序<em>的</em>数据序列，是以先进先出方式发送信息<em>的</em>通道，将数据从一个地方带到另一个地方，在 java <em>中</em>所有数据都是使用流读写<em>的</em>。同时可以通过流进行文件<em>的</em>读写操作。
+
+2、流<em>的</em>分类
+
+    按照流向，可以分为输入流和输出流两大类
+
+简单来说，可以理解为将磁盘<em>中</em><em>的</em>数据读入到内存<em>中</em>即为输入流；相反，将内存<em>中</em><em>的</em>数据存入磁盘<em>中</em>即为输出流
+
+
+
+    按处理数据<em>的</em>单元，可以将流分为字节流和字符流两大类
+
+   字节流是<em>.</em><em>.</em><em>.</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_38036079/article/details/123756735"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.17","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-17-123756735-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"17","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_38036079/article/details/123756735"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_38036079/article/details/123756735" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.17","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-17-123756735-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"17","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_38036079/article/details/123756735"}'  data-report-query='spm=1001.2101.3001.6650.17&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-123756735-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-123756735-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">对<em>FileInputStream</em><em>.</em><em>read</em><em>(</em><em>)</em>方法<em>的</em>一点心得</div>
+					<div class="tag">最新发布</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_38036079" target="_blank"><span class="blog-title">weixin_38036079的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">03-26</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					451
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_38036079/article/details/123756735" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.17","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-17-123756735-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"17","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_38036079/article/details/123756735"}'  data-report-query='spm=1001.2101.3001.6650.17&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-123756735-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-17-123756735-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">先上代码
+
+
+			1
+
+			2
+
+			3
+
+			4
+
+			5
+
+			6
+
+			7
+			
+			
+			FileOutputStream outputStream =newFileOutputStream<em>(</em>&quot;data<em>.</em>txt&quot;<em>)</em>;
+
+			<em>byte</em><em>[</em><em>]</em> <em>byte</em>s =new<em>byte</em><em>[</em>1024<em>]</em>;
+
+			intnum =0;
+
+			while<em>(</em><em>(</em>num=<em>fileInputStream</em><em>.</em><em>read</em><em>(</em><em>byte</em>s<em>)</em><em>)</em> != -1<em>)</em>{
+
+		<em>.</em><em>.</em><em>.</em></div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_44313859/article/details/120459338"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.18","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-18-120459338-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"18","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_44313859/article/details/120459338"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_44313859/article/details/120459338" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.18","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-18-120459338-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"18","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_44313859/article/details/120459338"}'  data-report-query='spm=1001.2101.3001.6650.18&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-120459338-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-120459338-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">文件io基础</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_44313859" target="_blank"><span class="blog-title">weixin_44313859的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">09-24</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					33
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_44313859/article/details/120459338" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.18","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-18-120459338-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"18","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://blog.csdn.net/weixin_44313859/article/details/120459338"}'  data-report-query='spm=1001.2101.3001.6650.18&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-120459338-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-18-120459338-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">文件
+流：数据在数据源（文件）和程序（内存）之间经历<em>的</em>路径
+输入流：数据从数据源（文件）到程序（内存）<em>的</em>路径
+输出流：数据从程序（内存）到数据源（文件）<em>的</em>路径
+创建文件
+
+
+new File<em>(</em>String pathname<em>)</em>  //根据路径构建一个File对象
+public void create01<em>(</em><em>)</em> {
+    String filePath = &quot;d:\\demo01<em>.</em>txt&quot;;
+    File file = new File<em>(</em>filePath<em>)</em>;
+    try {
+        file<em>.</em>c</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://gyaoxiong.blog.csdn.net/article/details/123233589"  data-report-view='{"ab":"new","spm":"1001.2101.3001.6650.19","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-19-123233589-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"19","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://gyaoxiong.blog.csdn.net/article/details/123233589"}'>
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://gyaoxiong.blog.csdn.net/article/details/123233589" class="tit" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.19","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-19-123233589-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"19","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://gyaoxiong.blog.csdn.net/article/details/123233589"}'  data-report-query='spm=1001.2101.3001.6650.19&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-19-123233589-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-19-123233589-blog-95508722.pc_relevant_default'>
+					<div class="left ellipsis-online ellipsis-online-1">【Javaweb】文件操作&mdash;&mdash;IO</div>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/qq_50156012" target="_blank"><span class="blog-title">耀的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">03-02</span>
+					<span class="info-block read"><img class="read-img" src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					539
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://gyaoxiong.blog.csdn.net/article/details/123233589" target="_blank"  data-report-click='{"ab":"new","spm":"1001.2101.3001.6650.19","mod":"popu_387","extra":"{\"highlightScore\":0.0,\"utm_medium\":\"distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromBaidu~Rate-19-123233589-blog-95508722.pc_relevant_default\",\"dist_request_id\":\"1666347403832_54290\"}","dist_request_id":"1666347403832_54290","ab_strategy":"default","index":"19","strategy":"2~default~BlogCommendFromBaidu~Rate","dest":"https://gyaoxiong.blog.csdn.net/article/details/123233589"}'  data-report-query='spm=1001.2101.3001.6650.19&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-19-123233589-blog-95508722.pc_relevant_default&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-19-123233589-blog-95508722.pc_relevant_default'>
+				<div class="desc ellipsis-online ellipsis-online-1">目录
+
+一、认识文件
+
+二、Java <em>中</em>操作文件
+
+1，方法
+
+示例1
+
+示例2
+
+示例3
+
+示例4
+
+三、文件内容<em>的</em>读写 &mdash;&mdash; 数据流
+
+1，InputStream 概述
+
+2，OutputStream概述
+
+3，流对象操作
+
+4，代码优化
+
+5，BufferedInputStream与BufferedOutputStream
+
+6，字符流
+
+四、序列化与反序列化
+
+
+
+一、认识文件
+
+
+我们先来认识狭义上<em>的</em>文件<em>(</em>file<em>)</em>。针对硬盘这种持久化存储<em>的</em>I/O设备，当我们想要进行数据保存时， 往往不是保存成一</div>
+			</a>
+		</div>
+	</div>
+</div>
+            </div>
+<div id="recommendNps" class="recommend-nps-box common-nps-box">
+  <h3 class="aside-title">“相关推荐”对你有帮助么？</h3>
+  <div class="aside-content">
+      <ul class="newnps-list">
+          <li class="newnps-item" data-type="非常没帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel1.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey1.png" alt="">
+              </div>
+              <div class="newnps-text">非常没帮助</div>
+          </li>
+          <li class="newnps-item" data-type="没帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel2.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey2.png" alt="">
+              </div>
+              <div class="newnps-text">没帮助</div>
+          </li>
+          <li class="newnps-item" data-type="一般">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel3.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey3.png" alt="">
+              </div>
+              <div class="newnps-text">一般</div>
+          </li>
+          <li class="newnps-item" data-type="有帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel4.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey4.png" alt="">
+              </div>
+              <div class="newnps-text">有帮助</div>
+          </li>
+          <li class="newnps-item" data-type="非常有帮助">
+              <div class="newnps-img-box">
+                  <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel5.png" alt="">
+                  <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey5.png" alt="">
+              </div>
+              <div class="newnps-text">非常有帮助</div>
+          </li>
+      </ul>
+      <div class="newnps-form-box">
+      <div class="newnps-form">
+          <input type="text" placeholder="请输入建议或反馈后点击提交" class="newnps-input">
+          <span class="newnps-btn">提交</span>
+      </div>
+      </div>
+  </div>
+</div>            <div class="template-box">
+                <span>©️2022 CSDN</span>
+                <span>皮肤主题：大白</span>
+                <span> 设计师：CSDN官方博客</span>
+                <span>
+                    <a href="https://blog.csdn.net/" class="back-home c-blue c-blue-hover c-blue-focus">返回首页</a>
+                </span>
+            </div>
+<div class="blog-footer-bottom" style="margin-top:10px;"></div>
+<script src="https://g.csdnimg.cn/common/csdn-footer/csdn-footer.js" data-isfootertrack="false" type="text/javascript"></script>
+<script type="text/javascript">
+    window.csdn.csdnFooter.options = {
+        el: '.blog-footer-bottom',
+        type: 2
+    }
+</script>        </main>
+<aside class="blog_container_aside">
+<div id="asideProfile" class="aside-box">
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/u010389391" target="_blank" data-report-click='{"mod":"popu_379","spm":"1001.2101.3001.4121","dest":"https://blog.csdn.net/u010389391","ab":"new"}'>
+                <img src="https://profile.csdnimg.cn/1/E/A/3_u010389391" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex flex-column profile-intro-name-box">
+            <div class="profile-intro-name-boxTop">
+                <a href="https://blog.csdn.net/u010389391" target="_blank" class="" id="uid" title="仰子瞻" data-report-click='{"mod":"popu_379","spm":"1001.2101.3001.4122","dest":"https://blog.csdn.net/u010389391","ab":"new"}'>
+                    <span class="name " username="u010389391">仰子瞻</span>
+                </a>
+                <span>
+                </span>
+                <span class="flag expert-blog">
+                <span class="bubble">CSDN认证博客专家</span>
+                </span>
+                <span class="flag company-blog">
+                <span class="bubble">CSDN认证企业博客</span>
+                </span>
+            </div>
+            <div class="profile-intro-name-boxFooter">
+                <span class="personal-home-page personal-home-years" title="已加入 CSDN 10年">码龄10年</span>
+                    <span class="personal-home-page">
+                    <a class="personal-home-certification" href="https://i.csdn.net/#/uc/profile?utm_source=14998968" target="_blank" title="暂无认证">
+                    <img src="https://csdnimg.cn/identity/nocErtification.png" alt="">
+                    暂无认证
+                    </a>
+                    </span>
+            </div>
+        </div>
+    </div>
+    <div class="data-info d-flex item-tiling">
+        <dl class="text-center" title="50">
+            <a href="https://blog.csdn.net/u010389391" data-report-click='{"mod":"1598321000_001","spm":"1001.2101.3001.4310"}' data-report-query="t=1">  
+                <dt><span class="count">50</span></dt>
+                <dd class="font">原创</dd>
+            </a>
+        </dl>
+        <dl class="text-center" data-report-click='{"mod":"1598321000_002","spm":"1001.2101.3001.4311"}' title="148514">
+            <a href="https://blog.csdn.net/rank/list/weekly" target="_blank">
+                <dt><span class="count">14万+</span></dt>
+                <dd class="font">周排名</dd>
+            </a>
+        </dl>
+        <dl class="text-center" title="1210177">
+            <a href="https://blog.csdn.net/rank/list/total" data-report-click='{"mod":"1598321000_003","spm":"1001.2101.3001.4312"}' target="_blank">
+                <dt><span class="count">121万+</span></dt>
+                <dd class="font">总排名</dd>
+            </a>
+        </dl>
+        <dl class="text-center" style="min-width:58px" title="136552">  
+            <dt><span class="count">13万+</span></dt>
+            <dd>访问</dd>
+        </dl>
+        <dl class="text-center" title="4级,点击查看等级说明">
+            <dt><a href="https://blog.csdn.net/blogdevteam/article/details/103478461" target="_blank">
+                <img class="level" src="https://csdnimg.cn/identity/blog4.png">
+            </a>
+            </dt>
+            <dd>等级</dd>
+        </dl>
+    </div>
+    <div class="item-rank"></div>
+    <div class="data-info d-flex item-tiling">
+        <dl class="text-center" title="1518">
+            <dt><span class="count">1518</span></dt>
+            <dd>积分</dd>
+        </dl>
+         <dl class="text-center" id="fanBox" title="10">
+            <dt><span class="count" id="fan">10</span></dt>
+            <dd>粉丝</dd>
+        </dl>
+        <dl class="text-center" title="80">
+            <dt><span class="count">80</span></dt>
+            <dd>获赞</dd>
+        </dl>
+        <dl class="text-center" title="17">
+            <dt><span class="count">17</span></dt>
+            <dd>评论</dd>
+        </dl>
+        <dl class="text-center" title="112">
+            <dt><span class="count">112</span></dt>
+            <dd>收藏</dd>
+        </dl>
+    </div>
+    <div class="aside-box-footer" data-report-view='{"spm":"3001.4296"}'>
+        <div class="badge-box d-flex">
+            <div class="badge d-flex">
+                <div class="icon-badge" title="持之以恒">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/chizhiyiheng@240.png" alt="持之以恒">
+                    </div>
+                </div>
+                <div class="icon-badge" title="笔耕不辍">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/70592b2299594e37aedcaa91fc52a294.png" alt="笔耕不辍">
+                    </div>
+                </div>
+                <div class="icon-badge" title="勤写标兵">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click='{"spm":"3001.4296"}' src="https://csdnimg.cn/medal/qixiebiaobing4@240.png" alt="勤写标兵">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="profile-intro-name-boxOpration">
+        <div class="opt-letter-watch-box">
+        <a class="bt-button personal-letter" href="https://im.csdn.net/chat/u010389391" target="_blank" rel="noopener">私信</a>
+        </div>
+        <div class="opt-letter-watch-box"> 
+            <a class="personal-watch bt-button" id="btnAttent" >关注</a>  
+        </div>
+    </div>
+</div>
+ <div id="asideSearchArticle" class="aside-box">
+	<div class="aside-content search-comter">
+    <div class="aside-search aside-search-blog">         
+        <input type="text" class="input-serch-blog" name="" autocomplete="off" value="" id="search-blog-words" placeholder="搜博主文章">
+        <a class="btn-search-blog">
+                    <img src="//csdnimg.cn/cdn/content-toolbar/csdn-sou.png?v=1587021042">
+        </a>
+    </div>
+    </div>
+</div>
+
+
+<div id="asideHotArticle" class="aside-box">
+	<h3 class="aside-title">热门文章</h3>
+	<div class="aside-content">
+		<ul class="hotArticle-list">
+			<li>
+				<a href="https://blog.csdn.net/u010389391/article/details/78558475" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/u010389391/article/details/78558475","ab":"new"}'>
+				Android Intent.FLAG_ACTIVITY_NEW_TASK的个人理解
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">48482</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/u010389391/article/details/52859207" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/u010389391/article/details/52859207","ab":"new"}'>
+				android中的windowTranslucentStatus和fitsSystemWindows的作用
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">12943</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/u010389391/article/details/53007706" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/u010389391/article/details/53007706","ab":"new"}'>
+				View的一系列SYSTEM_UI_FLAG的作用
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">11445</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/u010389391/article/details/52767181" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/u010389391/article/details/52767181","ab":"new"}'>
+				View测量模式：EXACTLY、AT_MOST、UNSPECIFIED
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">9874</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/u010389391/article/details/80316021" target="_blank"  data-report-click='{"mod":"popu_541","spm":"1001.2101.3001.4139","dest":"https://blog.csdn.net/u010389391/article/details/80316021","ab":"new"}'>
+				Android中userId的作用
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/readCountWhite.png" alt="">
+					<span class="read">8443</span>
+                </a>
+			</li>
+		</ul>
+	</div>
+</div>
+<div id="asideCategory" class="aside-box flexible-box">
+    <h3 class="aside-title">分类专栏</h3>
+    <div class="aside-content">
+        <ul>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010389391/category_9775360.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010389391/category_9775360.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        字节码
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010389391/category_9416579.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010389391/category_9416579.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756724.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        Java虚拟机
+                    </span>
+                </a>
+                <span class="special-column-num">5篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010389391/category_10155774.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010389391/category_10155774.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756913.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        线程
+                    </span>
+                </a>
+                <span class="special-column-num">2篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010389391/category_10253859.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010389391/category_10253859.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756724.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        计算机基础
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010389391/category_9782188.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010389391/category_9782188.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756923.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        执行引擎
+                    </span>
+                </a>
+                <span class="special-column-num">1篇</span>
+            </li>
+            <li>
+                <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010389391/category_9388547.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010389391/category_9388547.html","ab":"new"}'>
+                    <div class="special-column-bar "></div>
+                    <img src="https://img-blog.csdnimg.cn/20201014180756930.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        Java数组集合
+                    </span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <p class="text-center">
+        <a class="flexible-btn" data-fbox="aside-archive"><img class="look-more" src="https://csdnimg.cn/release/blogv2/dist/pc/img/arrowDownWhite.png" alt=""></a>
+    </p>
+</div>
+<div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/u010389391/article/details/126152444#comments_22711328" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010389391/article/details/126152444#comments_22711328","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010389391/article/details/126152444#comments_22711328","ab":"new"}'>Spring底层核心原理解析</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/community_717" class="user-name" target="_blank">programmer_ada: </a>
+                    <span class="code-comments">Java 技能树或许可以帮到你：https://edu.csdn.net/skill/java?utm_source=AI_act_java</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/u010389391/article/details/78558475#comments_21321132" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010389391/article/details/78558475#comments_21321132","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010389391/article/details/78558475#comments_21321132","ab":"new"}'>Android Intent.FLAG_ACTIVITY_NEW_TASK的个人理解</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/weixin_44272052" class="user-name" target="_blank">weixin_44272052: </a>
+                    <span class="code-comments">可以自行试一下不加intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)，结果是两个taskId都是一样的----------------这个我试了，不管有没有加taskId都是不一样的</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/u010389391/article/details/79147328#comments_19746371" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010389391/article/details/79147328#comments_19746371","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010389391/article/details/79147328#comments_19746371","ab":"new"}'>关于Activity的onCreate方法是如何被执行的</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/u010389391" class="user-name" target="_blank">仰子瞻: </a>
+                    <span class="code-comments">看的挺多<img src="https://g.csdnimg.cn/static/face/emoji/010.png" alt='表情包' ></span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/u010389391/article/details/79147328#comments_19610821" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010389391/article/details/79147328#comments_19610821","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010389391/article/details/79147328#comments_19610821","ab":"new"}'>关于Activity的onCreate方法是如何被执行的</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/dzyzj" class="user-name" target="_blank">余生请叫我周先生: </a>
+                    <span class="code-comments">厉害了，这得看多少源码才能总结出来呢
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<img src="https://g.csdnimg.cn/static/face/emoji/001.png" alt='表情包' ></span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/u010389391/article/details/53007706#comments_19447296" data-report-click='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010389391/article/details/53007706#comments_19447296","ab":"new"}' data-report-view='{"mod":"popu_542","spm":"1001.2101.3001.4231","dest":"https://blog.csdn.net/u010389391/article/details/53007706#comments_19447296","ab":"new"}'>View的一系列SYSTEM_UI_FLAG的作用</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/weixin_42309075" class="user-name" target="_blank">悟能兄: </a>
+                    <span class="code-comments">好文</span>
+                </p>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="asideNewNps" class="aside-box common-nps-box">
+    <h3 class="aside-title">您愿意向朋友推荐“博客详情页”吗？</h3>
+    <div class="aside-content">
+        <ul class="newnps-list">
+            <li class="newnps-item" data-type="强烈不推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel1.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey1.png" alt="">
+                </div>
+                <div class="newnps-text">强烈不推荐</div>
+            </li>
+            <li class="newnps-item" data-type="不推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel2.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey2.png" alt="">
+                </div>
+                <div class="newnps-text">不推荐</div>
+            </li>
+            <li class="newnps-item" data-type="一般般">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel3.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey3.png" alt="">
+                </div>
+                <div class="newnps-text">一般般</div>
+            </li>
+            <li class="newnps-item" data-type="推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel4.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey4.png" alt="">
+                </div>
+                <div class="newnps-text">推荐</div>
+            </li>
+            <li class="newnps-item" data-type="强烈推荐">
+                <div class="newnps-img-box">
+                    <img class="newnps-img active" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeel5.png" alt="">
+                    <img class="newnps-img default" src="https://csdnimg.cn/release/blogv2/dist/pc/img/npsFeelGrey5.png" alt="">
+                </div>
+                <div class="newnps-text">强烈推荐</div>
+            </li>
+        </ul>
+        <div class="newnps-form-box">
+        <div class="newnps-form">
+            <input type="text" placeholder="请输入建议或反馈后点击提交" class="newnps-input">
+            <span class="newnps-btn">提交</span>
+        </div>
+        </div>
+    </div>
+</div>
+<div id="asideArchive" class="aside-box" style="display:block!important; width:300px;">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix">
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/u010389391/article/details/126152444" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/u010389391/article/details/126152444","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/u010389391/article/details/126152444","ab":"new"}'>Spring底层核心原理解析</a>
+            </li>
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/u010389391/article/details/107892299" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/u010389391/article/details/107892299","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/u010389391/article/details/107892299","ab":"new"}'>对volatile关键字的学习总结</a>
+            </li>
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/u010389391/article/details/107716778" target="_blank" data-report-click='{"mod":"popu_382","spm":"1001.2101.3001.4136","dest":"https://blog.csdn.net/u010389391/article/details/107716778","ab":"new"}' data-report-view='{"mod":"popu_382","dest":"https://blog.csdn.net/u010389391/article/details/107716778","ab":"new"}'>CPU Cache在Java中的简单应用</a>
+            </li>
+        </ul>
+        <div class="archive-bar"></div>
+        <div class="archive-box">
+                <div class="archive-list-item"><a href="https://blog.csdn.net/u010389391?type=blog&amp;year=2022&amp;month=08" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/u010389391?type=blog&amp;year=2022&amp;month=08"}'><span class="year">2022年</span><span class="num">1篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/u010389391?type=blog&amp;year=2020&amp;month=08" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/u010389391?type=blog&amp;year=2020&amp;month=08"}'><span class="year">2020年</span><span class="num">7篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/u010389391?type=blog&amp;year=2019&amp;month=10" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/u010389391?type=blog&amp;year=2019&amp;month=10"}'><span class="year">2019年</span><span class="num">7篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/u010389391?type=blog&amp;year=2018&amp;month=05" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/u010389391?type=blog&amp;year=2018&amp;month=05"}'><span class="year">2018年</span><span class="num">5篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/u010389391?type=blog&amp;year=2017&amp;month=11" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/u010389391?type=blog&amp;year=2017&amp;month=11"}'><span class="year">2017年</span><span class="num">7篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/u010389391?type=blog&amp;year=2016&amp;month=11" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/u010389391?type=blog&amp;year=2016&amp;month=11"}'><span class="year">2016年</span><span class="num">22篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/u010389391?type=blog&amp;year=2015&amp;month=12" target="_blank" data-report-click='{"mod":"popu_538","spm":"1001.2101.3001.4138","ab":"new","dest":"https://blog.csdn.net/u010389391?type=blog&amp;year=2015&amp;month=12"}'><span class="year">2015年</span><span class="num">1篇</span></a></div>
+        </div>
+    </div>
+</div>
+	<div id="footerRightAds" class="isShowFooterAds">
+		<div class="aside-box">
+			<div id="kp_box_57" data-pid="57"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1076724771190722"
+     crossorigin="anonymous"></script>
+<!-- PC-博客-详情页-左下视窗-80-99 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1076724771190722"
+     data-ad-slot="7418711749"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=57&adId=1015194&a=1015194&c=0&k=FileInputStream中read及readbyte b的用法&spm=1001.2101.3001.5001&articleId=95508722&d=1&t=3&u=0b0b6a5264274b5c9f89c4e931f53283" style="display: block;width: 0px;height: 0px;"></div>
+		</div>
+	</div>
+    <!-- 详情页显示目录 -->
+<!--文章目录-->
+<div id="asidedirectory" class="aside-box">
+    <div class='groupfile' id="directory">
+        <h3 class="aside-title">目录</h3>
+        <div class="align-items-stretch group_item">
+            <div class="pos-box">
+            <div class="scroll-box">
+                <div class="toc-box"></div>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+</aside>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).parents("p.text-center").remove();
+	})
+</script>
+<script type="text/javascript"  src="https://g.csdnimg.cn/user-tooltip/2.7/user-tooltip.js"></script>
+<script type="text/javascript"  src="https://g.csdnimg.cn/user-medal/2.0.0/user-medal.js"></script>    </div>
+<div class="recommend-right align-items-stretch clearfix" id="rightAside" data-type="recommend">
+    <aside class="recommend-right_aside">
+        <div id="recommend-right" >
+                                <div class="programmer1Box">
+                        <div id="kp_box_530" data-pid="530"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1076724771190722"
+     crossorigin="anonymous"></script>
+<!-- PC-博客-详情页-右上视窗-80-99 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1076724771190722"
+     data-ad-slot="1041005650"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=530&adId=1015191&a=1015191&c=0&k=FileInputStream中read及readbyte b的用法&spm=1001.2101.3001.4647&articleId=95508722&d=1&t=3&u=0d6fe516ce714516b7941d43d9b407f0" style="display: block;width: 0px;height: 0px;"></div>
+                    </div>
+            <div class='flex-column aside-box groupfile' id="groupfile">
+                <div class="groupfile-div">
+                <h3 class="aside-title">目录</h3>
+                <div class="align-items-stretch group_item">
+                    <div class="pos-box">
+                        <div class="scroll-box">
+                            <div class="toc-box"></div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+                <div id="recommendAdBox">
+                    <div id="kp_box_479" data-pid="479"><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1076724771190722"
+     crossorigin="anonymous"></script>
+<!-- PC-博客-详情页-右下视窗-80-99 -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1076724771190722"
+     data-ad-slot="8695886974"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=479&adId=1015192&a=1015192&c=0&k=FileInputStream中read及readbyte b的用法&spm=1001.2101.3001.4834&articleId=95508722&d=1&t=3&u=b323c9e002bd48869f8f7b319b320045" style="display: block;width: 0px;height: 0px;"></div>
+                </div>
+            <div class='aside-box kind_person d-flex flex-column'>
+                    <h3 class="aside-title">分类专栏</h3>
+                    <div class="align-items-stretch kindof_item" id="kind_person_column">
+                        <div class="aside-content">
+                            <ul>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010389391/category_9775360.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010389391/category_9775360.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            字节码
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010389391/category_9416579.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010389391/category_9416579.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756724.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            Java虚拟机
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">5篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010389391/category_10155774.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010389391/category_10155774.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756913.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            线程
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">2篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010389391/category_10253859.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010389391/category_10253859.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756724.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            计算机基础
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010389391/category_9782188.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010389391/category_9782188.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756923.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            执行引擎
+                                        </span>
+                                    </a>
+                                    <span class="special-column-num">1篇</span>
+                                </li>
+                                <li>
+                                    <a class="clearfix special-column-name" target="_blank" href="https://blog.csdn.net/u010389391/category_9388547.html" data-report-click='{"mod":"popu_537","spm":"1001.2101.3001.4137","strategy":"pc付费专栏左侧入口","dest":"https://blog.csdn.net/u010389391/category_9388547.html","ab":"new"}'>
+                                        <div class="special-column-bar "></div>
+                                        <img src="https://img-blog.csdnimg.cn/20201014180756930.png?x-oss-process=image/resize,m_fixed,h_64,w_64" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="">
+                                            Java数组集合
+                                        </span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+<div class="recommend-right1  align-items-stretch clearfix" id="rightAsideConcision" data-type="recommend">
+    <aside class="recommend-right_aside">
+        <div id="recommend-right-concision" >
+            <div class='flex-column aside-box groupfile' id="groupfileConcision">
+                <div class="groupfile-div1">
+                <h3 class="aside-title">目录</h3>
+                <div class="align-items-stretch group_item">
+                    <div class="pos-box">
+                        <div class="scroll-box">
+                            <div class="toc-box"></div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+</div>
+<div class="mask-dark"></div>
+<script src="https://csdnimg.cn/public/sandalstrap/1.4/js/sandalstrap.min.js"></script>
+<div class="skin-boxshadow"></div>
+<div class="directory-boxshadow"></div>
+<div class="comment-side-box-shadow comment-side-tit-close" id="commentSideBoxshadow">
+<div class="comment-side-content">
+	<div class="comment-side-tit">
+	<span class="comment-side-tit-count">评论</span>	
+	<img class="comment-side-tit-close" src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png"></div>
+	<div id="pcCommentSideBox" class="comment-box comment-box-new2 " style="display:block">
+		<div class="comment-edit-box d-flex">
+			<div class="user-img">
+				<a href="https://blog.csdn.net/weixin_46000198" target="_blank">
+					<img src="https://profile.csdnimg.cn/E/D/5/3_weixin_46000198">
+				</a>
+			</div>
+			<form id="commentform">
+				<textarea class="comment-content" name="comment_content" id="comment_content" placeholder="欢迎高质量的评论，低质的评论会被折叠" maxlength="1000"></textarea>
+				<div class="comment-operate-box">
+					<div class="comment-operate-l">
+						<span id="tip_comment" class="tip">还能输入<em>1000</em>个字符</span>
+					</div>
+					<div class="comment-operate-c">
+						&nbsp;
+					</div>
+					<div class="comment-operate-r">
+						<div class="comment-operate-item comment-emoticon">
+							<img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentEmotionIcon.png" alt="表情包">
+							<span class="comment-operate-tip">插入表情</span>
+							<div class="comment-emoticon-box comment-operate-isshow">
+								<div class="comment-emoticon-img-box"></div>
+							</div>
+						</div>
+						<div class="comment-operate-item comment-code">
+							<img class="comment-operate-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentCodeIcon.png" alt="表情包">
+							<span class="comment-operate-tip">代码片</span>
+							<div class="comment-code-box comment-operate-isshow">
+								<ul id="commentCode">
+									<li><a data-code="html">HTML/XML</a></li>
+									<li><a data-code="objc">objective-c</a></li>
+									<li><a data-code="ruby">Ruby</a></li>
+									<li><a data-code="php">PHP</a></li>
+									<li><a data-code="csharp">C</a></li>
+									<li><a data-code="cpp">C++</a></li>
+									<li><a data-code="javascript">JavaScript</a></li>
+									<li><a data-code="python">Python</a></li>
+									<li><a data-code="java">Java</a></li>
+									<li><a data-code="css">CSS</a></li>
+									<li><a data-code="sql">SQL</a></li>
+									<li><a data-code="plain">其它</a></li>
+								</ul>
+							</div>
+						</div>
+						<div class="comment-operate-item">
+							<input type="hidden" id="comment_replyId" name="comment_replyId">
+							<input type="hidden" id="article_id" name="article_id" value="95508722">
+							<input type="hidden" id="comment_userId" name="comment_userId" value="">
+							<input type="hidden" id="commentId" name="commentId" value="">
+							<a data-report-click='{"mod":"1582594662_003","spm":"1001.2101.3001.4227","ab":"new"}'>
+							<input type="submit" class="btn-comment btn-comment-input" value="评论">
+							</a>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="comment-list-container">
+			<div class="comment-list-box comment-operate-item">
+			</div>
+			<div id="lookFlodComment" class="look-flod-comment">
+					<span class="count"></span>&nbsp;条评论被折叠&nbsp;<a class="look-more-flodcomment">查看</a>
+			</div>
+			<div class="opt-box text-center">
+				<div class="btn btn-sm btn-link-blue" id="btnMoreComment"></div>
+			</div>
+		</div>
+	</div>
+	<div id="pcFlodCommentSideBox" class="pc-flodcomment-sidebox">
+		<div class="comment-fold-tit"><span id="lookUnFlodComment" class="back"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowLeftWhite.png" alt=""></span>被折叠的&nbsp;<span class="count"></span>&nbsp;条评论
+		 <a href="https://blogdev.blog.csdn.net/article/details/122245662" class="tip" target="_blank">为什么被折叠?</a>
+		 <a href="https://bbs.csdn.net/forums/FreeZone" class="park" target="_blank">
+		 <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/iconPark.png">到【灌水乐园】发言</a>                                
+		</div>
+		<div class="comment-fold-content"></div>
+		<div id="lookBadComment" class="look-bad-comment side-look-comment">
+			<a class="look-more-comment">查看更多评论<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/commentArrowDownWhite.png" alt=""></a>
+		</div>
+	</div>
+</div>
+</div>
+<div id="rewardNew" class="reward-popupbox-new">
+	<p class="rewad-title">打赏作者<span class="reward-close"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/closeBt.png"></span></p>
+	<dl class="profile-box">
+		<dd>
+		<a href="https://blog.csdn.net/u010389391" data-report-click='{"mod":"popu_379","dest":"https://blog.csdn.net/u010389391","ab":"new"}'>
+			<img src="https://profile.csdnimg.cn/1/E/A/3_u010389391" class="avatar_pic">
+		</a>
+		</dd>
+		<dt>
+			<p class="blog-name">仰子瞻</p>
+			<p class="blog-discript">你的鼓励将是我创作的最大动力</p>
+		</dt>
+	</dl>
+	<div class="reward-box-new">
+			<div class="reward-content"><div class="reward-right"></div></div>
+	</div>
+	<div class="money-box">
+				<span class="choose-money choosed" data-id="2">¥2</span>
+				<span class="choose-money " data-id="4">¥4</span>
+				<span class="choose-money " data-id="6">¥6</span>
+				<span class="choose-money " data-id="10">¥10</span>
+				<span class="choose-money " data-id="20">¥20</span>
+				<input id="customizeMoney" class="customize-money" name="" type="" value="" placeholder="自定义"/>
+				<div class="customize-tip">输入1-500的整数</div>
+	</div>
+	<div class="pay-box">
+		<div class="pay-type-blance pay-type active" data-type="blance">
+			<img class="unchoose" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnChoose.png" alt="">
+			<img class="choose"src="https://csdnimg.cn/release/blogv2/dist/pc/img/newChoose.png" alt="">
+			<span class="pay-type-name">余额支付</span>
+			<span class="pay-type-num">(余额：-- )</span>
+		</div>
+		<div class="pay-type-money pay-type" data-type="money">
+			<img class="unchoose" src="https://csdnimg.cn/release/blogv2/dist/pc/img/newUnChoose.png" alt="">
+			<img class="choose"src="https://csdnimg.cn/release/blogv2/dist/pc/img/newChoose.png" alt="">
+			<span class="pay-type-name">扫码支付</span>
+		</div>
+	</div>
+	<div class="sure-box">
+		<div class="sure-box-money">
+			<div class="code-box">
+				<div class="code-num-box">
+					<span class="code-name">扫码支付：</span><span class="code-num">¥2</span>
+				</div>
+				<div class="code-img-box">
+					<div class="renovate">
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png">
+					<span>获取中</span>
+					</div>
+				</div>
+				<div class="code-pay-box">
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newWeiXin.png" alt="">
+					<img src="https://csdnimg.cn/release/blogv2/dist/pc/img/newZhiFuBao.png" alt="">
+					<span>扫码支付</span>
+				</div>
+			</div>
+		</div>
+		<div class="sure-box-blance">
+			<p class="tip">您的余额不足，请更换扫码支付或<a target="_blank" data-report-click='{"mod":"1597646289_003","spm":"1001.2101.3001.4302"}' href="https://i.csdn.net/#/wallet/balance/recharge?utm_source=RewardVip" class="go-invest">充值</a></p>
+			<p class="is-have-money"><a class="reward-sure">打赏作者</a></p>
+		</div>
+	</div>
+</div>
+<div class="pay-code">
+    <div class="pay-money">实付<span class="pay-money-span" data-nowprice='' data-oldprice=''>元</span></div>
+    <div class="content-blance"><a class="blance-bt" href="javascript:;">使用余额支付</a></div>
+    <div class="content-code">
+    <div id="payCode" data-id="">
+            <div class="renovate">
+                <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-time-out.png">
+                <span>点击重新获取</span>
+            </div>
+        </div>
+        <div class="pay-style"><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/weixin.png"></span><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/zhifubao.png"></span><span><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/jingdong.png"></span><span class="text">扫码支付</span></div>
+    </div>
+    <div class="bt-close"><svg t="1567152543821" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10924" xmlns:xlink="http://www.w3.org/1999/xlink" width="12" height="12"><defs><style type="text/css"></style></defs><path d="M512 438.378667L806.506667 143.893333a52.032 52.032 0 1 1 73.6 73.621334L585.621333 512l294.485334 294.485333a52.074667 52.074667 0 0 1-73.6 73.642667L512 585.621333 217.514667 880.128a52.053333 52.053333 0 1 1-73.621334-73.642667L438.378667 512 143.893333 217.514667a52.053333 52.053333 0 1 1 73.621334-73.621334L512 438.378667z" fill="" p-id="10925"></path></svg></div>
+    <!-- <p style="margin-top: 8px;font-size: 14px;" class="text-center">支付成功即可阅读</p> -->
+    <div class="pay-balance">
+    <input type="radio" class="pay-code-radio" data-type="details"> 
+    <span class="span">钱包余额</span>
+    <span class="balance" style="color:#FC5531;font-size:14px;">0</span>  
+    <div class="pay-code-tile">
+        <img src="https://csdnimg.cn/release/blogv2/dist/pc/img/pay-help.png" alt="">
+        <div class="pay-code-content">
+            <div class="span">
+                <p class="title">抵扣说明：</p>
+                <p> 1.余额是钱包充值的虚拟货币，按照1:1的比例进行支付金额的抵扣。<br> 2.余额无法直接购买下载，可以购买VIP、C币套餐、付费专栏及课程。</p>
+            </div>
+        </div>
+    </div>
+    </div>
+    <a class="pay-balance-con" href="https://i.csdn.net/#/wallet/balance/recharge" target="_blank"><img src="https://csdnimg.cn/release/blogv2/dist/pc/img/recharge.png" alt=""><span  >余额充值</span></a>
+</div>
+<div style="display:none;">
+	<img src="" onerror='setTimeout(function(){if(!/(csdn.net|iteye.com|baiducontent.com|googleusercontent.com|360webcache.com|sogoucdn.com|bingj.com|baidu.com)$/.test(window.location.hostname)){window.location.href="\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x63\x73\x64\x6e\x2e\x6e\x65\x74"}},3000);'>
+</div>
+<div class="keyword-dec-box" id="keywordDecBox"></div>
+</body>
+    <!-- 富文本柱状图  -->
+	<link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/chart.css"/>
+	<script type="text/javascript" src="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/lib/chart.min.js"></script>
+    <script type="text/javascript" src="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/chart/widget2chart.js"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_highlight-2a2586c533.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/components/js/pc_wap_common-fbcbe8567e.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/components/js/edit_copy_code-ce0f06f94b.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="https://csdnimg.cn/release/blog_editor_html/release1.6.12/ckeditor/plugins/codesnippet/lib/highlight/styles/atom-one-light.css">
+<script src="https://g.csdnimg.cn/user-accusation/1.0.5/user-accusation.js" type="text/javascript" ></script>
+<script>
+ // 全局声明
+ if (window.csdn === undefined) {
+      window.csdn = {};
+    }
+    window.csdn.sideToolbar = {
+        options: {
+            report:{
+                isShow: true,
+            },
+            qr: {
+                isShow: false,
+            },
+            guide: {
+                isShow: true
+            }
+        }
+    }
+    $(function(){
+        $(document).on('click',"a.option-box[data-type='report']",function() {
+            window.csdn.userLogin.loadAjax(function(res){
+                window.csdn.feedback({
+                    "type":'blog',
+                    "rtype":'article',
+                    "rid":articleId,
+                    "reportedName":username,
+                    "submitOptions":{
+                        "title":articleTitle,
+                        "contentUrl":articleDetailUrl
+                    },
+                    "callback":function(){
+                        showToast({
+                            text: "感谢您的举报，我们会尽快审核！",
+                            bottom: '10%', 
+                            zindex: 9000, 
+                            speed: 500,
+                            time: 1500
+                        });
+                    }
+                })
+            })
+        });
+    })
+</script>
+    <script src="https://g.csdnimg.cn/baidu-search/1.0.12/baidu-search.js"  type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/download/old_static/js/qrcode.js"></script>
+<script src="https://g.csdnimg.cn/lib/qrcode/1.0.0/qrcode.min.js"></script>
+<script src="https://g.csdnimg.cn/user-ordercart/3.0.1/user-ordercart.js" type="text/javascript"></script>
+<script src="https://g.csdnimg.cn/user-ordertip/5.0.1/user-ordertip.js" type="text/javascript" ></script>
+<script src="https://g.csdnimg.cn/order-payment/4.0.1/order-payment.js" type="text/javascript" ></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/pc/js/common-a1dfbf1dc3.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/pc/js/detail-bff68f3fa1.min.js" type="text/javascript"></script>
+<script src="https://csdnimg.cn/release/blogv2/dist/pc/js/column-2e5cf567c5.min.js" type="text/javascript"></script>
+<script src="https://g.csdnimg.cn/side-toolbar/3.4/side-toolbar.js" type="text/javascript"></script>
+<script src="https://g.csdnimg.cn/copyright/1.0.4/copyright.js" type="text/javascript"></script>
+<script>
+    $(".MathJax").remove();
+    if ($('div.markdown_views pre.prettyprint code.hljs').length > 0) {
+        $('div.markdown_views')[0].className = 'markdown_views';
+    }
+</script>
+<script type="text/javascript" src="https://csdnimg.cn/release/blog_mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+            "HTML-CSS": {
+                    linebreaks: { automatic: true, width: "94%container" },
+                    imageFont: null
+            },
+            tex2jax: {
+                preview: "none",
+                ignoreClass:"title-article"
+            },
+            mml2jax: {
+                preview: 'none'
+            }
+    });
+</script>
+<script type="text/javascript" crossorigin src="https://g.csdnimg.cn/common/csdn-login-box/csdn-login-box.js"></script></html>
